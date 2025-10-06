@@ -3,8 +3,6 @@
 import AnalyticsMetrics from "@/components/analytics/AnalyticsMetrics";
 import {
   ResponsiveContainer,
-  PieChart,
-  Pie,
   Cell,
   Tooltip,
   BarChart,
@@ -17,23 +15,13 @@ import Button from "../ui/button/Button";
 import SearchableSelect from "../form/SearchableSelect";
 import { teams } from "../user-management/user-list/modals/UserListModal";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card1/card";
-import { PieChartIcon } from "@/icons";
 import { useMemo } from "react";
 import { BarChart3Icon, Download } from "lucide-react";
 import TargetAchievedChart from "../logistics/TargetAchivedChart";
 import HourlyTeamProductivity from "../saas/HourlyTeamProductivity";
+import SessionChart from "../analytics/SessionChart";
 
 export default function MainComponent() {
-  const priorityDistribution = useMemo(
-    () => [
-      { name: "Medium", value: 42, color: "#3b82f6" },
-      { name: "Low", value: 15, color: "#6b7280" },
-      { name: "High", value: 31, color: "#f59e0b" },
-      { name: "Critical", value: 13, color: "#ef4444" },
-    ],
-    []
-  );
-
   const taskStatusDistribution = useMemo(
     () => [
       { name: "Unassigned", value: 20, color: "#6b7280" },
@@ -118,37 +106,7 @@ export default function MainComponent() {
           </Card>
         </div>
         <div className="col-span-12 lg:col-span-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                <PieChartIcon className="text-success-500" />
-                Task Distribution by Priority
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer
-                width="100%"
-                height={300}
-                className="border-none outline-none"
-              >
-                <PieChart>
-                  <Pie
-                    data={priorityDistribution}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    dataKey="value"
-                    label={({ name, value }) => `${name} ${value}%`}
-                  >
-                    {priorityDistribution.map((entry, index) => (
-                      <Cell key={`priority-cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`${value}%`, `Tasks`]} />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          <SessionChart />
         </div>
       </div>
     </div>
