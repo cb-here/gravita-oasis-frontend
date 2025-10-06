@@ -217,46 +217,52 @@ export default function RoleManagement() {
       label: "Permissions Count",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700"
-          color="primary"
-          variant="light"
-        >
-          {row.permissions.length} permissions
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700"
+            color="primary"
+            variant="light"
+          >
+            {row.permissions.length} permissions
+          </Badge>
+        </div>
       ),
     },
     {
       label: "Assigned Users",
       sortable: true,
       render: (row: any) => (
-        <span className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 flex items-center justify-center">
           {row.assignedUsersCount || 0}
-        </span>
+        </div>
       ),
     },
     {
       label: "Type",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className={`px-2 py-1 rounded text-xs font-semibold `}
-          color={row.isSystemRole ? "velvet" : "info"}
-        >
-          {row.isSystemRole ? "System" : "Custom"}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className={`px-2 py-1 rounded text-xs font-semibold `}
+            color={row.isSystemRole ? "velvet" : "info"}
+          >
+            {row.isSystemRole ? "System" : "Custom"}
+          </Badge>
+        </div>
       ),
     },
     {
       label: "Status",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className={`px-2 py-1 rounded text-xs font-semibold `}
-          color={row.isActive ? "success" : "error"}
-        >
-          {row.isActive ? "Active" : "Inactive"}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className={`px-2 py-1 rounded text-xs font-semibold `}
+            color={row.isActive ? "success" : "error"}
+          >
+            {row.isActive ? "Active" : "Inactive"}
+          </Badge>
+        </div>
       ),
     },
   ];

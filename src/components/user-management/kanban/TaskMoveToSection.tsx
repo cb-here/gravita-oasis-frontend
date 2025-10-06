@@ -47,8 +47,8 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
   };
 
   return (
-    <div className="w-full bg-[#F6F7F9] rounded-lg px-4 py-4 mt-4">
-      <div className="text-xs text-gray-500 font-medium mb-2">Move to</div>
+    <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-4 mt-4">
+      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">Move to</div>
       <div className="flex gap-4">
         {[getHoldLabel(), "Under QA", "Submission"].map((option) => (
           <button
@@ -57,7 +57,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
               ${
                 selected === option
                   ? "bg-brand-primary text-white shadow"
-                  : "bg-white text-gray-700 border border-gray-200 hover:bg-blue-50"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-600"
               }
             `}
             onClick={() => {
@@ -80,7 +80,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
         className="max-w-[500px]"
       >
         <div className="p-6">
-          <h1 className="text-[24px] font-semibold leading-[30px] text-gray-dark mb-4 text-center">
+          <h1 className="text-[24px] font-semibold leading-[30px] text-gray-900 dark:text-white mb-4 text-center">
             Select your reasons for hold
           </h1>
 
@@ -94,7 +94,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
                   ${
                     selectedReasons.includes(reason)
                       ? "bg-brand-primary text-white border-brand-primary scale-105"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:scale-105"
+                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-600 hover:scale-105"
                   }`}
               >
                 {reason}
@@ -107,7 +107,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
 
           {selectedReasons.includes("Other") && (
             <TextArea
-              className="w-full mt-4 p-2 border border-gray-300 rounded-lg text-sm"
+              className="w-full mt-4 p-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows={3}
               placeholder="Please specify your reason..."
               value={otherText}
@@ -119,7 +119,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
             className={`w-full px-[16px] py-[10px] rounded-[10px] text-white mt-6 transition-colors duration-150
               ${
                 selectedReasons.length === 0
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
                   : "bg-brand-primary hover:bg-brand-primary/90"
               }`}
             onClick={() => {
@@ -141,7 +141,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
         className="max-w-[400px]"
       >
         <div className="p-8 flex flex-col items-center text-center">
-          <div className="w-[86px] h-[86px] flex items-center justify-center rounded-full bg-[#F3F0FF] text-brand-primary mb-4">
+          <div className="w-[86px] h-[86px] flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/20 text-brand-primary mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-8 w-8"
@@ -157,12 +157,12 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
               />
             </svg>
           </div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
             Are you sure you want to move to {getHoldLabel()}?
           </h2>
           <div className="flex gap-4 w-full">
             <button
-              className="flex-1 py-2 rounded-[10px] border border-gray-300 text-gray-700 bg-gray-100 hover:bg-gray-200"
+              className="flex-1 py-2 rounded-[10px] border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
               onClick={() => setShowConfirmModal(false)}
             >
               No

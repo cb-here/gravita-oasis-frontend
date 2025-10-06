@@ -266,7 +266,7 @@ export default function MainComponent() {
     {
       label: "Total Tasks",
       sortable: true,
-      render: (item: any) => <span>{safeRender(item?.total_tasks)}</span>,
+      render: (item: any) => <div className="flex items-center justify-center">{safeRender(item?.total_tasks)}</div>,
       className: "w-[100px] max-w-[100px]",
       
     },

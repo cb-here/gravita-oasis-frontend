@@ -6,7 +6,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Column from "./Column";
 import SearchableSelect from "@/components/form/SearchableSelect";
 import Search from "@/components/common/Search";
-// import Tabs from "@/components/common/tabs/Tabs";
 
 export const initialTasks: any[] = [
   {
@@ -34,7 +33,7 @@ export const initialTasks: any[] = [
     status: "workflow",
     statusTags: [
       { label: "Low", color: "green" },
-      { label: "ETC", color: "red" }, // Changed RTC to ETC to match the image
+      { label: "RTC", color: "red" }, // Changed RTC to RTC to match the image
     ],
     category: { name: "Assessment", color: "orange" },
   },
@@ -48,7 +47,7 @@ export const initialTasks: any[] = [
     status: "workflow",
     statusTags: [
       { label: "Low", color: "green" },
-      { label: "ETC", color: "red" }, // Changed RTC to ETC to match the image
+      { label: "RTC", color: "red" }, // Changed RTC to RTC to match the image
     ],
     category: { name: "Assessment", color: "orange" },
   },
@@ -102,7 +101,7 @@ export const initialTasks: any[] = [
     category: { name: "Evaluation", color: "blue" },
   },
   {
-    id: "7",
+    id: "10",
     mrn: "123456",
     title: "Pediatric Evaluation",
     patient: "Stan Marsh", // Empty patient name as in the mockup
@@ -125,6 +124,17 @@ export const initialTasks: any[] = [
     statusTags: [
       { label: "High", color: "red" }, // Added high priority based on the image
     ],
+    category: { name: "Evaluation", color: "blue" },
+  },
+  {
+    id: "9", // Changed from "7"
+    mrn: "123456",
+    title: "Pediatric Evaluation",
+    patient: "Stan Marsh",
+    dueDate: "05-01-2023",
+    assignee: "/images/user/user-04.jpg",
+    status: "completed",
+    statusTags: [{ label: "High", color: "red" }],
     category: { name: "Evaluation", color: "blue" },
   },
 ];
@@ -163,7 +173,6 @@ const KanbanBoard: React.FC = () => {
 
   const handleTimeChange = (selectedOption: any) => {
     setSelectedTime(selectedOption?.value || null);
-    // console.log("Selected time:", selectedOption?.value);
   };
 
   const [activeTab, setActiveTab] = useState("workflow");
@@ -181,11 +190,6 @@ const KanbanBoard: React.FC = () => {
       <div className="flex-none p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="w-fit ">
-            {/* <Tabs
-              tabGroups={tabGroups}
-              setSelectedTabGroup={setActiveTab}
-              selectedTabGroup={activeTab}
-            /> */}
             <div className="grid grid-cols-2 sm:grid-cols-5 items-center gap-x-1 gap-y-2 rounded-lg bg-gray-200 p-0.5 dark:bg-gray-900">
               {tabGroups.map((group) => (
                 <button
@@ -210,15 +214,11 @@ const KanbanBoard: React.FC = () => {
                 </button>
               ))}
             </div>
-            {/* <h2 className="text-xl font-semibold text-gray-dark">
-              Task Management
-            </h2>
-            <p className="text-gray-light text-sm ">Today Task Management</p> */}
           </div>
           <div className="flex items-center gap-2">
             <Search
               placeholder="Search..."
-              className="w-[500px] bg-white rounded-lg"
+              className="w-[500px] bg-white dark:bg-white/[0.03] rounded-lg"
             />
             <div className="relative min-w-[200px]">
               <SearchableSelect

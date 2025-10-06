@@ -65,14 +65,11 @@ interface AdminApprovalTabProps {
 
 export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
   submissions,
-  onApprovalAction,
 }) => {
   const [selectedSubmission, setSelectedSubmission] =
     useState<SubmissionRecord | null>(null);
-  const [comments, setComments] = useState("");
-  const [actionType, ] = useState<"approve" | "reject">("approve");
-  const [currentPage, ] = useState(1);
-  const [rowsPerPage, ] = useState(10);
+  const [currentPage] = useState(1);
+  const [rowsPerPage] = useState(10);
   const [processedCurrentPage, setProcessedCurrentPage] = useState(1);
   const [processedRowsPerPage, setProcessedRowsPerPage] = useState(10);
   const reviewModal = useModal();
@@ -129,14 +126,6 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
   const processedTotalPages = Math.ceil(
     processedSubmissions.length / processedRowsPerPage
   );
-
-  const handleAction = () => {
-    if (selectedSubmission) {
-      onApprovalAction(selectedSubmission.id, actionType, comments);
-      setSelectedSubmission(null);
-      setComments("");
-    }
-  };
 
   // Headers for pending submissions table
   const pendingHeaders: HeaderType<SubmissionRecord>[] = [

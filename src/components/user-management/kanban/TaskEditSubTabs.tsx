@@ -4,7 +4,7 @@ import { TabButton } from "../../ui/tabs/TabWithUnderline";
 interface TaskEditSubTabsProps {
   activeSubTab: string;
   onSubTabChange: (tab: string) => void;
-  readonly?: boolean
+  readOnly?: boolean;
 }
 
 const subTabs = ["Coding", "Oasis", "Poc", "QA", "Preview"];

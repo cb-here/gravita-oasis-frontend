@@ -1081,7 +1081,17 @@ pre[class*="language-"].line-numbers {
   box-shadow: none !important;
 }
 
-
 [contentEditable="true"]:focus {
-      outline: 0px !important;
+  outline: 0px !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
 }

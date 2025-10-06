@@ -18,16 +18,12 @@ import SearchableSelect from "../form/SearchableSelect";
 import { teams } from "../user-management/user-list/modals/UserListModal";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card1/card";
 import { PieChartIcon } from "@/icons";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { BarChart3Icon, Download } from "lucide-react";
 import TargetAchievedChart from "../logistics/TargetAchivedChart";
 import HourlyTeamProductivity from "../saas/HourlyTeamProductivity";
 
 export default function MainComponent() {
-  const [timeFilter, setTimeFilter] = useState<
-    "all" | "day" | "week" | "month"
-  >("all");
-
   const priorityDistribution = useMemo(
     () => [
       { name: "Medium", value: 42, color: "#3b82f6" },
@@ -130,7 +126,11 @@ export default function MainComponent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300} className="border-none outline-none">
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                className="border-none outline-none"
+              >
                 <PieChart>
                   <Pie
                     data={priorityDistribution}

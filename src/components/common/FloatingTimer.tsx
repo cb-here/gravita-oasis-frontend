@@ -1,14 +1,22 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Clock, X, Pause, Play, CheckCircle2, Maximize2, Minimize2 } from "lucide-react";
+import {
+  Clock,
+  X,
+  Pause,
+  Play,
+  CheckCircle2,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
 import Timer from "./Timer";
 import { useTimer } from "@/lib/contexts/TimerContext";
 import Button from "../ui/button/Button";
 import CheckOutModal from "../user-management/kanban/modals/CheckOutModal";
 
 export default function FloatingTimer() {
-  const { isRunning, startTime, taskInfo, stopTimer, pauseTimer, resumeTimer } =
+  const { isRunning, startTime, taskInfo, pauseTimer, resumeTimer } =
     useTimer();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -17,7 +25,7 @@ export default function FloatingTimer() {
   const timerRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef({ x: 40, y: 10 });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
 
   // For React re-renders only when needed (not during drag)
   const [, setRenderTrigger] = useState(0);
@@ -28,11 +36,11 @@ export default function FloatingTimer() {
     if (savedPosition) {
       const pos = JSON.parse(savedPosition);
       positionRef.current = pos;
-      setRenderTrigger(prev => prev + 1); // Trigger re-render
+      setRenderTrigger((prev) => prev + 1); // Trigger re-render
     } else {
       // Default position (top-right)
       positionRef.current = { x: window.innerWidth - 400, y: 16 };
-      setRenderTrigger(prev => prev + 1); // Trigger re-render
+      setRenderTrigger((prev) => prev + 1); // Trigger re-render
     }
   }, []);
 
@@ -68,34 +76,40 @@ export default function FloatingTimer() {
     }
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
 
-    // Cancel any previous animation frame
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
+      // Cancel any previous animation frame
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
 
-    // Use requestAnimationFrame for smooth updates
-    animationFrameRef.current = requestAnimationFrame(() => {
-      updatePosition(e.clientX, e.clientY);
-    });
-  }, [isDragging, updatePosition]);
+      // Use requestAnimationFrame for smooth updates
+      animationFrameRef.current = requestAnimationFrame(() => {
+        updatePosition(e.clientX, e.clientY);
+      });
+    },
+    [isDragging, updatePosition]
+  );
 
   const handleMouseUp = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
-      
+
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
 
       // Save position to localStorage
-      localStorage.setItem("timerPosition", JSON.stringify(positionRef.current));
-      
+      localStorage.setItem(
+        "timerPosition",
+        JSON.stringify(positionRef.current)
+      );
+
       // Trigger re-render to ensure React knows about the final position
-      setRenderTrigger(prev => prev + 1);
+      setRenderTrigger((prev) => prev + 1);
     }
   }, [isDragging]);
 
@@ -103,7 +117,7 @@ export default function FloatingTimer() {
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
-      
+
       // Add grabbing cursor to body
       document.body.style.cursor = "grabbing";
       document.body.style.userSelect = "none";
@@ -112,11 +126,11 @@ export default function FloatingTimer() {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      
+
       // Clean up cursor styles
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
-      
+
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);

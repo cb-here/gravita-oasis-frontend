@@ -215,13 +215,6 @@ export default function ErrorManagement() {
       ),
     },
     {
-      label: "Point Value",
-      sortable: true,
-      render: (row: any) => (
-        <span className="font-medium">{row.pointValue}</span>
-      ),
-    },
-    {
       label: "Description",
       sortable: true,
       render: (row: any) => (
@@ -229,16 +222,27 @@ export default function ErrorManagement() {
       ),
     },
     {
+      label: "Point Value",
+      sortable: true,
+      render: (row: any) => (
+        <div className="font-medium flex items-center justify-center">
+          {row.pointValue}
+        </div>
+      ),
+    },
+    {
       key: "status",
       label: "Status",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className={`px-2 py-1 rounded text-xs font-semibold`}
-          color={row.status === "Active" ? "success" : "error"}
-        >
-          {row.status}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className={`px-2 py-1 rounded text-xs font-semibold`}
+            color={row.status === "Active" ? "success" : "error"}
+          >
+            {row.status}
+          </Badge>
+        </div>
       ),
     },
   ];

@@ -4,12 +4,13 @@ import React from "react";
 
 interface SwitchProps {
   label?: any;
-  checked: boolean;
+  checked?: boolean;
   disabled?: boolean;
   onChange?: (checked: boolean) => void;
   color?: "blue" | "gray";
   readOnly?: boolean;
   loading?: boolean;
+  defaultChecked?: boolean;
 }
 
 const Switch: React.FC<SwitchProps> = ({

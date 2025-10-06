@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   DownloadIcon,
-  ClockIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   ExternalLinkIcon,
@@ -96,6 +95,7 @@ export default function ViewBulkModal({
   selectedItem,
   setSelectedItem,
 }: ViewModalProps) {
+  console.log("🚀 ~ ViewBulkModal ~ setSelectedItem:", setSelectedItem);
   const [activeTab, setActiveTab] = useState("overview");
   const [isDownloading, setIsDownloading] = useState(false);
   const [showRawData, setShowRawData] = useState(false);
@@ -125,7 +125,6 @@ export default function ViewBulkModal({
   };
 
   const errorData = getErrorData();
-  const errorCount = errorData.length || data.failed_tasks || 0;
 
   const handleExportErrors = async () => {
     if (!errorData?.length) return;
@@ -249,8 +248,8 @@ export default function ViewBulkModal({
                       <p className="text-sm text-amber-700 dark:text-amber-300 mt-1.5 leading-relaxed">
                         {data.failed_tasks} task
                         {data.failed_tasks !== 1 ? "s" : ""} failed to process.
-                        Review the errors in the "Errors" tab to understand what
-                        needs to be corrected.
+                        Review the errors in the &quot;Errors&quot; tab to
+                        understand what needs to be corrected.
                       </p>
                     </div>
                     <button
@@ -338,12 +337,12 @@ export default function ViewBulkModal({
                   {showRawData ? (
                     <>
                       <ChevronUpIcon className="w-3.5 h-3.5" />
-                      Hide JSON
+                      Hide
                     </>
                   ) : (
                     <>
                       <ChevronDownIcon className="w-3.5 h-3.5" />
-                      Show JSON
+                      Show
                     </>
                   )}
                 </button>

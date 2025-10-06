@@ -247,7 +247,7 @@ export const AdminHistoryTab: React.FC<AdminHistoryTabProps> = ({
                 })),
               },
             ]}
-            filterValues={historyParams}
+            filterValues={historyParams as any}
             onFilterChange={handleFilterChange}
             onApply={handleApplyFilters}
             className="max-w-[600px]"

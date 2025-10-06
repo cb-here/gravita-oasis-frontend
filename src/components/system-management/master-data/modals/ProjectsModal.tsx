@@ -467,7 +467,6 @@ export default function ProjectsModal({
                           })}
                         </div>
 
-                        {/* Summary Section */}
                         <div className="mt-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">

@@ -2,8 +2,6 @@ import { Modal } from "@/components/ui/modal";
 import { Clock1, InfoIcon, User, CheckCircle } from "lucide-react";
 import { useTimer } from "@/lib/contexts/TimerContext";
 import { useState } from "react";
-import TextArea from "@/components/form/input/TextArea";
-import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 
 interface CheckOutModalProps {
@@ -18,7 +16,7 @@ export default function CheckOutModal({
   onCheckOut,
 }: CheckOutModalProps) {
   const { stopTimer, taskInfo, getElapsedTime } = useTimer();
-  const [notes, setNotes] = useState("");
+  const [notes, ] = useState("");
 
   const formatElapsedTime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);

@@ -197,21 +197,23 @@ export default function InsuranceType() {
       label: "Status",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className="text-xs"
-          color={
-            row?.status === "Active"
-              ? "success"
-              : row?.status === "Inactive"
-              ? "error"
-              : row?.status === "Pending"
-              ? "warning"
-              : "info"
-          }
-          variant="light"
-        >
-          {row?.status ?? "Unknown"}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className="text-xs"
+            color={
+              row?.status === "Active"
+                ? "success"
+                : row?.status === "Inactive"
+                ? "error"
+                : row?.status === "Pending"
+                ? "warning"
+                : "info"
+            }
+            variant="light"
+          >
+            {row?.status ?? "Unknown"}
+          </Badge>
+        </div>
       ),
     },
   ];

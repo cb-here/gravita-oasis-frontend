@@ -8,7 +8,7 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
         {task && (
           <div className="space-y-4">
             {/* Title */}
-            <h2 className="text-[20px] leading-[30px] font-bold text-gray-900">
+            <h2 className="text-[20px] leading-[30px] font-bold text-gray-900 dark:text-white">
               {task?.title || "SN Assessment E"}
             </h2>
 
@@ -18,10 +18,10 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
                 {/* MRN */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">MRN</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">MRN</p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-brand-primary font-medium">
+                    <p className="text-sm text-brand-primary dark:text-brand-primary-300 font-medium">
                       {task?.mrn || "123456"}
                     </p>
                   </div>
@@ -30,12 +30,12 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
                 {/* Type of Chart */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Type of Chart
                     </p>
                   </div>
                   <div className="flex-1">
-                    <span className="capitalize inline-flex px-[10px] py-[5px] rounded-[6px] text-xs bg-new-green text-text-green font-semibold">
+                    <span className="capitalize inline-flex px-[10px] py-[5px] rounded-[6px] text-xs bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold">
                       {task?.status || "Fresh"}
                     </span>
                   </div>
@@ -44,12 +44,12 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
                 {/* Priority */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Priority
                     </p>
                   </div>
                   <div className="flex-1">
-                    <span className="capitalize inline-flex px-[10px] py-[5px] rounded-[6px] text-xs bg-red-50 text-red-700 font-semibold">
+                    <span className="capitalize inline-flex px-[10px] py-[5px] rounded-[6px] text-xs bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-semibold">
                       {task?.priority || "High"}
                     </span>
                   </div>
@@ -58,12 +58,12 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
                 {/* Current Status */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Current Status
                     </p>
                   </div>
                   <div className="flex-1">
-                    <span className="capitalize inline-flex px-[10px] py-[5px] rounded-[6px] text-xs bg-brand-primary-100 text-brand-primary font-semibold">
+                    <span className="capitalize inline-flex px-[10px] py-[5px] rounded-[6px] text-xs bg-brand-primary-100 dark:bg-brand-primary-900/20 text-brand-primary dark:text-brand-primary-300 font-semibold">
                       {"Workflow"}
                     </span>
                   </div>
@@ -72,18 +72,18 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
                 {/* Assignee */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Assignee
                     </p>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center">
-                      <div className="h-6 w-6 rounded-full bg-yellow-300 overflow-hidden mr-2 flex items-center justify-center">
-                        <span className="font-medium text-xs text-gray-700">
+                      <div className="h-6 w-6 rounded-full bg-yellow-300 dark:bg-yellow-600 overflow-hidden mr-2 flex items-center justify-center">
+                        <span className="font-medium text-xs text-gray-700 dark:text-gray-300">
                           JD
                         </span>
                       </div>
-                      <span className="text-sm text-gray-900">
+                      <span className="text-sm text-gray-900 dark:text-white">
                         {"John Doe"}
                       </span>
                     </div>
@@ -96,12 +96,12 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
                 {/* Target Date */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Target Date
                     </p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-gray-900 dark:text-white">
                       {task?.dueDate || "01 - 01 - 2025"}
                     </p>
                   </div>
@@ -109,54 +109,54 @@ const TaskDetailsTab: React.FC<{ task: Task }> = ({ task }) => (
 
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">Age</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Age</p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">{"38"}</p>
+                    <p className="text-sm text-gray-900 dark:text-white">{"38"}</p>
                   </div>
                 </div>
 
                 {/* Project Name */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Task Type
                     </p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">SOC</p>
+                    <p className="text-sm text-gray-900 dark:text-white">SOC</p>
                   </div>
                 </div>
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Insurance
                     </p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">Human Medical</p>
+                    <p className="text-sm text-gray-900 dark:text-white">Human Medical</p>
                   </div>
                 </div>
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Assigned Date
                     </p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">01-01-2025</p>
+                    <p className="text-sm text-gray-900 dark:text-white">01-01-2025</p>
                   </div>
                 </div>
 
                 {/* Patient Name */}
                 <div className="flex">
                   <div className="w-32">
-                    <p className="text-sm text-gray-light font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Patient Name
                     </p>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">{"John Doe"}</p>
+                    <p className="text-sm text-gray-900 dark:text-white">{"John Doe"}</p>
                   </div>
                 </div>
               </div>

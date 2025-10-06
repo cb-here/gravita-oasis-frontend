@@ -76,7 +76,7 @@ const TextArea: React.FC<TextareaProps> = ({
       )}
       {
         error && errorMessage && (
-          <span className="mt-1.5 text-sm text-error-500">{errorMessage}</span>
+          <span className="mt-1.5 text-sm text-red-500">{errorMessage}</span>
         )
       }
     </div>

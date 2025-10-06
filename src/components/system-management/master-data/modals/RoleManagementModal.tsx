@@ -218,10 +218,10 @@ export default function RoleManagementModal({
                   rows={4}
                 />
               </div>
-              <div>
+              <div className="flex items-center gap-3">
+                <Label>Status</Label>
                 <Switch
-                  label="Status"
-                  defaultChecked={formData.isActive}
+                  checked={formData.isActive}
                   onChange={(checked) =>
                     setFormData((prev) => ({ ...prev, isActive: checked }))
                   }

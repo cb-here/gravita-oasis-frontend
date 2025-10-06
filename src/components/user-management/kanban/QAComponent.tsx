@@ -2,13 +2,39 @@ import React, { useState, useRef } from "react";
 import ErrorDetailsModal from "./ErrorDetailsModal";
 import AddErrorModal from "./AddErrorModal";
 import { Modal } from "@/components/ui/modal";
-import { Download, DownloadCloud } from "lucide-react";
+import { Download } from "lucide-react";
 import CommonTable from "@/components/common/CommonTable";
 import { useModal } from "@/hooks/useModal";
+import TextArea from "@/components/form/input/TextArea";
 
-// Different table data for each tab
+// Interfaces for type safety
+interface SampleError {
+  errorNumber: number;
+  category: string;
+  description: string;
+  location: string;
+  attachmentName: string;
+}
 
-const sampleErrors = [
+interface TableRow {
+  category?: string;
+  count: number | string;
+  points: number | string;
+  details?: boolean;
+  description?: string;
+  location?: string;
+  attachment?: string;
+  Section?: string;
+  "Quality Score"?: string;
+}
+
+type TabType = "coding" | "oasis" | "poc" | "summary";
+
+interface QAComponentProps {
+  readOnly?: boolean;
+}
+
+const sampleErrors: SampleError[] = [
   {
     errorNumber: 1,
     category: "DX Missing (4 points)",
@@ -53,7 +79,7 @@ const sampleErrors = [
   },
 ];
 
-const codingTableData = [
+const codingTableData: TableRow[] = [
   {
     category: "DX Missing",
     count: 1,
@@ -77,7 +103,7 @@ const codingTableData = [
   { category: "Process Error", count: 0, points: 0, details: false },
 ];
 
-const oasisTableData = [
+const oasisTableData: TableRow[] = [
   {
     category: "OASIS Assessment Error",
     count: 2,
@@ -100,7 +126,7 @@ const oasisTableData = [
   { category: "Compliance Issue", count: 0, points: 0, details: false },
 ];
 
-const pocTableData = [
+const pocTableData: TableRow[] = [
   {
     category: "Medication Error",
     count: 1,
@@ -123,7 +149,7 @@ const pocTableData = [
   { category: "Care Plan Issue", count: 0, points: 0, details: false },
 ];
 
-const summaryTableData = [
+const summaryTableData: TableRow[] = [
   {
     Section: "Coding",
     count: 3,
@@ -156,26 +182,19 @@ const summaryTableData = [
   },
 ];
 
-// Tab type definition
-type TabType = "coding" | "oasis" | "poc" | "summary";
-
-interface QAComponentProps {
-  readOnly?: boolean;
-}
-
 const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
   const [showAddErrorModal, setShowAddErrorModal] = useState(false);
-  const [externalQA, setExternalQA] = useState(88); 
+  const [externalQA, setExternalQA] = useState(88);
   const [activeTab, setActiveTab] = useState<TabType>("coding");
   const sliderRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const errorModal = useModal();
 
-  const [errors, setErrors] = useState<any>(null);
+  const [errors, setErrors] = useState<any | null>(null);
 
   // Get current table data based on active tab
-  const getCurrentTableData = () => {
+  const getCurrentTableData = (): TableRow[] => {
     switch (activeTab) {
       case "coding":
         return codingTableData;
@@ -190,34 +209,26 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
     }
   };
 
-  // // Get error categories for AddErrorModal based on active tab
-  // const getErrorCategories = () => {
-  //   const currentData = getCurrentTableData();
-  //   return currentData
-  //     .filter((e) => e.details)
-  //     .map((e) => `${e.category} (${e.points}point)`);
-  // };
-
   // Get columns based on active tab
   const getColumns = (): any[] => {
     if (activeTab === "summary") {
       return [
         {
           label: "Section",
-          render: (row: any) => row.Section,
+          render: (row: TableRow) => row.Section,
         },
         {
           label: "Count",
-          render: (row: any) => row.count,
+          render: (row: TableRow) => row.count,
         },
         {
           label: "Points",
-          render: (row: any) => row.points,
+          render: (row: TableRow) => row.points,
         },
         {
           label: "Quality Score",
-          render: (row: any) => (
-            <span className="bg-[#C7F5DA] text-[#039855] text-xs font-medium px-[10px] py-[2px] rounded-[6px]">
+          render: (row: TableRow) => (
+            <span className="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-medium px-[10px] py-[2px] rounded-[6px]">
               {row["Quality Score"]}
             </span>
           ),
@@ -227,26 +238,24 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
       return [
         {
           label: "Error Category",
-          render: (row: any) => row.category,
+          render: (row: TableRow) => row.category,
         },
         {
           label: "Count",
-          render: (row: any) => row.count,
+          render: (row: TableRow) => row.count,
         },
         {
           label: "Points",
-          render: (row: any) => row.points,
+          render: (row: TableRow) => row.points,
         },
         {
           label: "Reasons & Attachments",
-          render: (row: any) => {
-            const currentData = getCurrentTableData();
-            const idx = currentData.findIndex((r) => r === row);
+          render: (row: TableRow) => {
             return (
               <div className="flex gap-2 items-center justify-center">
                 {row.details && (
                   <button
-                    className="text-brand-primary text-xs font-medium hover:underline"
+                    className="text-brand-primary dark:text-brand-primary-300 text-xs font-medium hover:underline"
                     onClick={() => {
                       openErrorModal();
                     }}
@@ -256,7 +265,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                 )}
                 {!readOnly && (
                   <button
-                    className="text-green-600 text-xs font-medium hover:underline"
+                    className="text-green-600 dark:text-green-400 text-xs font-medium hover:underline"
                     onClick={() => setShowAddErrorModal(true)}
                   >
                     +Add Error
@@ -270,7 +279,6 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
     }
   };
 
-  // Mouse/touch drag logic
   const onDrag = (e: React.MouseEvent | React.TouchEvent) => {
     if (!sliderRef.current) return;
     const rect = sliderRef.current.getBoundingClientRect();
@@ -285,7 +293,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
     setExternalQA(Math.round(percent));
   };
 
-  const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
+  const startDrag = () => {
     dragging.current = true;
     document.body.style.userSelect = "none";
     window.addEventListener("mousemove", onDrag as any);
@@ -345,13 +353,13 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
         </Modal>
       )}
       {/* Quality Scoring Section */}
-      <div className="bg-white rounded-xl border border-gray-200 mx-[16px] p-[16px] mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 mx-[16px] p-[16px] mb-4">
         <div className="flex items-center justify-between mb-4">
-          <span className="leading-[24px] text-[16px] text-gray-dark">
+          <span className="leading-[24px] text-[16px] text-gray-900 dark:text-white">
             Quality Scoring
           </span>
           <div className="flex gap-2">
-            <button className="px-[12px] py-[6px] rounded-[8px] border border-green-500 text-[#039855] bg-white text-sm flex items-center gap-1">
+            <button className="px-[12px] py-[6px] rounded-[8px] border border-green-500 text-green-600 dark:text-green-400 bg-white dark:bg-gray-700 text-sm flex items-center gap-1">
               Excel
               <Download
                 style={{
@@ -360,24 +368,24 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                 }}
               />
             </button>
-            <button className="px-[12px] py-[6px] rounded-[8px] border border-red-500 text-[#D92D20] bg-white text-sm flex items-center gap-1">
+            <button className="px-[12px] py-[6px] rounded-[8px] border border-red-500 text-red-600 dark:text-red-400 bg-white dark:bg-gray-700 text-sm flex items-center gap-1">
               PDF
-              <DownloadCloud className="h-4 w-4 text-error-500" />
+              <Download className="h-4 w-4 text-red-500 dark:text-red-400" />
             </button>
           </div>
         </div>
-        <div className="bg-[#EEF1FF] rounded-[10px] p-[16px] mb-[10px]">
+        <div className="bg-blue-50 dark:bg-brand-900/20 rounded-[10px] p-[16px] mb-[10px]">
           <div className="flex items-center w-full mb-3">
-            <span className="text-brand-primary font-medium text-sm">
+            <span className="text-brand-primary dark:text-brand-primary-300 font-medium text-sm">
               External QA
             </span>
             <div className="flex-1 flex items-center justify-end">
-              <span className="text-gray-light text-sm mr-[12px] font-[550]">
+              <span className="text-gray-500 dark:text-gray-400 text-sm mr-[12px] font-[550]">
                 Score (%):
               </span>
               <div
                 ref={sliderRef}
-                className="relative w-[300px] h-4 bg-white rounded-full mr-4 cursor-pointer select-none"
+                className="relative w-[300px] h-4 bg-white dark:bg-gray-700 rounded-full mr-4 cursor-pointer select-none"
                 onMouseDown={startDrag}
                 onTouchStart={startDrag}
                 tabIndex={0}
@@ -389,7 +397,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                 style={{ outline: "none" }}
               >
                 <div
-                  className="h-4 bg-[#039855] rounded-full absolute top-0 left-0"
+                  className="h-4 bg-green-500 rounded-full absolute top-0 left-0"
                   style={{ width: `${externalQA}%` }}
                 ></div>
                 <div
@@ -398,7 +406,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                   style={{ left: `calc(${externalQA}% - 12px)` }}
                 >
                   <div
-                    className="w-6 h-6 bg-white border-2 border-green-500 rounded-full shadow flex items-center justify-center cursor-pointer"
+                    className="w-6 h-6 bg-white dark:bg-gray-700 border-2 border-green-500 rounded-full shadow flex items-center justify-center cursor-pointer"
                     tabIndex={0}
                     aria-label={`External QA score: ${externalQA}%`}
                   >
@@ -412,22 +420,22 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
             </div>
           </div>
           <div className="mb-[16px]">
-            <label className="block text-sm text-gray-dark mb-1">
+            <label className="block text-sm text-gray-900 dark:text-white mb-1">
               Comments
             </label>
-            <textarea
-              className="w-full min-h-[83px] border border-[#EAECF0] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white"
+            <TextArea
+              className="w-full min-h-[83px] "
               placeholder="Enter external QA comment here..."
-            ></textarea>
+            />
           </div>
           <div className="flex justify-end">
-            <button className="px-[16px] py-[10px] rounded-[10px] bg-brand-primary text-white text-sm  transition-colors">
+            <button className="px-[16px] py-[10px] rounded-[10px] bg-brand-primary text-white text-sm  transition-colors hover:bg-brand-primary/90">
               Complete External QA
             </button>
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl mb-[14px] p-[16px]">
+      <div className="bg-white dark:bg-gray-800 rounded-xl mb-[14px] p-[16px] border border-gray-200 dark:border-gray-700">
         <div className="mb-2">
           <div className="flex gap-2 mb-2">
             {tabs.map((tab) => (
@@ -436,7 +444,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                 className={`w-[90px] px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
                   activeTab === tab.id
                     ? "bg-brand-primary text-white"
-                    : "bg-[#EAECF0] text-gray-700 hover:bg-gray-200"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
                 onClick={() => setActiveTab(tab.id)}
               >
@@ -450,17 +458,17 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
           data={getCurrentTableData()}
           className="mb-2"
         />
-        <div className="bg-[#EEF1FF] rounded-[10px] p-[16px] mb-[10px] mt-[14p]">
+        <div className="bg-blue-50 dark:bg-brand-900/20 rounded-[10px] p-[16px] mb-[10px] mt-[14px]">
           <div className="flex items-center w-full mb-3">
-            <span className="text-gray-dark font-medium text-sm">
+            <span className="text-gray-900 dark:text-white font-medium text-sm">
               Additional Comments:
             </span>
           </div>
           <div className="">
-            <textarea
-              className="w-full min-h-[83px] border border-[#EAECF0] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white"
+            <TextArea
+              className="w-full min-h-[83px]"
               placeholder="Enter external QA comment here..."
-            ></textarea>
+            />
           </div>
         </div>
       </div>

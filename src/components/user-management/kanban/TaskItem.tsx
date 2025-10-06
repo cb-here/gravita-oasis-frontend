@@ -5,16 +5,15 @@ import TaskEditTab from "./TaskEditTab";
 import TaskDetailsTab from "./TaskDetailsTab";
 import TaskHistoryTab from "./TaskHistoryTab";
 import TaskTasksTab from "./TaskTasksTab";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@/icons";
+import { ChevronDownIcon, ChevronUpIcon } from "@/icons";
 import CheckInModal from "./modals/CheckInModal";
 import TaskMoveToSection from "./TaskMoveToSection";
 import NoteList from "./components/NoteList";
-import { AlarmClock, Calendar1Icon,  } from "lucide-react";
+import { AlarmClock, Calendar1Icon } from "lucide-react";
 import Switch from "@/components/form/switch/Switch";
 import { Modal } from "@/components/ui/modal";
+import Badge from "@/components/ui/badge/Badge";
+import Button from "@/components/ui/button/Button";
 
 interface TaskItemProps {
   task: Task;
@@ -82,13 +81,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
 
   return (
     <div
-      className={`relative border rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out`}
+      className={`relative border dark:border-gray-700 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out`}
     >
       {!isAccordionOpen && (
-        <div
-          className={`p-2.5 cursor-pointer`}
-          onClick={handleAccordionToggle}
-        >
+        <div className={`p-2.5 cursor-pointer`} onClick={handleAccordionToggle}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="text-sm leading-[20px] font-medium text-brand-primary">
@@ -158,14 +154,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
                 task.statusTags.map(
                   (tag, idx) =>
                     tag.label && (
-                      <span
+                      <Badge
                         key={idx}
-                        className={`px-[10px] py-[3px] rounded-[6px] text-[12px] leading-[18px] font-medium ${getStatusTagColor(
-                          tag.color
-                        )}`}
+                        className={`rounded-[6px] text-xs`}
+                        color={getStatusTagColor(tag.color)}
                       >
                         <span className="font-semibold">{tag.label}</span>
-                      </span>
+                      </Badge>
                     )
                 )}
             </div>
@@ -185,7 +180,6 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
         </div>
       )}
 
-      {/* Check-in Modal */}
       {showCheckInModal && (
         <CheckInModal
           isOpen={showCheckInModal}
@@ -197,12 +191,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
             patientName: task.patient || "",
             mrn: task.mrn || "",
             priority: task.statusTags?.[0]?.label || "Low",
-            age: task.age || "",
           }}
         />
       )}
 
-      
       <Modal
         isOpen={showSideModal}
         onClose={handleSideModalClose}
@@ -228,22 +220,24 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
           {(activeMainTab === "Edit" &&
             !["Preview"].includes(activeEditSubTab)) ||
           activeMainTab === "Tasks" ? (
-            <div className="mt-auto pt-6 border-t flex justify-end gap-3">
-              <button
+            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 mr-4">
+              <Button
+                variant="outline"
                 className="px-4 py-2 rounded-[10px] bg-[#EAECF0] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
                 onClick={handleSideModalClose}
               >
                 Cancel
-              </button>
-              <button
-                className="px-5 py-2 rounded-[10px] bg-brand-primary text-white"
+              </Button>
+              <Button
+                variant="primary"
+                className="px-5 py-2 rounded-[10px] "
                 onClick={() => {
                   setShowSideModal(false);
                   setShowCheckInModal(true);
                 }}
               >
                 Save Changes
-              </button>
+              </Button>
             </div>
           ) : null}
 
@@ -264,15 +258,15 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
 const getStatusTagColor = (color: string) => {
   switch (color) {
     case "green":
-      return "bg-new-green text-text-green";
+      return "success";
     case "blue":
-      return "bg-brand-primary-100 text-brand-primary";
+      return "primary";
     case "red":
-      return "bg-[#FEF3F2] text-[#D92D20]";
+      return "error";
     case "yellow":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300";
+      return "warning";
     default:
-      return "bg-brand-primary-100 text-brand-primary";
+      return "info";
   }
 };
 

@@ -14,6 +14,7 @@ import { PencilIcon, TrashBinIcon } from "@/icons";
 import React, { useState, useRef } from "react";
 import TeamManagementModal from "../modals/TeamManagementModal";
 import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
+import AvatarText from "@/components/ui/avatar/AvatarText";
 
 export default function TeamManagement() {
   const mainModal = useModal();
@@ -213,9 +214,12 @@ export default function TeamManagement() {
         const teamLead = row.teamLead;
 
         return (
-          <span className="text-sm text-gray-600">
-            {`${teamLead.first_name} ${teamLead.last_name}`}
-          </span>
+          <div className="flex items-center gap-2">
+            <AvatarText name={`${teamLead.first_name} ${teamLead.last_name}`} />
+            <span className="text-sm text-gray-600">
+              {`${teamLead.first_name} ${teamLead.last_name}`}
+            </span>
+          </div>
         );
       },
     },
@@ -224,9 +228,9 @@ export default function TeamManagement() {
       label: "Capacity",
       sortable: true,
       render: (row: any) => (
-        <span className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 flex items-center justify-center">
           {row.currentLoad}/{row.capacity}
-        </span>
+        </div>
       ),
     },
     {
@@ -236,14 +240,16 @@ export default function TeamManagement() {
       render: (row: any) => {
         const available = Math.max(0, row.capacity - row.currentLoad);
         return (
-          <Badge
-            className={`px-2 py-1 rounded text-xs font-semibold`}
-            color={
-              available > 3 ? "success" : available > 0 ? "warning" : "error"
-            }
-          >
-            {available}
-          </Badge>
+          <div className="flex items-center justify-center">
+            <Badge
+              className={`px-2 py-1 rounded text-xs font-semibold`}
+              color={
+                available > 3 ? "success" : available > 0 ? "warning" : "error"
+              }
+            >
+              {available}
+            </Badge>
+          </div>
         );
       },
     },
@@ -251,21 +257,23 @@ export default function TeamManagement() {
       label: "Status",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className="text-xs"
-          color={
-            row?.status === "Active"
-              ? "success"
-              : row?.status === "Inactive"
-              ? "error"
-              : row?.status === "Pending"
-              ? "warning"
-              : "info"
-          }
-          variant="light"
-        >
-          {row?.status ?? "Unknown"}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className="text-xs"
+            color={
+              row?.status === "Active"
+                ? "success"
+                : row?.status === "Inactive"
+                ? "error"
+                : row?.status === "Pending"
+                ? "warning"
+                : "info"
+            }
+            variant="light"
+          >
+            {row?.status ?? "Unknown"}
+          </Badge>
+        </div>
       ),
     },
   ];

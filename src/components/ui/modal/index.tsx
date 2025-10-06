@@ -1,11 +1,11 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ModalProps {
   isOpen: boolean;
-  onClose?: any;
+  onClose?: () => void;
   className?: string;
   children: React.ReactNode;
   showCloseButton?: boolean;
@@ -31,7 +31,7 @@ export const Modal: React.FC<ModalProps> = ({
   const [mounted, setMounted] = useState(false);
 
   const isSidePanel = openFromRight;
-  const showSidebar = isSidePanel && sidebarContent;
+  const showSidebar = isSidePanel && !!sidebarContent;
 
   useEffect(() => {
     setMounted(true);
@@ -98,22 +98,23 @@ export const Modal: React.FC<ModalProps> = ({
   return createPortal(modalContent, document.body);
 };
 
-// Extracted modal content component
-const ModalContent: React.FC<{
+interface ModalContentProps {
   isSidePanel: boolean;
   isFullscreen: boolean;
   showSidebar: boolean;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   sidebarWidth: number;
-  sidebarRef: React.RefObject<HTMLDivElement>;
-  modalRef: React.RefObject<HTMLDivElement>;
-  onClose?: any;
+  sidebarRef: React.RefObject<HTMLDivElement | null>; 
+  modalRef: React.RefObject<HTMLDivElement | null>;
+  onClose?: () => void;
   showCloseButton: boolean;
   className?: string;
   sidebarContent?: React.ReactNode;
   children: React.ReactNode;
-}> = ({
+}
+
+const ModalContent: React.FC<ModalContentProps> = ({
   isSidePanel,
   isFullscreen,
   showSidebar,
@@ -128,15 +129,11 @@ const ModalContent: React.FC<{
   sidebarContent,
   children,
 }) => {
-  // Calculate dynamic width for side panel with sidebar
   const calculateModalWidth = () => {
     const baseWidth = "70vw";
 
-    if (!showSidebar || !sidebarOpen || sidebarWidth === 0) {
-      return baseWidth;
-    }
+    if (!showSidebar || !sidebarOpen || sidebarWidth === 0) return baseWidth;
 
-    // Increase width to accommodate sidebar content
     if (baseWidth.includes("vw")) {
       const vwValue = parseFloat(baseWidth);
       const sidebarVW = (sidebarWidth / window.innerWidth) * 100;
@@ -146,7 +143,7 @@ const ModalContent: React.FC<{
     return baseWidth;
   };
 
-  const sideModalStyle = {
+  const sideModalStyle: React.CSSProperties = {
     width: showSidebar ? calculateModalWidth() : "70vw",
     height: "100%",
     transition: "width 0.3s ease-in-out",
@@ -159,13 +156,10 @@ const ModalContent: React.FC<{
   const overlayClasses =
     "fixed inset-0 h-full w-full bg-gray-400/50 z-[99999] pointer-events-auto";
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    // Only close if clicking directly on the overlay, not bubbled from children
+  const handleOverlayClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       e.stopPropagation();
-      if (onClose) {
-        onClose();
-      }
+      onClose?.();
     }
   };
 
@@ -191,7 +185,6 @@ const ModalContent: React.FC<{
     <div className={containerClasses} onClick={handleOverlayClick}>
       {!isFullscreen && <div className={overlayClasses}></div>}
 
-      {/* For side panel, wrap content and close button together */}
       {isSidePanel ? (
         <div className="relative">
           <div
@@ -203,7 +196,9 @@ const ModalContent: React.FC<{
             {showSidebar ? (
               <div
                 className={`flex h-full w-full relative ${
-                  sidebarOpen ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden no-scrollbar"
+                  sidebarOpen
+                    ? "overflow-hidden"
+                    : "overflow-y-auto overflow-x-hidden no-scrollbar"
                 }`}
               >
                 <div
@@ -216,10 +211,9 @@ const ModalContent: React.FC<{
                   {children}
                 </div>
 
-                {/* Toggle sidebar button */}
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className={`absolute top-4 z-50 w-[48px] h-10 bg-white border border-[#EAECF0] text-gray-dark rounded-full flex items-center justify-center shadow-lg hover:bg-[#EAECF0] transition-all duration-300`}
+                  className={`absolute top-4 z-50 w-[48px] h-10 bg-white dark:bg-gray-700 border border-[#EAECF0] dark:border-gray-800 text-gray-dark rounded-full flex items-center justify-center shadow-lg hover:bg-[#EAECF0] transition-all duration-300`}
                   style={{
                     right: sidebarOpen ? `${sidebarWidth + 16}px` : "16px",
                     transition: "right 0.3s ease-in-out",
@@ -233,10 +227,9 @@ const ModalContent: React.FC<{
                   )}
                 </button>
 
-                {/* Right sidebar with content-defined width */}
                 <div
                   ref={sidebarRef}
-                  className={`h-full bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700 flex-shrink-0`}
+                  className="h-full bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700 flex-shrink-0"
                   style={{
                     width: sidebarOpen ? "auto" : "0px",
                     opacity: sidebarOpen ? 1 : 0,
@@ -259,7 +252,7 @@ const ModalContent: React.FC<{
 
           {showCloseButton && (
             <button
-              onClick={onClose || null}
+              onClick={onClose}
               className={closeButtonClasses}
               aria-label="Close"
             >
@@ -288,7 +281,7 @@ const ModalContent: React.FC<{
           onClick={(e) => e.stopPropagation()}
         >
           {showCloseButton && (
-            <button onClick={onClose || null} className={closeButtonClasses}>
+            <button onClick={onClose} className={closeButtonClasses}>
               <svg
                 width="20"
                 height="20"
@@ -306,7 +299,7 @@ const ModalContent: React.FC<{
               </svg>
             </button>
           )}
-          <div className="overflow-x-hidden">{children}</div>
+          <div className="overflow-x-visible">{children}</div>
         </div>
       )}
     </div>

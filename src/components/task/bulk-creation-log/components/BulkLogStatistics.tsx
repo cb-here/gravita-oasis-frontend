@@ -1,6 +1,4 @@
 import {
-  TrendingUpIcon,
-  TrendingDownIcon,
   CheckCircleIcon,
   XCircleIcon,
   FileTextIcon,

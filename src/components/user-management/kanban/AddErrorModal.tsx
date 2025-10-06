@@ -30,7 +30,7 @@ const AddErrorModal: React.FC<AddErrorModalProps> = ({ onClose, onSave }) => {
 
   return (
     <div className="w-full max-w-[580px] p-4">
-      <div className="font-semibold text-lg text-gray-900 mb-4">
+      <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">
         Add Error Details
       </div>
       {/* Error Category */}
@@ -128,7 +128,7 @@ const AddErrorModal: React.FC<AddErrorModalProps> = ({ onClose, onSave }) => {
         </Button>
         <Button
           className="flex-1  font-medium  rounded-[10px] px-3 py-[10px] text-[14px] bg-brand-primary text-white "
-          onClick={() => onSave({ category, description, location, files })}
+          onClick={() => onSave({ description, location, files })}
         >
           Save Error
         </Button>

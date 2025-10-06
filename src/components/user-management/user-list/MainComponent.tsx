@@ -16,6 +16,7 @@ import CommonTable from "@/components/common/CommonTable";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import TableFooter from "@/components/common/TableFooter";
 import { useModal } from "@/hooks/useModal";
+import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
 
 export const tagsColors: StatusColor[] = [
   "primary",
@@ -298,21 +299,23 @@ export default function MainComponent() {
       label: "Status",
       sortable: true,
       render: (row: any) => (
-        <Badge
-          className="text-xs"
-          color={
-            row?.status === "Active"
-              ? "success"
-              : row?.status === "Inactive"
-              ? "error"
-              : row?.status === "Pending"
-              ? "warning"
-              : "info"
-          }
-          variant="light"
-        >
-          {row?.status ?? "Unknown"}
-        </Badge>
+        <div className="flex items-center justify-center">
+          <Badge
+            className="text-xs"
+            color={
+              row?.status === "Active"
+                ? "success"
+                : row?.status === "Inactive"
+                ? "error"
+                : row?.status === "Pending"
+                ? "warning"
+                : "info"
+            }
+            variant="light"
+          >
+            {row?.status ?? "Unknown"}
+          </Badge>
+        </div>
       ),
     },
     {
@@ -423,7 +426,7 @@ export default function MainComponent() {
                   { label: "Tag 1", value: "Tag 1 " },
                   { label: "Tag 2", value: "Tag 2" },
                 ],
-                showCheckboxes: true
+                showCheckboxes: true,
               },
             ]}
             filterValues={userListParams}
@@ -438,6 +441,7 @@ export default function MainComponent() {
           <ExportButton loading={exportLoading} onClick={handleExport} />
         </div>
       </div>
+      <FilterAndSortPills filters={userListParams} onRemoveFilter={() => {}} />
       <CommonTable
         headers={headers}
         data={userLists?.UserLists}
