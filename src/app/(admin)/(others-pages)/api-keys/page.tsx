@@ -3,8 +3,8 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Next.js API Keys Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js API Keys Page TailAdmin Dashboard Template",
+  title: "Gravity Oasis API Keys Page | TailAdmin - Gravity Oasis Dashboard Template",
+  description: "This is Gravity Oasis API Keys Page TailAdmin Dashboard Template",
 };
 
 export default function ApiKeysPage() {

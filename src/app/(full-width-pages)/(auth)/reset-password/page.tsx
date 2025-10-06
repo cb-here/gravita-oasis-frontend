@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Reset Password | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Reset Password | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js Password Reset page for TailAdmin Dashboard Template",
+    "This is Gravity Oasis Password Reset page for TailAdmin Dashboard Template",
 };
 
 export default function ResetPasswordPage() {

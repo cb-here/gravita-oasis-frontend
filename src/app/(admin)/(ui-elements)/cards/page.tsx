@@ -7,9 +7,9 @@ import React from "react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Next.js Cards | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Cards | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js Cards page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Cards page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function Cards() {

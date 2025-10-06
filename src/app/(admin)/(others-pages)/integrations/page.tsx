@@ -16,9 +16,9 @@ import React from "react";
 
 export const metadata: Metadata = {
   title:
-    "Next.js Integrations Page | TailAdmin - Next.js Admin Dashboard Template",
+    "Gravity Oasis Integrations Page | TailAdmin - Gravity Oasis Admin Dashboard Template",
   description:
-    "This is Next.js Integrations page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Integrations page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 const integrationData = [

@@ -13,9 +13,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Form Elements | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Form Elements | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Form Elements page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function FormElements() {

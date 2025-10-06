@@ -7,9 +7,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js FileManager Page | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis FileManager Page | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js FileManager page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis FileManager page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
   // other metadata
 };
 

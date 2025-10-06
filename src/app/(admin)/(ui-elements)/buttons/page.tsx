@@ -6,9 +6,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Buttons | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Buttons | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js Buttons page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Buttons page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function Buttons() {

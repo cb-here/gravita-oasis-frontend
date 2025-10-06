@@ -11,9 +11,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js List | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis List | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js List page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis List page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function List() {
