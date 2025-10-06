@@ -47,7 +47,6 @@ export default function UserRegistrationForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [form, setForm] = useState<FormData>({
-    // Personal Details
     firstName: "",
     lastName: "",
     username: "",
@@ -59,12 +58,10 @@ export default function UserRegistrationForm() {
     motherName: "",
     gender: "",
     maritalStatus: "",
-    // Bank Details
     accountNumber: "",
     ifscCode: "",
     bankName: "",
     branchName: "",
-    // Documents
     aadharCard: null,
     panCard: null,
     experienceCertificate: null,
@@ -72,17 +69,118 @@ export default function UserRegistrationForm() {
     otherDocuments: null,
   });
 
+  // Animation background elements
+  const [circles] = useState(() =>
+    Array.from({ length: 15 }, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 1,
+      duration: Math.random() * 20 + 10,
+      delay: Math.random() * 5,
+    }))
+  );
+
+  const validateStep = (currentStep: number): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (currentStep === 0) {
+      if (!form.firstName.trim())
+        newErrors.firstName = "First name is required";
+      if (!form.lastName.trim()) newErrors.lastName = "Last name is required";
+      if (!form.username.trim()) newErrors.username = "Username is required";
+      if (!form.email.trim()) newErrors.email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+        newErrors.email = "Invalid email format";
+      if (!form.phone.trim()) newErrors.phone = "Phone number is required";
+      else if (!/^\+\d{10,15}$/.test(form.phone))
+        newErrors.phone = "Invalid phone number format";
+      if (!form.dob.trim()) newErrors.dob = "Date of birth is required";
+      if (!form.gender.trim()) newErrors.gender = "Gender is required";
+      if (!form.maritalStatus.trim())
+        newErrors.maritalStatus = "Marital status is required";
+    }
+
+    if (currentStep === 1) {
+      if (!form.accountNumber.trim())
+        newErrors.accountNumber = "Account number is required";
+      if (!form.ifscCode.trim()) newErrors.ifscCode = "IFSC code is required";
+      if (!form.bankName.trim()) newErrors.bankName = "Bank name is required";
+      if (!form.branchName.trim())
+        newErrors.branchName = "Branch name is required";
+    }
+
+    if (currentStep === 2) {
+      if (!form.aadharCard) newErrors.aadharCard = "Aadhar card is required";
+      if (!form.panCard) newErrors.panCard = "PAN card is required";
+      if (!form.educationalCertificate)
+        newErrors.educationalCertificate =
+          "Educational certificate is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const isStepValid = (currentStep: number): boolean => {
+    if (currentStep === 0) {
+      return !!(
+        form.firstName.trim() &&
+        form.lastName.trim() &&
+        form.username.trim() &&
+        form.email.trim() &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
+        form.phone.trim() &&
+        /^\+\d{10,15}$/.test(form.phone) &&
+        form.dob.trim() &&
+        form.gender.trim() &&
+        form.maritalStatus.trim()
+      );
+    }
+
+    if (currentStep === 1) {
+      return !!(
+        form.accountNumber.trim() &&
+        form.ifscCode.trim() &&
+        form.bankName.trim() &&
+        form.branchName.trim()
+      );
+    }
+
+    if (currentStep === 2) {
+      return !!(form.aadharCard && form.panCard && form.educationalCertificate);
+    }
+
+    return false;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSelect = (name: string, value: string) => {
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleFileChange = (name: string, file: File | null) => {
     if (file) {
-      // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
@@ -91,7 +189,6 @@ export default function UserRegistrationForm() {
         return;
       }
 
-      // Validate file type
       const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
         setErrors((prev) => ({
@@ -108,11 +205,13 @@ export default function UserRegistrationForm() {
       });
     }
 
-    setForm({ ...form, [name]: file });
+    setForm((prev) => ({ ...prev, [name]: file }));
   };
 
   const handleNext = () => {
-    setStep(step + 1);
+    if (validateStep(step)) {
+      setStep(step + 1);
+    }
   };
 
   const handlePrevious = () => {
@@ -120,16 +219,16 @@ export default function UserRegistrationForm() {
   };
 
   const handleSubmit = async () => {
-    try {
-      setIsSubmitting(true);
-      // Handle form submission
-      console.log("Form submitted:", form);
-      // Add your API call here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    } finally {
-      setIsSubmitting(false);
+    if (validateStep(step)) {
+      try {
+        setIsSubmitting(true);
+        console.log("Form submitted:", form);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -170,7 +269,7 @@ export default function UserRegistrationForm() {
                 name="firstName"
                 value={form.firstName}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder="Enter your first name"
                 error={!!errors.firstName}
                 errorMessage={errors.firstName}
               />
@@ -182,7 +281,7 @@ export default function UserRegistrationForm() {
                 name="lastName"
                 value={form.lastName}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder="Enter your last name"
                 error={!!errors.lastName}
                 errorMessage={errors.lastName}
               />
@@ -194,7 +293,7 @@ export default function UserRegistrationForm() {
                 name="username"
                 value={form.username}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder="Enter your username"
                 error={!!errors.username}
                 errorMessage={errors.username}
               />
@@ -212,22 +311,27 @@ export default function UserRegistrationForm() {
               />
             </div>
             <div>
-              <Label required>Phone Number</Label>
-              <Input
-                type="tel"
-                name="phone"
+              <MyPhoneInput
+                label="Phone Number"
+                required
                 value={form.phone}
-                onChange={handleChange}
-                placeholder="Enter your number"
+                onChange={(phone) => setForm((prev) => ({ ...prev, phone }))}
+                placeholder="Enter phone number"
                 error={!!errors.phone}
-                errorMessage={errors.phone}
               />
+              {errors.phone && (
+                <p className="mt-1 text-sm text-red-500 error-message">
+                  {errors.phone}
+                </p>
+              )}
             </div>
             <div>
               <MyPhoneInput
                 label="Backup Number"
                 value={form.backupPhone}
-                onChange={(phone) => setForm({ ...form, backupPhone: phone })}
+                onChange={(phone) =>
+                  setForm((prev) => ({ ...prev, backupPhone: phone }))
+                }
                 placeholder="Enter backup number"
                 error={!!errors.backupPhone}
               />
@@ -250,7 +354,7 @@ export default function UserRegistrationForm() {
               />
             </div>
             <div>
-              <Label>Father's Name</Label>
+              <Label>Father&apos;s Name</Label>
               <Input
                 type="text"
                 name="fatherName"
@@ -262,7 +366,7 @@ export default function UserRegistrationForm() {
               />
             </div>
             <div>
-              <Label>Mother's Name</Label>
+              <Label>Mother&apos;s Name</Label>
               <Input
                 type="text"
                 name="motherName"
@@ -276,7 +380,7 @@ export default function UserRegistrationForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-5 backdrop-blur-sm">
               <Label required>Gender</Label>
               <div className="flex flex-wrap gap-2">
                 {genderOptions.map((g) => (
@@ -286,7 +390,7 @@ export default function UserRegistrationForm() {
                     className={`px-4 py-2 rounded-lg border transition-all font-medium focus:outline-none text-sm ${
                       form.gender === g
                         ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10"
+                        : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
                     }`}
                     onClick={() => handleSelect("gender", g)}
                   >
@@ -298,7 +402,7 @@ export default function UserRegistrationForm() {
                 <p className="mt-2 text-sm text-error-500">{errors.gender}</p>
               )}
             </div>
-            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-5 backdrop-blur-sm">
               <Label required>Marital Status</Label>
               <div className="flex flex-wrap gap-2">
                 {maritalStatusOptions.map((m) => (
@@ -308,7 +412,7 @@ export default function UserRegistrationForm() {
                     className={`px-4 py-2 rounded-lg border transition-all font-medium focus:outline-none text-sm ${
                       form.maritalStatus === m
                         ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10"
+                        : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
                     }`}
                     onClick={() => handleSelect("maritalStatus", m)}
                   >
@@ -329,6 +433,7 @@ export default function UserRegistrationForm() {
           <Button
             variant="gradient"
             size="md"
+            disabled={!isStepValid(0)}
             endIcon={
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <path
@@ -429,6 +534,7 @@ export default function UserRegistrationForm() {
           <Button
             variant="gradient"
             size="sm"
+            disabled={!isStepValid(1)}
             endIcon={
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <path
@@ -465,7 +571,7 @@ export default function UserRegistrationForm() {
           accept=".pdf,.jpg,.jpeg,.png"
         />
         <div
-          className="flex flex-col items-center justify-center py-8 bg-gray-50 dark:bg-gray-900/50 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-brand-300 dark:hover:border-brand-700 transition-all"
+          className="flex flex-col items-center justify-center py-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-brand-300 dark:hover:border-brand-700 transition-all backdrop-blur-sm"
           onClick={() => handleFileClick(name)}
         >
           {form[name] ? (
@@ -563,7 +669,12 @@ export default function UserRegistrationForm() {
           >
             Previous
           </Button>
-          <Button variant="gradient" size="md" onClick={handleSubmit}>
+          <Button
+            variant="gradient"
+            size="md"
+            onClick={handleSubmit}
+            disabled={!isStepValid(2)}
+          >
             Submit
           </Button>
         </div>
@@ -572,21 +683,53 @@ export default function UserRegistrationForm() {
   };
 
   return (
-    <div className="min-h-screen py-6 sm:py-10 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 relative">
+    <div className="min-h-screen py-6 sm:py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-900 dark:via-blue-950/20 dark:to-indigo-950/10 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {circles.map((circle, index) => (
+          <div
+            key={index}
+            className="absolute rounded-full bg-gradient-to-r from-brand-500/10 to-purple-500/10 dark:from-brand-400/5 dark:to-purple-400/5 animate-float"
+            style={{
+              left: `${circle.x}%`,
+              top: `${circle.y}%`,
+              width: `${circle.size}rem`,
+              height: `${circle.size}rem`,
+              animationDuration: `${circle.duration}s`,
+              animationDelay: `${circle.delay}s`,
+            }}
+          />
+        ))}
+
+        {/* Grid Pattern */}
+        <div
+          className="absolute inset-0 opacity-20 dark:opacity-10"
+          style={{
+            backgroundImage: `linear-gradient(to right, #9ca3af 1px, transparent 1px),
+                             linear-gradient(to bottom, #9ca3af 1px, transparent 1px)`,
+            backgroundSize: "4rem 4rem",
+          }}
+        />
+      </div>
+
       <div className="fixed bottom-6 right-6 z-50">
         <ThemeTogglerTwo />
       </div>
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto relative z-10">
         <div className="flex justify-center mb-8 sm:mb-10">
-          <Image
-            width={200}
-            height={42}
-            src="/images/logo/auth-logo.svg"
-            alt="Logo"
-            className="text-gray-900 dark:text-gray-100"
-          />
+          <div className="relative">
+            <Image
+              width={200}
+              height={42}
+              src="/images/logo/auth-logo.svg"
+              alt="Logo"
+              className="text-gray-900 dark:text-gray-100"
+            />
+            <div className="absolute -inset-4 bg-brand-500/10 rounded-full blur-xl animate-pulse" />
+          </div>
         </div>
+
         <div className="text-center mb-8 sm:mb-10">
           <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white/90 mb-2">
             Create Your Account
@@ -596,19 +739,20 @@ export default function UserRegistrationForm() {
           </p>
         </div>
 
+        {/* Enhanced Progress Steps */}
         <div className="mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-theme-xs border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-theme-lg border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6">
             <div className="flex items-center justify-between max-w-3xl mx-auto">
               {steps.map((s, idx) => (
                 <React.Fragment key={s.label}>
                   <div className="flex flex-col items-center flex-1">
                     <div
-                      className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ${
+                      className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-500 transform ${
                         idx === step
-                          ? "bg-brand-500 text-white ring-4 ring-brand-500/20"
+                          ? "bg-gradient-to-r from-[#00C6FF] to-[#9B5FFF] text-white ring-4 ring-[#00C6FF]/30 scale-110 shadow-lg"
                           : idx < step
-                          ? "bg-brand-500 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                          ? "bg-brand-500 text-white shadow-md"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 shadow-sm"
                       }`}
                     >
                       {idx < step ? (
@@ -678,7 +822,7 @@ export default function UserRegistrationForm() {
                     <span
                       className={`mt-2 text-xs sm:text-sm font-medium text-center transition-colors ${
                         idx <= step
-                          ? "text-brand-500 dark:text-brand-400"
+                          ? "text-brand-500 dark:text-brand-400 font-semibold"
                           : "text-gray-400 dark:text-gray-500"
                       }`}
                     >
@@ -691,7 +835,7 @@ export default function UserRegistrationForm() {
                       style={{ maxWidth: "120px" }}
                     >
                       <div
-                        className={`h-1 rounded-full transition-all duration-300 ${
+                        className={`h-1 rounded-full transition-all duration-500 ${
                           idx < step
                             ? "bg-brand-500"
                             : "bg-gray-200 dark:bg-gray-700"
@@ -705,12 +849,28 @@ export default function UserRegistrationForm() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-theme-xs border border-gray-200 dark:border-gray-700 p-6 sm:p-8 lg:p-10">
+        {/* Enhanced Form Container */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-theme-lg border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 lg:p-10 transform transition-all duration-300 hover:shadow-theme-xl">
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             {renderForm()}
           </form>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(180deg);
+          }
+        }
+        .animate-float {
+          animation: float linear infinite;
+        }
+      `}</style>
     </div>
   );
 }

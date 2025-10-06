@@ -8,9 +8,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Stocks Dashboard | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Stocks Dashboard | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js Stocks Dashboard page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Stocks Dashboard page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 export default function Stocks() {
   return (

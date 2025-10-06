@@ -1,6 +1,6 @@
 import DeliveryActivityTable from "@/components/logistics/DeliveriesActivityTable";
 import DeliveryMan from "@/components/logistics/DeliveryMan";
-import DeliveryStatisticsChart from "@/components/logistics/DeliveryStatisticsChart";
+import DeliveryStatisticsChart from "@/components/logistics/TargetAchivedChart";
 import DeliveryVehicle from "@/components/logistics/DeliveryVehicle";
 import LogisticsMetrics from "@/components/logistics/LogisticsMetrics";
 import RevenueEarnedChart from "@/components/logistics/RevenueEarnedChart";
@@ -10,9 +10,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Logistics Dashboard | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Logistics Dashboard | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js  Logistics Dashboard for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis  Logistics Dashboard for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function LogisticsPage() {

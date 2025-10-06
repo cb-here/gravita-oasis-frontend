@@ -5,9 +5,9 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Maintenance Page | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis Maintenance Page | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js Maintenance page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Maintenance page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function Maintenance() {

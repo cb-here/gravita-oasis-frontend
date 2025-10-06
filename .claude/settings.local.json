@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/official/crm_frontend_admin/src/pages/Dashboard/tasks/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

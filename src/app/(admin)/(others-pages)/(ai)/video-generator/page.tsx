@@ -6,9 +6,9 @@ import React from "react";
 
 export const metadata: Metadata = {
   title:
-    "Next.js AI Video Generator | TailAdmin - Next.js Admin Dashboard Template",
+    "Gravity Oasis AI Video Generator | TailAdmin - Gravity Oasis Admin Dashboard Template",
   description:
-    "This is Next.js AI Video Generator page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis AI Video Generator page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function page() {

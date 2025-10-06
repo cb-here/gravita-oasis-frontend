@@ -235,7 +235,7 @@ export default function ReactDatePicker({
               position: "absolute",
               top: calendarPosition.top,
               left: calendarPosition.left,
-              zIndex: 9999,
+              zIndex: 99999,
               width: inputWidth ?? "auto",
             }}
             className=""

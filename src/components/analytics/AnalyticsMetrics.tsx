@@ -1,80 +1,153 @@
 import React from "react";
-import Badge from "../ui/badge/Badge";
-
-const mockData = [
-  {
-    id: 1,
-    title: "Unique Visitors",
-    value: "24.7K",
-    change: "+20%",
-    direction: "up",
-    comparisonText: "Vs last month",
-  },
-  {
-    id: 2,
-    title: "Total Pageviews",
-    value: "55.9K",
-    change: "+4%",
-    direction: "up",
-    comparisonText: "Vs last month",
-  },
-  {
-    id: 3,
-    title: "Bounce Rate",
-    value: "54%",
-    change: "-1.59%",
-    direction: "down",
-    comparisonText: "Vs last month",
-  },
-  {
-    id: 4,
-    title: "Visit Duration",
-    value: "2m 56s",
-    change: "+7%",
-    direction: "up",
-    comparisonText: "Vs last month",
-  },
-];
+import {
+  ClipboardList,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+  Calendar,
+  Clock,
+  CalendarDays,
+  AlertCircle,
+} from "lucide-react";
 
 const AnalyticsMetrics: React.FC = () => {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
-      {/* <!-- Metric Item Start --> */}
-      {mockData.map((item) => (
-        <div
-          key={item.id}
-          className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]"
-        >
-          <p className="text-gray-500 text-theme-sm dark:text-gray-400">
-            {item.title}
-          </p>
-          <div className="flex items-end justify-between mt-3">
-            <div>
-              <h4 className="text-2xl font-bold text-gray-800 dark:text-white/90">
-                {item.value}
-              </h4>
-            </div>
-            <div className="flex items-center gap-1">
-              <Badge
-                color={
-                  item.direction === "up"
-                    ? "success"
-                    : item.direction === "down"
-                    ? "error"
-                    : "warning"
-                }
-              >
-                <span className="text-xs"> {item.change}</span>
-              </Badge>
-              <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                {item.comparisonText}
-              </span>
-            </div>
-          </div>
-        </div>
-      ))}
+  const mainMetricsData = [
+    {
+      title: "Total Tasks",
+      value: "124",
+      subValue: "9E",
+      icon: ClipboardList,
+      iconColor: "text-blue-500 dark:text-blue-400",
+    },
+    {
+      title: "SLA Risk",
+      value: "16",
+      variant: "error" as const,
+      icon: AlertTriangle,
+      iconColor: "text-red-500 dark:text-red-400",
+    },
+    {
+      title: "Capacity Utilization",
+      value: "78%",
+      subValue: "+12% from last week",
+      variant: "success" as const,
+      icon: TrendingUp,
+      iconColor: "text-green-500 dark:text-green-400",
+    },
+    {
+      title: "Active Coders",
+      value: "12",
+      icon: Users,
+      iconColor: "text-purple-500 dark:text-purple-400",
+    },
+  ];
 
-      {/* <!-- Metric Item End --> */}
+  const timelineMetricsData = [
+    {
+      title: "0-10 Days",
+      value: "32",
+      icon: Calendar,
+      iconColor: "text-green-500 dark:text-green-400",
+    },
+    {
+      title: "11-14 Days",
+      value: "48",
+      icon: Clock,
+      iconColor: "text-yellow-500 dark:text-yellow-400",
+    },
+    {
+      title: "15-20 Days",
+      value: "28",
+      icon: CalendarDays,
+      iconColor: "text-orange-500 dark:text-orange-400",
+    },
+    {
+      title: "20+ Days",
+      value: "16",
+      variant: "error" as const,
+      icon: AlertCircle,
+      iconColor: "text-red-500 dark:text-red-400",
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Top Row - Main Metrics */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {mainMetricsData.map((item) => {
+          const IconComponent = item.icon;
+          return (
+            <div
+              key={item.title}
+              className={`rounded-2xl border border-gray-200 dark:border-gray-800 p-5 ${
+                item.variant === "error"
+                  ? "bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400"
+                  : item.variant === "success"
+                  ? "bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400"
+                  : "bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-2xl font-bold">{item.value}</h4>
+                <IconComponent className={`h-5 w-5 ${item.iconColor}`} />
+              </div>
+              <p
+                className={`text-sm ${
+                  item.variant === "error"
+                    ? "text-red-600 dark:text-red-400"
+                    : item.variant === "success"
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {item.title}
+              </p>
+              {item.subValue && (
+                <p
+                  className={`text-xs mt-1 ${
+                    item.variant === "success"
+                      ? "text-green-500 dark:text-green-400"
+                      : "text-gray-500 dark:text-gray-500"
+                  }`}
+                >
+                  {item.subValue}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom Row - Timeline Metrics */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {timelineMetricsData.map((item) => {
+          const IconComponent = item.icon;
+          return (
+            <div
+              key={item.title}
+              className={`rounded-2xl border border-gray-200 dark:border-gray-800 p-5 ${
+                item.variant === "error"
+                  ? "bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400"
+                  : "bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-2xl font-bold">{item.value}</h4>
+                <IconComponent className={`h-5 w-5 ${item.iconColor}`} />
+              </div>
+              <p
+                className={`text-sm ${
+                  item.variant === "error"
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {item.title}
+              </p>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

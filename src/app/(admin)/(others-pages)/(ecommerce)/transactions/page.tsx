@@ -4,9 +4,9 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title:
-    "Next.js E-commerce Transaction | TailAdmin - Next.js Dashboard Template",
+    "Gravity Oasis E-commerce Transaction | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is E-commerce  Next.js Transaction TailAdmin Dashboard Template",
+    "This is E-commerce  Gravity Oasis Transaction TailAdmin Dashboard Template",
 };
 
 export default function TransactionsPage() {

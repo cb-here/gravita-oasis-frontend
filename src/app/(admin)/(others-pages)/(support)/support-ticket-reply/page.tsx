@@ -4,9 +4,9 @@ import TicketReplyContent from "@/components/support/TicketReplyContent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Next.js Support Reply | TailAdmin - Next.js Admin Dashboard Template",
+  title: "Gravity Oasis Support Reply | TailAdmin - Gravity Oasis Admin Dashboard Template",
   description:
-    "This is Next.js Support Reply for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis Support Reply for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function SupportReply() {

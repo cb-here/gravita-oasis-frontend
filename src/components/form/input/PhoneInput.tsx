@@ -38,6 +38,7 @@ type MyPhoneInputProps = {
   disabled?: boolean;
   placeholder?: string;
   error?: any;
+  required?: boolean;
 };
 
 const MyPhoneInput: React.FC<MyPhoneInputProps> = ({
@@ -49,10 +50,11 @@ const MyPhoneInput: React.FC<MyPhoneInputProps> = ({
   disabled,
   placeholder,
   error,
+  required
 }) => {
   return (
     <div className="w-full ">
-      <Label required htmlFor="phone">
+      <Label required={required} htmlFor="phone">
         {label}
       </Label>
       <div

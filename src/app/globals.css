@@ -136,6 +136,29 @@
   --color-primary: hsl(235 85% 65%);
   --color-secondary: hsl(190 85% 65%);
 
+  --color-gray-dark: #101828;
+  --color-gray-light: #475467;
+  --color-brand-primary: #5750f1;
+  --color-brand-secondary: #02d8f1;
+  --color-brand-primary-100: #e0e5ff;
+  --color-new-green: #c7f5da;
+  --color-text-green: #039855;
+  --color-new-gray-500: #f2f4f7;
+  --color-new-brand-50: #eef1ff;
+  --color-foreground: 210 15% 20%;
+  --color-muted-foreground: 210 10% 55%;
+  --color-coder: #465fff;
+  --color-coder-foreground: #ffffff; /* hsl(0, 0%, 100%) */
+  --color-coder-light: #ebf3ff; /* hsl(217, 91%, 95%) */
+
+  --color-qa: #22c55e; /* hsl(142, 71%, 45%) */
+  --color-qa-foreground: #ffffff; /* hsl(0, 0%, 100%) */
+  --color-qa-light: #e9fef3; /* hsl(142, 71%, 95%) */
+
+  --color-expert: #a855f7; /* hsl(271, 81%, 56%) */
+  --color-expert-foreground: #ffffff; /* hsl(0, 0%, 100%) */
+  --color-expert-light: #f5e8ff;
+
   --shadow-theme-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1),
     0px 2px 4px -2px rgba(16, 24, 40, 0.06);
   --shadow-theme-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08),
@@ -162,6 +185,9 @@
   --z-index-9999: 9999;
   --z-index-99999: 99999;
   --z-index-999999: 999999;
+
+  --color-muted: 217.2 32.6% 17.5%;
+  --color-muted-foreground: 215 20.2% 65.1%;
 }
 
 /*
@@ -179,6 +205,18 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+
+  .dark {
+    --color-gray-dark: #f9fafb; /* reverse for readability */
+    --color-gray-light: #d1d5db; /* lighter gray for text */
+    --color-brand-primary: #8b87f8; /* slightly lighter purple for dark bg */
+    --color-brand-secondary: #38e3f8; /* bright cyan */
+    --color-brand-primary-100: #1e1b4b; /* dark indigo background */
+    --color-new-green: #1f7a4a; /* deep green */
+    --color-text-green: #6ee7b7; /* mint text green */
+    --color-new-gray-500: #1f2937; /* dark gray for surfaces */
+    --color-new-brand-50: #1e1f38; /* dark indigo surface */
   }
 
   button:not(:disabled),
@@ -289,6 +327,10 @@
 
 @utility text-heading {
   @apply text-2xl font-bold text-gray-900 dark:text-gray-200;
+}
+
+@utility text-subtitle {
+  @apply text-base text-gray-600 dark:text-gray-400;
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -928,4 +970,118 @@ pre[class*="language-"].line-numbers {
   .admin-layout {
     @apply max-w-[1900px];
   }
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+
+/* Vertical scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track styles for both */
+.overflow-x-auto::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Thumb styles for both */
+.overflow-x-auto::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+/* Hover styles for both */
+.overflow-x-auto::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Dark mode styles for both */
+.dark .overflow-x-auto::-webkit-scrollbar-thumb,
+.dark ::-webkit-scrollbar-thumb {
+  background: #4a5568;
+}
+
+.dark .overflow-x-auto::-webkit-scrollbar-thumb:hover,
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+@media (max-width: 640px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* .react-datepicker */
+.react-datepicker,
+.react-datepicker__header {
+  @apply mt-4 bg-white! rounded-xl! p-5! border! border-gray-200! dark:border-white/5! text-gray-500! dark:bg-gray-dark! dark:text-gray-400! dark:shadow-theme-xl! 2xsm:w-auto!;
+}
+
+.react-datepicker * {
+  @apply text-black dark:text-white;
+}
+
+.react-datepicker .react-datepicker__day:not([aria-disabled="true"]):hover {
+  background-color: transparent;
+}
+
+.react-datepicker__day--in-range {
+  @apply bg-brand-600 text-white dark:text-black;
+}
+
+.react-datepicker__day--in-selecting-range {
+  @apply bg-brand-300 text-white dark:bg-brand-600 dark:text-white;
+}
+
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end,
+.react-datepicker__day--in-range,
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range:not(
+    .react-datepicker__day--in-range,
+    .react-datepicker__month-text--in-range,
+    .react-datepicker__quarter-text--in-range,
+    .react-datepicker__year-text--in-range
+  ) {
+  @apply !bg-brand-600 !text-white;
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.recharts-wrapper svg,
+.recharts-wrapper path,
+.recharts-wrapper g {
+  outline: none !important;
+}
+
+.tox-tinymce-aux {
+  z-index: 1300000 !important;
+}
+
+/* Remove TinyMCE focus outline */
+.tox:not(.tox-tinymce-inline) .tox-editor-header:focus,
+.tox:not(.tox-tinymce-inline) .tox-toolbar:focus,
+.tox:not(.tox-tinymce-inline) .tox-edit-area:focus,
+.tox:not(.tox-tinymce-inline):focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus from toolbar buttons */
+.tox .tox-toolbar button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+[contentEditable="true"]:focus {
+      outline: 0px !important;
 }

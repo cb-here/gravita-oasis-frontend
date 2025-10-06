@@ -1,7 +1,7 @@
-# TailAdmin Pro - Next.js (v2.2)
+# TailAdmin Pro - Gravity Oasis (v2.2)
 
 [TailAdmin](https://tailadmin.com) is a modern, responsive, and customizable admin dashboard template built using
-Tailwind CSS and Next.js. It is designed to help developers build beautiful and functional dashboards quickly and
+Tailwind CSS and Gravity Oasis. It is designed to help developers build beautiful and functional dashboards quickly and
 easily.
 
 ## Quick Links
@@ -136,26 +136,26 @@ To get started with TailAdmin, ensure you have the following prerequisites insta
 
 ### v2.0.0 (February 2025)
 
-A major update focused on Next.js 15 implementation and comprehensive redesign.
+A major update focused on Gravity Oasis 15 implementation and comprehensive redesign.
 
 #### Major Improvements
 
-- Complete redesign using Next.js 15 App Router and React Server Components
-- Enhanced user interface with Next.js-optimized components
+- Complete redesign using Gravity Oasis 15 App Router and React Server Components
+- Enhanced user interface with Gravity Oasis-optimized components
 - Improved responsiveness and accessibility
 - New features including collapsible sidebar, chat screens, and calendar
-- Redesigned authentication using Next.js App Router and server actions
+- Redesigned authentication using Gravity Oasis App Router and server actions
 - Updated data visualization using ApexCharts for React
 
 #### Breaking Changes
 
-- Migrated from Next.js 14 to Next.js 15
+- Migrated from Gravity Oasis 14 to Gravity Oasis 15
 - Chart components now use ApexCharts for React
 - Authentication flow updated to use Server Actions and middleware
 
 #### Breaking Changes
 
-- Migrated from Next.js 14 to Next.js 15
+- Migrated from Gravity Oasis 14 to Gravity Oasis 15
 - Chart components now use ApexCharts for React
 - Authentication flow updated to use Server Actions and middleware
 
@@ -182,7 +182,7 @@ A major update focused on Next.js 15 implementation and comprehensive redesign.
 
 ### v1.3.0 (Feb 05, 2024)
 
-- Upgraded to Next.js 14
+- Upgraded to Gravity Oasis 14
 - Added Flatpickr integration
 - Improved form elements
 - Enhanced multiselect functionality

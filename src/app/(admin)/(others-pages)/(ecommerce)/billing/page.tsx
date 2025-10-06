@@ -7,9 +7,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js E-commerce  Billing | TailAdmin - Next.js Dashboard Template",
+  title: "Gravity Oasis E-commerce  Billing | TailAdmin - Gravity Oasis Dashboard Template",
   description:
-    "This is Next.js E-commerce  Billing TailAdmin Dashboard Template",
+    "This is Gravity Oasis E-commerce  Billing TailAdmin Dashboard Template",
 };
 
 export default function BillingPages() {

@@ -1,6 +1,6 @@
 import ActivitiesCard from "@/components/saas/ActivitiesCard";
 import ChurnRateChart from "@/components/saas/ChurnRate";
-import FunnelChart from "@/components/saas/FunnelChart";
+import FunnelChart from "@/components/saas/HourlyTeamProductivity";
 import GrowthChart from "@/components/saas/GrowthRate";
 import ProductPerformanceTab from "@/components/saas/ProductPerformanceTab";
 import SaasInvoiceTable from "@/components/saas/SaasInvoiceTable";
@@ -10,9 +10,9 @@ import React from "react";
 
 export const metadata: Metadata = {
   title:
-    "Next.js SaaS Dashboard | TailAdmin - Next.js Admin Dashboard Template",
+    "Gravity Oasis SaaS Dashboard | TailAdmin - Gravity Oasis Admin Dashboard Template",
   description:
-    "This is Next.js SaaS Dashboard page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "This is Gravity Oasis SaaS Dashboard page for TailAdmin - Gravity Oasis Tailwind CSS Admin Dashboard Template",
 };
 
 export default function SaaS() {
