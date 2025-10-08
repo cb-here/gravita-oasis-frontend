@@ -5,6 +5,7 @@ import FilterButton from "@/components/common/filter/FilterButton";
 import FilterModal from "@/components/common/filter/FilterModal";
 import Search from "@/components/common/Search";
 import TableFooter from "@/components/common/TableFooter";
+import AvatarText from "@/components/ui/avatar/AvatarText";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import ExportButton from "@/components/ui/button/ExportButton";
@@ -12,87 +13,69 @@ import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import React, { useState, useRef } from "react";
-import TeamManagementModal from "../modals/TeamManagementModal";
 import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
-import AvatarText from "@/components/ui/avatar/AvatarText";
+import ReasonModal from "../modals/ReasonModal";
+import Switch from "@/components/form/switch/Switch";
 
-export default function TeamManagement() {
+export default function HoldReasons() {
   const mainModal = useModal();
 
-  const [teamData, setTeamData] = useState<any>({
-    totalRecords: 6,
-    Teams: [
+  const [reasons, setReasons] = useState<any>({
+    totalRecords: 8,
+    Reasons: [
       {
         id: 1,
-        name: "Frontend Team",
-        description: "Handles UI/UX development for web apps",
-        teamLead: { first_name: "Alice", last_name: "Johnson" },
-        capacity: 8,
-        currentLoad: 6,
+        fullName: "Awaiting Customer Response",
+        description: "The customer has not replied to recent communication.",
         status: "Active",
       },
       {
         id: 2,
-        name: "Backend Team",
-        description: "Responsible for APIs and database architecture",
-        teamLead: { first_name: "Bob", last_name: "Smith" },
-        capacity: 10,
-        currentLoad: 10,
+        fullName: "Missing Documentation",
+        description:
+          "Required documents or verification details are pending from the customer.",
         status: "Active",
       },
       {
         id: 3,
-        name: "QA Team",
-        description: "Ensures quality through automated/manual testing",
-        teamLead: { first_name: "Clara", last_name: "Williams" },
-        capacity: 6,
-        currentLoad: 2,
+        fullName: "Payment Pending",
+        description:
+          "The customer has not completed the payment or deposit required to proceed.",
         status: "Active",
       },
       {
         id: 4,
-        name: "DevOps Team",
-        description: "Manages CI/CD pipelines and cloud infrastructure",
-        teamLead: { first_name: "David", last_name: "Brown" },
-        capacity: 5,
-        currentLoad: 5,
-        status: "Inactive",
-      },
-      {
-        id: 5,
-        name: "AI Research Team",
-        description: "Explores and develops AI/ML models",
-        teamLead: { first_name: "Emma", last_name: "Davis" },
-        capacity: 7,
-        currentLoad: 3,
+        fullName: "Internal Review Required",
+        description:
+          "The case is under review by compliance or management before moving forward.",
         status: "Pending",
       },
       {
-        id: 6,
-        name: "Security Team",
-        description: "Handles penetration testing and vulnerability management",
-        teamLead: { first_name: "Frank", last_name: "Miller" },
-        capacity: 4,
-        currentLoad: 4,
+        id: 5,
+        fullName: "Technical Issue",
+        description:
+          "A system or integration issue is preventing further processing.",
         status: "Active",
+      },
+      {
+        id: 6,
+        fullName: "Awaiting Third-Party Approval",
+        description:
+          "Waiting for confirmation or approval from an external vendor or partner.",
+        status: "Pending",
       },
       {
         id: 7,
-        name: "Support Team",
-        description: "Provides customer and technical support",
-        teamLead: { first_name: "Grace", last_name: "Wilson" },
-        capacity: 12,
-        currentLoad: 9,
-        status: "Active",
+        fullName: "Customer Requested Hold",
+        description: "The customer has asked to pause the process temporarily.",
+        status: "Inactive",
       },
       {
         id: 8,
-        name: "Product Team",
-        description: "Coordinates product roadmap and business requirements",
-        teamLead: { first_name: "Henry", last_name: "Moore" },
-        capacity: 6,
-        currentLoad: 1,
-        status: "Inactive",
+        fullName: "Resource Unavailable",
+        description:
+          "Internal resource or staff availability is delaying the process.",
+        status: "Active",
       },
     ],
   });
@@ -104,24 +87,24 @@ export default function TeamManagement() {
     status: "",
   };
 
-  const [teamParams, setTeamParams] = useState<any>(initParams);
+  const [reasonParams, setReasonParams] = useState<any>(initParams);
 
   const [loading, setLoading] = useState(false);
 
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
-  const totalPages = Math.ceil(teamData?.totalRecords / teamParams?.limit);
-  const startIndex = (teamParams?.page - 1) * teamParams?.limit;
+  const totalPages = Math.ceil(reasons?.totalRecords / reasonParams?.limit);
+  const startIndex = (reasonParams?.page - 1) * reasonParams?.limit;
   const endIndex = Math.min(
-    startIndex + teamParams?.limit,
-    teamData?.totalRecords
+    startIndex + reasonParams?.limit,
+    reasons?.totalRecords
   );
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<any>(null);
+  const [selectedReason, setSelectedReason] = useState<any>(null);
   const [modalType, setModalType] = useState<any>("");
   const [exportLoading, setExportLoading] = useState(false);
 
-  const getTeams = async (params?: {
+  const getReasons = async (params?: {
     page?: number;
     limit?: number;
     search?: string;
@@ -130,56 +113,56 @@ export default function TeamManagement() {
     setLoading(true);
     try {
       const res = await {
-        page: params?.page ?? teamParams?.page,
-        limit: params?.limit ?? teamParams?.limit,
-        search: params?.search ?? teamParams?.search,
-        status: params?.status ?? teamParams?.status,
+        page: params?.page ?? reasonParams?.page,
+        limit: params?.limit ?? reasonParams?.limit,
+        search: params?.search ?? reasonParams?.search,
+        status: params?.status ?? reasonParams?.status,
       };
-      setTeamData(res);
+      setReasons(res);
     } catch (err) {
-      console.error("Failed to fetch teams:", err);
+      console.error("Failed to fetch reasons:", err);
     } finally {
       setLoading(false);
     }
   };
 
   const handlePageChange = async (page: number) => {
-    setTeamParams((prev: any) => ({ ...prev, page: page }));
-    await getTeams({ page });
+    setReasonParams((prev: any) => ({ ...prev, page: page }));
+    await getReasons({ page });
   };
 
   const handleRowsPerPageChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newRowsPerPage = parseInt(e.target.value, 10);
-    setTeamParams((prev: any) => ({
+    setReasonParams((prev: any) => ({
       ...prev,
       page: 1,
       limit: newRowsPerPage,
     }));
-    await getTeams({ page: 1, limit: newRowsPerPage });
+    await getReasons({ page: 1, limit: newRowsPerPage });
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setTeamParams((prev: any) => ({ ...prev, search: value }));
+    setReasonParams((prev: any) => ({ ...prev, search: value }));
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
     setLoading(true);
     searchTimeout.current = setTimeout(async () => {
-      await getTeams({ page: 1, search: value });
-      setTeamParams((prev: any) => ({ ...prev, page: 1 }));
+      await getReasons({ page: 1, search: value });
+      setReasonParams((prev: any) => ({ ...prev, page: 1 }));
       setLoading(false);
     }, 1000);
   };
 
   const handleFilterChange = async (key: string, value: string) => {
-    setTeamParams((prev: any) => ({ ...prev, [key]: value }));
+    setReasonParams((prev: any) => ({ ...prev, [key]: value }));
   };
 
   const handleApplyFilters = async (filters: any) => {
-    await getTeams(filters);
+    await getReasons(filters);
     setIsFilterModalOpen(false);
   };
 
@@ -195,62 +178,25 @@ export default function TeamManagement() {
 
   const headers = [
     {
-      label: "Team Name",
-      render: (row: any) => <span>{row?.name}</span>,
+      label: "Name",
       sortable: true,
+      render: (row: any) => {
+        const safeFullName =
+          typeof row.fullName === "string" ? row.fullName : "Unknown User";
+        return (
+          <div className="flex items-center gap-2">
+            <AvatarText name={safeFullName} />
+            <span>{safeFullName}</span>
+          </div>
+        );
+      },
     },
     {
       label: "Description",
-      render: (row: any) => (
-        <span>{row?.description ?? "No description available"}</span>
-      ),
-      sortable: true,
-    },
-    {
-      key: "teamLead",
-      label: "Team Lead",
-      sortable: true,
-      render: (row: any) => {
-        const teamLead = row.teamLead;
-
-        return (
-          <div className="flex items-center gap-2">
-            <AvatarText name={`${teamLead.first_name} ${teamLead.last_name}`} />
-            <span className="text-sm ">
-              {`${teamLead.first_name} ${teamLead.last_name}`}
-            </span>
-          </div>
-        );
-      },
-    },
-    {
-      key: "capacity",
-      label: "Capacity",
       sortable: true,
       render: (row: any) => (
-        <div className="text-sm  flex items-center justify-center">
-          {row.currentLoad}/{row.capacity}
-        </div>
+        <span>{row?.description ?? "No Description Available"}</span>
       ),
-    },
-    {
-      key: "availableCapacity",
-      label: "Available",
-      sortable: true,
-      render: (row: any) => {
-        const available = Math.max(0, row.capacity - row.currentLoad);
-        return (
-          <div className="flex items-center justify-center">
-            <Badge
-              className={`px-2 py-1 rounded text-xs font-semibold`}
-              color={
-                available > 3 ? "success" : available > 0 ? "warning" : "error"
-              }>
-              {available}
-            </Badge>
-          </div>
-        );
-      },
     },
     {
       label: "Status",
@@ -281,25 +227,25 @@ export default function TeamManagement() {
       <div className="flex flex-col items-center justify-between gap-2 mb-3 md:flex-row w-full">
         <Search
           className="w-full md:w-auto xl:w-[400px]"
-          placeholder="Search Teams"
-          value={teamParams?.search}
+          placeholder="Search reasons"
+          value={reasonParams?.search}
           onChange={handleSearch}
         />
         <div className="flex flex-col items-center gap-3 md:flex-row w-full justify-end">
           <Button
             className="sm:w-auto w-full"
             onClick={() => {
-              setSelectedTeam(null);
+              setSelectedReason(null);
               setModalType("add");
               mainModal.openModal();
             }}>
-            Add New Team
+            Add New Hold Reason
           </Button>
           <FilterModal
             isOpen={isFilterModalOpen}
             onClose={() => setIsFilterModalOpen(false)}
-            title="Filter Teams"
-            description="Filter teams based on your criteria"
+            title="Filter Hold Reasons"
+            description="Filter hold reasons based on your criteria"
             filters={[
               {
                 key: "status",
@@ -310,7 +256,7 @@ export default function TeamManagement() {
                 ],
               },
             ]}
-            filterValues={teamParams}
+            filterValues={reasonParams}
             onFilterChange={handleFilterChange}
             onApply={handleApplyFilters}
             className="max-w-[600px]"
@@ -322,18 +268,19 @@ export default function TeamManagement() {
           <ExportButton loading={exportLoading} onClick={handleExport} />
         </div>
       </div>
-      <FilterAndSortPills filters={teamParams} onRemoveFilter={() => {}} />
+      <FilterAndSortPills filters={reasonParams} onRemoveFilter={() => {}} />
       <CommonTable
         headers={headers}
-        data={teamData?.Teams || []}
+        data={reasons?.Reasons || []}
         actions={(item: any) => (
           <>
+            <Switch />
             <Tooltip content="Edit" position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
                 onClick={() => {
                   setModalType("edit");
-                  setSelectedTeam(item);
+                  setSelectedReason(item);
                   mainModal.openModal();
                 }}>
                 <PencilIcon />
@@ -344,7 +291,7 @@ export default function TeamManagement() {
                 className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500"
                 onClick={() => {
                   setModalType("delete");
-                  setSelectedTeam(item);
+                  setSelectedReason(item);
                   mainModal.openModal();
                 }}>
                 <TrashBinIcon />
@@ -355,23 +302,23 @@ export default function TeamManagement() {
         loading={loading}
       />
       <TableFooter
-        rowsPerPage={teamParams?.limit}
+        rowsPerPage={reasonParams?.limit}
         handleRowsPerPageChange={handleRowsPerPageChange}
-        currentPage={teamParams?.page}
+        currentPage={reasonParams?.page}
         totalPages={totalPages}
         handlePageChange={handlePageChange}
-        totalEntries={teamData?.totalRecords}
+        totalEntries={reasons?.totalRecords}
         startIndex={startIndex}
         endIndex={endIndex}
       />
 
-      <TeamManagementModal
+      <ReasonModal
         isOpen={mainModal.isOpen}
         closeModal={mainModal.closeModal}
         modelType={modalType}
         setModelType={setModalType}
-        selectedTeam={selectedTeam}
-        setSelectedTeam={setSelectedTeam}
+        selectedReason={selectedReason}
+        setSelectedReason={setSelectedReason}
       />
     </div>
   );

@@ -23,10 +23,9 @@ export default function AuthLayout({
                   <Image
                     width={231}
                     height={48}
-                    src="./images/logo/auth-logo.svg"
+                    src="/images/logo/app-logo.png"
                     alt="Logo"
                   />
-                  
                 </Link>
                 <p className="text-center text-gray-400 dark:text-white/60">
                   Bringing Expertise Across a Wide Range of EMRs to Streamline

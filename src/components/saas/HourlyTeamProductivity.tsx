@@ -4,12 +4,38 @@ import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import React, { useState, useCallback } from "react";
 import SearchableSelect from "../form/SearchableSelect";
+import { FaBroadcastTower } from "react-icons/fa";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-// Sample data structure - replace with your actual data source
+const hours = [
+  "8 AM",
+  "10 AM",
+  "12 PM",
+  "2 PM",
+  "4 PM",
+  "6 PM",
+  "8 PM",
+  "10 PM",
+];
+
+const colors = [
+  "#3B82F6", // Blue-500
+  "#60A5FA", // Blue-400
+  "#0EA5E9", // Sky-500
+  "#38BDF8", // Sky-400
+  "#06B6D4", // Cyan-500
+  "#2DD4BF", // Teal-400
+  "#10B981", // Emerald-500
+  "#34D399", // Emerald-400
+  "#6366F1", // Indigo-500
+  "#818CF8", // Indigo-400
+  "#8B5CF6", // Violet-500
+  "#A78BFA", // Violet-400
+];
+
 const productivityData: any = {
   "Team 1": {
     aggregate: [44, 55, 41, 67, 22, 43, 55, 41],
@@ -78,21 +104,6 @@ const productivityData: any = {
   },
 };
 
-const hours = ["9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM"];
-
-const colors = [
-  "#3B82F6", // Blue-600
-  "#8B5CF6", // Violet-500
-  "#A855F7", // Violet-500 lighter
-  "#C084FC", // Violet-400
-  "#EC4899", // Pink-500 muted
-  "#F472B6", // Pink-400
-  "#6EE7B7", // Emerald-300
-  "#34D399", // Emerald-400
-  "#10B981", // Emerald-600
-  "#059669", // Emerald-700
-];
-
 export default function HourlyTeamProductivity() {
   const [selectedTeam, setSelectedTeam] = useState("");
 
@@ -147,16 +158,17 @@ export default function HourlyTeamProductivity() {
         borderRadiusWhenStacked: "last",
       },
     },
-    dataLabels: {
-      enabled: false,
-    },
+    dataLabels: { enabled: false },
     xaxis: {
       categories: hours,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      labels: {
+        style: {
+          fontSize: "13px",
+          fontWeight: 500,
+          colors: "#6B7280",
+        },
       },
     },
     legend: {
@@ -164,88 +176,80 @@ export default function HourlyTeamProductivity() {
       position: "top",
       horizontalAlign: "left",
       fontFamily: "Outfit",
-      fontSize: "14px",
-      fontWeight: 400,
-      markers: {
-        size: 5,
-        shape: "circle",
-        strokeWidth: 0,
-      },
-      itemMargin: {
-        horizontal: 10,
-        vertical: 0,
-      },
+      fontSize: "13px",
+      fontWeight: 500,
+      markers: { size: 6, shape: "circle", strokeWidth: 0 },
+      itemMargin: { horizontal: 10, vertical: 2 },
     },
     yaxis: {
-      title: {
-        text: undefined,
+      labels: {
+        style: { fontSize: "12px", colors: "#6B7280" },
       },
     },
     grid: {
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
+      borderColor: "#E5E7EB", // gray-200
+      strokeDashArray: 4,
+      yaxis: { lines: { show: true } },
+      padding: { left: 10, right: 10 },
     },
     fill: {
-      opacity: 1,
+      opacity: 0.95,
+      type: "solid",
     },
     tooltip: {
-      x: {
-        show: false,
-      },
+      theme: "light",
+      x: { show: true },
       y: {
-        formatter: (val: number) => val.toString(),
+        formatter: (val: number) => `${val} tasks`,
+      },
+      style: {
+        fontSize: "12px",
       },
     },
   };
 
-  // const [isOpen, setIsOpen] = useState(false);
-
-  // function toggleDropdown() {
-  //   setIsOpen(!isOpen);
-  // }
-
-  // function closeDropdown() {
-  //   setIsOpen(false);
-  // }
-
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-      <div className="mb-6 flex justify-between">
-        <div>
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center space-x-2">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             Hourly Team Productivity
           </h3>
         </div>
-        <SearchableSelect
-          dataProps={{
-            optionData: teamOptions,
-          }}
-          selectionProps={{
-            selectedValue: selectedTeam,
-          }}
-          displayProps={{
-            placeholder: "All Teams",
-            id: "team-select",
-            isClearable: true,
-            layoutProps: {
-              className: "min-w-[200px] h-11",
-            },
-          }}
-          eventHandlers={{
-            onChange: handleTeamChange,
-          }}
-        />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-1">
+            <FaBroadcastTower className="w-5 h-5 text-success-500 animate-pulse" />
+            <span className="text-sm text-success-500 font-semibold">LIVE</span>
+          </div>
+          <SearchableSelect
+            dataProps={{
+              optionData: teamOptions,
+            }}
+            selectionProps={{
+              selectedValue: selectedTeam,
+            }}
+            displayProps={{
+              placeholder: "All Teams",
+              id: "team-select",
+              isClearable: true,
+              layoutProps: {
+                className: "min-w-[200px] h-11",
+              },
+            }}
+            eventHandlers={{
+              onChange: handleTeamChange,
+            }}
+          />
+        </div>
       </div>
+
       <div className="overflow-x-auto custom-scrollbar pl-2">
         <ReactApexChart
-          className="-ml-5 min-w-[700px] xl:min-w-full"
+          className="w-full min-w-[700px]"
           options={options}
           series={series}
           type="bar"
-          height={315}
+          height={320}
         />
       </div>
     </div>

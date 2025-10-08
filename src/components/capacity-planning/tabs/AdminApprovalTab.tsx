@@ -10,8 +10,7 @@ import {
   Code,
   TestTube,
 } from "lucide-react";
-import { format } from "date-fns";
-import { SubmissionRecord } from "../types/planning";
+import { SubmissionRecord, TeamMember } from "../types/planning";
 import Badge from "@/components/ui/badge/Badge";
 import {
   Card,
@@ -25,6 +24,8 @@ import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { EyeIcon } from "@/icons";
 import { useModal } from "@/hooks/useModal";
 import ReviewModal from "../modals/ReviewModal";
+import { formatDate } from "@/utils/formateDate";
+import AvatarText from "@/components/ui/avatar/AvatarText";
 
 export const getStatusBadge = (status: string) => {
   switch (status) {
@@ -55,7 +56,6 @@ export const getStatusBadge = (status: string) => {
 };
 
 interface AdminApprovalTabProps {
-  submissions: SubmissionRecord[];
   onApprovalAction: (
     submissionId: string,
     action: "approve" | "reject",
@@ -63,9 +63,44 @@ interface AdminApprovalTabProps {
   ) => void;
 }
 
-export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
-  submissions,
-}) => {
+const mockTeamMembers: TeamMember[] = [
+  {
+    id: 1,
+    name: "Member 1",
+    role: "Coder",
+    coding: 5,
+    qa: 0,
+    sampling: 2,
+    target: 5,
+    completed: 3,
+  },
+  {
+    id: 2,
+    name: "Member 2",
+    role: "QA",
+    coding: 0,
+    qa: 3,
+    sampling: 0,
+    target: 3,
+    completed: 2,
+  },
+  {
+    id: 3,
+    name: "Member 3",
+    role: "Coder/QA",
+    coding: 4,
+    qa: 2,
+    sampling: 1,
+    target: 6,
+    completed: 5,
+  },
+];
+
+export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = (
+  {
+    // onApprovalAction,
+  }
+) => {
   const [selectedSubmission, setSelectedSubmission] =
     useState<SubmissionRecord | null>(null);
   const [currentPage] = useState(1);
@@ -74,12 +109,179 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
   const [processedRowsPerPage, setProcessedRowsPerPage] = useState(10);
   const reviewModal = useModal();
 
+  const submissions: SubmissionRecord[] = useMemo(
+    () => [
+      // Pending submissions
+      {
+        id: "1",
+        timestamp: new Date("2025-10-06T10:00:00"),
+        teamName: "Team Alpha",
+        raisedBy: "John Doe",
+        teamMembers: [
+          {
+            id: 1,
+            name: "Alice",
+            role: "Coder",
+            coding: 10,
+            qa: 0,
+            sampling: 3,
+            target: 10,
+            completed: 7,
+          },
+        ],
+        metrics: {
+          totalCodingTasks: 10,
+          totalQACapacity: 0,
+          totalTargets: 10,
+          totalCompleted: 7,
+          overallPerformance: 70,
+          samplingBalance: -3,
+          isBalanced: false,
+        },
+        status: "pending",
+      },
+      {
+        id: "2",
+        timestamp: new Date("2025-10-07T09:30:00"),
+        teamName: "Team Beta",
+        raisedBy: "Jane Smith",
+        teamMembers: [
+          {
+            id: 1,
+            name: "Bob",
+            role: "QA",
+            coding: 0,
+            qa: 5,
+            sampling: 0,
+            target: 5,
+            completed: 4,
+          },
+          {
+            id: 2,
+            name: "Carol",
+            role: "Coder/QA",
+            coding: 2,
+            qa: 3,
+            sampling: 1,
+            target: 5,
+            completed: 3,
+          },
+        ],
+        metrics: {
+          totalCodingTasks: 2,
+          totalQACapacity: 8,
+          totalTargets: 10,
+          totalCompleted: 7,
+          overallPerformance: 70,
+          samplingBalance: 7,
+          isBalanced: true,
+        },
+        status: "pending",
+      },
+      {
+        id: "3",
+        timestamp: new Date("2025-10-07T14:00:00"),
+        teamName: "Team Gamma",
+        raisedBy: "Mike Johnson",
+        teamMembers: mockTeamMembers,
+        metrics: {
+          totalCodingTasks: 19,
+          totalQACapacity: 5,
+          totalTargets: 16,
+          totalCompleted: 10,
+          overallPerformance: 62,
+          samplingBalance: -14,
+          isBalanced: false,
+        },
+        status: "pending",
+      },
+      // Processed submissions
+      {
+        id: "4",
+        timestamp: new Date("2025-10-05T11:00:00"),
+        teamName: "Team Delta",
+        raisedBy: "Sarah Wilson",
+        teamMembers: mockTeamMembers,
+        metrics: {
+          totalCodingTasks: 15,
+          totalQACapacity: 6,
+          totalTargets: 21,
+          totalCompleted: 18,
+          overallPerformance: 85,
+          samplingBalance: -9,
+          isBalanced: false,
+        },
+        status: "approved",
+        adminApproval: {
+          approvedBy: "Admin User 1",
+          approvedAt: new Date("2025-10-06T15:00:00"),
+          comments: "Approved after capacity review. Proceed with adjustments.",
+        },
+      },
+      {
+        id: "5",
+        timestamp: new Date("2025-10-04T13:20:00"),
+        teamName: "Team Epsilon",
+        raisedBy: "Tom Brown",
+        teamMembers: [
+          {
+            id: 1,
+            name: "David",
+            role: "Coder",
+            coding: 8,
+            qa: 0,
+            sampling: 4,
+            target: 8,
+            completed: 5,
+          },
+        ],
+        metrics: {
+          totalCodingTasks: 8,
+          totalQACapacity: 0,
+          totalTargets: 8,
+          totalCompleted: 5,
+          overallPerformance: 62,
+          samplingBalance: -4,
+          isBalanced: false,
+        },
+        status: "rejected",
+        adminApproval: {
+          approvedBy: "Admin User 2",
+          approvedAt: new Date("2025-10-05T09:00:00"),
+          comments: "Rejected due to imbalanced sampling and QA capacity.",
+        },
+      },
+      {
+        id: "6",
+        timestamp: new Date("2025-10-06T16:45:00"),
+        teamName: "Team Zeta",
+        raisedBy: "Lisa Davis",
+        teamMembers: mockTeamMembers,
+        metrics: {
+          totalCodingTasks: 12,
+          totalQACapacity: 7,
+          totalTargets: 19,
+          totalCompleted: 19,
+          overallPerformance: 100,
+          samplingBalance: -5,
+          isBalanced: false,
+        },
+        status: "approved",
+        adminApproval: {
+          approvedBy: "Admin User 1",
+          approvedAt: new Date("2025-10-07T10:30:00"),
+          comments: "Fully approved. Excellent performance metrics.",
+        },
+      },
+    ],
+    []
+  );
+
   const pendingSubmissions = submissions.filter((s) => s.status === "pending");
   const processedSubmissions = submissions.filter(
     (s) => s.status !== "pending"
   );
 
-  // Calculate today's capacity from approved submissions
   const todaysCapacity = useMemo(() => {
     const approvedSubmissions = submissions.filter(
       (sub) => sub.status === "approved"
@@ -127,7 +329,6 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
     processedSubmissions.length / processedRowsPerPage
   );
 
-  // Headers for pending submissions table
   const pendingHeaders: HeaderType<SubmissionRecord>[] = [
     {
       label: "Team Name",
@@ -136,12 +337,16 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
     },
     {
       label: "Raised By",
-      render: (item) => item.raisedBy,
-      width: 180,
+      render: (item) => (
+        <div className="flex gap-2 items-center">
+          <AvatarText name={item.raisedBy} />
+          <span>{item.raisedBy}</span>
+        </div>
+      ),
     },
     {
       label: "Submitted",
-      render: (item) => format(new Date(item.timestamp), "MMM dd, yyyy"),
+      render: (item) => formatDate(new Date(item.timestamp), true),
       width: 150,
     },
     {
@@ -171,14 +376,8 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
       render: (item) => getStatusBadge(item.status),
       width: 150,
     },
-    {
-      label: "Actions",
-      render: () => <></>,
-      width: 100,
-    },
   ];
 
-  // Headers for processed submissions table
   const processedHeaders: HeaderType<SubmissionRecord>[] = [
     {
       label: "Team Name",
@@ -187,21 +386,20 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
     },
     {
       label: "Raised By",
-      render: (item) => item.raisedBy,
-      width: 180,
+      render: (item) => (
+        <div className="flex gap-2 items-center">
+          <AvatarText name={item.raisedBy} />
+          <span>{item.raisedBy}</span>
+        </div>
+      ),
     },
     {
-      label: "Decision Date",
+      label: "Decision Date Time",
       render: (item) =>
         item.adminApproval
-          ? format(new Date(item.adminApproval.approvedAt), "MMM dd, HH:mm")
+          ? formatDate(new Date(item.adminApproval.approvedAt), true)
           : "-",
       width: 180,
-    },
-    {
-      label: "Status",
-      render: (item) => getStatusBadge(item.status),
-      width: 150,
     },
     {
       label: "Approved By",
@@ -217,11 +415,15 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
       ),
       width: 250,
     },
+    {
+      label: "Status",
+      render: (item) => getStatusBadge(item.status),
+      width: 150,
+    },
   ];
 
   return (
     <div className="space-y-6 mt-6">
-      {/* Today's Capacity Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
@@ -287,7 +489,6 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
           </CardContent>
         </Card>
       </div>
-      {/* Pending Submissions */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -321,9 +522,8 @@ export const AdminApprovalTab: React.FC<AdminApprovalTabProps> = ({
                         onClick={() => {
                           setSelectedSubmission(item);
                           reviewModal.openModal();
-                        }}
-                      >
-                        <EyeIcon />
+                        }}>
+                        <EyeIcon className="h-5 w-5" />
                       </button>
                     </Tooltip>
                   </>

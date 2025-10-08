@@ -10,12 +10,12 @@ import ExportButton from "@/components/ui/button/ExportButton";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
 import { DownloadIcon } from "@/icons";
-import { format } from "date-fns";
 import { InfoIcon } from "lucide-react";
 import { useState, useRef } from "react";
 import DownloadModal from "./modals/DownloadModal";
 import TableFooter from "@/components/common/TableFooter";
 import ViewBulkModal from "./modals/ViewBulkModal";
+import { formatDate } from "@/utils/formateDate";
 
 export default function MainComponent() {
   const mainModal = useModal();
@@ -233,8 +233,7 @@ export default function MainComponent() {
           onClick={() => {
             setSelectedItem(item);
             mainModal.openModal();
-          }}
-        >
+          }}>
           {safeRender(item?.file_name)}
         </div>
       ),
@@ -245,7 +244,7 @@ export default function MainComponent() {
       render: (item: any) => (
         <span>
           {item?.upload_date
-            ? format(new Date(item.upload_date), "MMM d, yyyy, hh:mm a")
+            ? formatDate(new Date(item.upload_date), true)
             : "Unknown Date"}
         </span>
       ),
@@ -266,9 +265,12 @@ export default function MainComponent() {
     {
       label: "Total Tasks",
       sortable: true,
-      render: (item: any) => <div className="flex items-center justify-center">{safeRender(item?.total_tasks)}</div>,
+      render: (item: any) => (
+        <div className="flex items-center justify-center">
+          {safeRender(item?.total_tasks)}
+        </div>
+      ),
       className: "w-[100px] max-w-[100px]",
-      
     },
     {
       label: "Success Tasks",
@@ -277,7 +279,6 @@ export default function MainComponent() {
           {safeRender(item?.success_tasks)}
         </Badge>
       ),
-      
     },
     {
       label: "Failed Tasks",
@@ -285,8 +286,7 @@ export default function MainComponent() {
         <Badge
           variant="light"
           color={item?.failed_tasks > 0 ? "error" : "success"}
-          size="sm"
-        >
+          size="sm">
           {item?.failed_tasks !== 0
             ? `${safeRender(item?.failed_tasks)} Failed`
             : "No Errors"}
@@ -355,8 +355,7 @@ export default function MainComponent() {
                 onClick={() => {
                   setSelectedItem(item);
                   mainModal.openModal();
-                }}
-              >
+                }}>
                 <InfoIcon />
               </button>
             </Tooltip>
@@ -366,8 +365,7 @@ export default function MainComponent() {
                 onClick={() => {
                   setSelectedItem(item);
                   downloadModal.openModal();
-                }}
-              >
+                }}>
                 <DownloadIcon />
               </button>
             </Tooltip>

@@ -6,6 +6,7 @@ import { Download } from "lucide-react";
 import CommonTable from "@/components/common/CommonTable";
 import { useModal } from "@/hooks/useModal";
 import TextArea from "@/components/form/input/TextArea";
+import Badge from "@/components/ui/badge/Badge";
 
 // Interfaces for type safety
 interface SampleError {
@@ -228,9 +229,9 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
         {
           label: "Quality Score",
           render: (row: TableRow) => (
-            <span className="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-medium px-[10px] py-[2px] rounded-[6px]">
+            <Badge color="success" className="text-xs">
               {row["Quality Score"]}
-            </span>
+            </Badge>
           ),
         },
       ];
@@ -258,16 +259,14 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                     className="text-brand-primary dark:text-brand-primary-300 text-xs font-medium hover:underline"
                     onClick={() => {
                       openErrorModal();
-                    }}
-                  >
+                    }}>
                     View Details
                   </button>
                 )}
                 {!readOnly && (
                   <button
                     className="text-green-600 dark:text-green-400 text-xs font-medium hover:underline"
-                    onClick={() => setShowAddErrorModal(true)}
-                  >
+                    onClick={() => setShowAddErrorModal(true)}>
                     +Add Error
                   </button>
                 )}
@@ -342,8 +341,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
         <Modal
           isOpen={showAddErrorModal}
           onClose={() => setShowAddErrorModal(false)}
-          className="max-w-[580px] p-6"
-        >
+          className="max-w-[580px] p-6">
           <AddErrorModal
             onClose={() => setShowAddErrorModal(false)}
             onSave={() => {
@@ -353,7 +351,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
         </Modal>
       )}
       {/* Quality Scoring Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 mx-[16px] p-[16px] mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700  p-[16px] mb-4">
         <div className="flex items-center justify-between mb-4">
           <span className="leading-[24px] text-[16px] text-gray-900 dark:text-white">
             Quality Scoring
@@ -394,22 +392,18 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                 aria-valuemax={100}
                 role="slider"
                 onKeyDown={handleKeyDown}
-                style={{ outline: "none" }}
-              >
+                style={{ outline: "none" }}>
                 <div
                   className="h-4 bg-green-500 rounded-full absolute top-0 left-0"
-                  style={{ width: `${externalQA}%` }}
-                ></div>
+                  style={{ width: `${externalQA}%` }}></div>
                 <div
                   ref={handleRef}
                   className="absolute top-1/2 -translate-y-1/2"
-                  style={{ left: `calc(${externalQA}% - 12px)` }}
-                >
+                  style={{ left: `calc(${externalQA}% - 12px)` }}>
                   <div
                     className="w-6 h-6 bg-white dark:bg-gray-700 border-2 border-green-500 rounded-full shadow flex items-center justify-center cursor-pointer"
                     tabIndex={0}
-                    aria-label={`External QA score: ${externalQA}%`}
-                  >
+                    aria-label={`External QA score: ${externalQA}%`}>
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   </div>
                 </div>
@@ -446,8 +440,7 @@ const QAComponent: React.FC<QAComponentProps> = ({ readOnly = false }) => {
                     ? "bg-brand-primary text-white"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
-                onClick={() => setActiveTab(tab.id)}
-              >
+                onClick={() => setActiveTab(tab.id)}>
                 {tab.label}
               </button>
             ))}

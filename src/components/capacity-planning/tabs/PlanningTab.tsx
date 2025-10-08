@@ -21,6 +21,10 @@ import Button from "@/components/ui/button/Button";
 import Input from "@/components/form/input/InputField";
 import Badge from "@/components/ui/badge/Badge";
 import SearchableSelect from "@/components/form/SearchableSelect";
+import { showToast } from "@/lib/toast";
+import DateTimePicker from "@/components/common/DateTimePicker";
+import { useModal } from "@/hooks/useModal";
+import SubmitModal from "@/components/common/common-modals/SubmitModal";
 
 interface PlanningTabProps {
   teamMembers: TeamMember[];
@@ -52,6 +56,8 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
   setTeamMembers,
   onSubmit,
 }) => {
+  const submitModal = useModal();
+  const [planningDate, setPlanningDate] = useState<Date | null>(new Date());
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState<Record<number, Partial<TeamMember>>>(
     {}
@@ -60,7 +66,6 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
     Record<number, Record<string, string>>
   >({});
 
-  // Calculate team metrics
   const metrics = React.useMemo(() => {
     const totalSamplingTasks = teamMembers.reduce(
       (sum, member) => sum + (member.sampling || 0),
@@ -149,6 +154,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
   };
 
   const handleSaveDraft = () => {
+    showToast("success", "", "Draft saved successfully!");
     const allErrors: Record<number, Record<string, string>> = {};
     let hasErrors = false;
 
@@ -205,7 +211,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
 
     const submissionRecord: SubmissionRecord = {
       id: Date.now().toString(),
-      timestamp: new Date(),
+      timestamp: planningDate || new Date(),
       teamName: "Main Team",
       raisedBy: "Team Lead",
       teamMembers: updatedMembers,
@@ -317,26 +323,56 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
             </span>
           </CardTitle>
           <div className="flex gap-2">
+            <DateTimePicker
+              value={planningDate}
+              onChange={setPlanningDate}
+              mode="single"
+              allowTime={false}
+              onlyFuture={true}
+              onlyPast={false}
+              maxRangeDays={null}
+              className="!w-[140px]"
+            />
             {isEditMode ? (
               <>
-                <Button onClick={handleSaveDraft} variant="outline" size="sm">
+                <Button
+                  onClick={handleSaveDraft}
+                  variant="outline"
+                  size="sm"
+                  className="whitespace-nowrap">
                   <FileText className="h-4 w-4" />
                   Save Draft
                 </Button>
-                <Button onClick={handleSubmit} variant="gradient" size="sm">
+                <Button
+                  onClick={() => {
+                    submitModal.openModal();
+                  }}
+                  variant="gradient"
+                  size="sm"
+                  className="whitespace-nowrap">
                   <Send className="h-4 w-4" />
                   Submit
                 </Button>
-                <Button onClick={handleEditMode} variant="error" size="sm">
+                <Button
+                  onClick={handleEditMode}
+                  variant="error"
+                  size="sm"
+                  className="whitespace-nowrap">
                   <X className="h-4 w-4" />
                   Cancel
                 </Button>
               </>
             ) : (
-              <Button onClick={handleEditMode} variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-1" />
-                Edit All
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleEditMode}
+                  variant="outline"
+                  size="sm"
+                  className="whitespace-nowrap">
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit All
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
@@ -380,7 +416,9 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                     (editData[member.id] as TeamMember) || member;
 
                   return (
-                    <tr key={member.id} className="hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <tr
+                      key={member.id}
+                      className="hover:bg-gray-100 dark:hover:bg-gray-800">
                       <td className="px-4 py-3 font-medium text-foreground">
                         {member.name}
                       </td>
@@ -439,8 +477,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                               member.coding > 0
                                 ? "text-coder"
                                 : "text-muted-foreground"
-                            )}
-                          >
+                            )}>
                             {member.coding || "-"}
                           </span>
                         )}
@@ -463,8 +500,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                               member.qa > 0
                                 ? "text-qa"
                                 : "text-muted-foreground"
-                            )}
-                          >
+                            )}>
                             {member.qa || "-"}
                           </span>
                         )}
@@ -504,8 +540,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                               member.sampling > 0
                                 ? "text-expert"
                                 : "text-muted-foreground"
-                            )}
-                          >
+                            )}>
                             {member.sampling > 0 ? (
                               <div className="space-y-1">
                                 <div>{member.sampling}</div>
@@ -578,8 +613,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                       <td className="px-4 py-3 text-center">
                         <Badge
                           className="text-xs"
-                          color={getStatusColor(productivity)}
-                        >
+                          color={getStatusColor(productivity)}>
                           {productivity}%
                         </Badge>
                       </td>
@@ -606,8 +640,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
               </span>
               <Badge
                 className="text-2xl font-bold px-3 py-1 rounded-lg"
-                color={getStatusColor(metrics.overallPerformance)}
-              >
+                color={getStatusColor(metrics.overallPerformance)}>
                 {metrics.overallPerformance}%
               </Badge>
             </div>
@@ -633,8 +666,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
             metrics.isBalanced
               ? "bg-success-50 border-success-100"
               : "bg-error-100 border-error-100"
-          )}
-        >
+          )}>
           <CardHeader className="flex flex-row items-center space-y-0 pb-2">
             {metrics.isBalanced ? (
               <CheckCircle className="h-5 w-5 text-success-500 mr-2" />
@@ -664,8 +696,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                 className={cn(
                   "font-bold text-lg",
                   metrics.isBalanced ? "text-success-500" : "text-error-500"
-                )}
-              >
+                )}>
                 {metrics.samplingBalance >= 0 ? "+" : ""}
                 {metrics.samplingBalance}
               </span>
@@ -737,8 +768,7 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
                 className={cn(
                   "text-sm font-medium",
                   metrics.isBalanced ? "text-success-500" : "text-error-500"
-                )}
-              >
+                )}>
                 {metrics.isBalanced
                   ? "✓ Workflow Balanced"
                   : "⚠ Capacity Issue"}
@@ -747,6 +777,18 @@ export const PlanningTab: React.FC<PlanningTabProps> = ({
           </CardContent>
         </Card>
       </div>
+      <SubmitModal
+        isOpen={submitModal.isOpen}
+        closeModal={submitModal.closeModal}
+        title="Submit Capacity Plan"
+        description="Are you sure you want to submit this capacity planning record? Once submitted, it will be sent for review."
+        btnText="Confirm & Submit"
+        onSubmit={async () => {
+          await handleSubmit();
+          submitModal.closeModal();
+          showToast("success", "", "Capacity plan submitted successfully!");
+        }}
+      />
     </div>
   );
 };

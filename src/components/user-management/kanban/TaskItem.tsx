@@ -14,6 +14,9 @@ import Switch from "@/components/form/switch/Switch";
 import { Modal } from "@/components/ui/modal";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
+import { useModal } from "@/hooks/useModal";
+import SubmitModal from "@/components/common/common-modals/SubmitModal";
+import { showToast } from "@/lib/toast";
 
 interface TaskItemProps {
   task: Task;
@@ -21,9 +24,14 @@ interface TaskItemProps {
   moveTask: (dragIndex: number, hoverIndex: number) => void;
   changeTaskStatus: (taskId: string, newStatus: string) => void;
   showToggleButton?: boolean;
+  selectedRole?: string | null;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
+const TaskItem: React.FC<TaskItemProps> = ({
+  task,
+  showToggleButton,
+  selectedRole,
+}) => {
   const [selectedMove, setSelectedMove] = useState("Hold");
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
@@ -31,6 +39,18 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
   const [activeMainTab, setActiveMainTab] = useState("Edit");
   const [activeEditSubTab, setActiveEditSubTab] = useState("Coding");
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+  const submitModal = useModal();
+
+  const visibleSubTabs = (() => {
+    if (selectedRole === "coder") {
+      return ["Coding", "Oasis", "Poc", "Preview"];
+    } else if (selectedRole === "qa") {
+      return ["Coding", "Oasis", "Poc", "QA", "Preview"];
+    } else if (selectedRole === "coderqa") {
+      return ["Coding", "Oasis", "Poc", "QA", "Preview"];
+    }
+    return ["Coding", "Oasis", "Poc", "QA", "Preview"];
+  })();
 
   const getTimeDisplay = () => {
     if (
@@ -81,8 +101,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
 
   return (
     <div
-      className={`relative border dark:border-gray-700 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out`}
-    >
+      className={`relative border dark:border-gray-700 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out`}>
       {!isAccordionOpen && (
         <div className={`p-2.5 cursor-pointer`} onClick={handleAccordionToggle}>
           <div className="flex items-center justify-between">
@@ -109,8 +128,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
         <div className="transition-all duration-300 ease-in-out">
           <div
             className={`p-2.5 border-b border-gray-200 dark:border-gray-600 cursor-pointer`}
-            onClick={handleAccordionToggle}
-          >
+            onClick={handleAccordionToggle}>
             <div className="flex items-center justify-between">
               <span className="text-sm leading-[20px] font-medium text-brand-primary">
                 MRN: {task.mrn}
@@ -130,8 +148,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
                 ? "max-h-[500px] opacity-100 translate-y-0"
                 : "max-h-0 opacity-0 -translate-y-2"
             }`}
-            onClick={handleCardClick}
-          >
+            onClick={handleCardClick}>
             <div className="flex items-center justify-between mb-[12px]">
               <h4 className="text-base text-gray-dark leading-[24px] font-medium">
                 {task.title}
@@ -157,8 +174,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
                       <Badge
                         key={idx}
                         className={`rounded-[6px] text-xs`}
-                        color={getStatusTagColor(tag.color)}
-                      >
+                        color={getStatusTagColor(tag.color)}>
                         <span className="font-semibold">{tag.label}</span>
                       </Badge>
                     )
@@ -199,8 +215,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
         isOpen={showSideModal}
         onClose={handleSideModalClose}
         openFromRight={true}
-        sidebarContent={<NoteList />}
-      >
+        sidebarContent={<NoteList />}>
         <div className="p-2 w-full h-full flex flex-col">
           <TaskModalTabs
             activeTab={activeMainTab}
@@ -212,6 +227,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
               <TaskEditTab
                 activeSubTab={activeEditSubTab}
                 onSubTabChange={setActiveEditSubTab}
+                visibleSubTabs={visibleSubTabs}
               />
             )}
             {activeMainTab === "History" && <TaskHistoryTab />}
@@ -220,24 +236,33 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
           {(activeMainTab === "Edit" &&
             !["Preview"].includes(activeEditSubTab)) ||
           activeMainTab === "Tasks" ? (
-            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 mr-4">
+            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 mr-4 pb-6">
               <Button
                 variant="outline"
                 className="px-4 py-2 rounded-[10px] bg-[#EAECF0] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
-                onClick={handleSideModalClose}
-              >
+                onClick={handleSideModalClose}>
                 Cancel
               </Button>
+
               <Button
                 variant="primary"
-                className="px-5 py-2 rounded-[10px] "
+                className="px-5 py-2 rounded-[10px]"
                 onClick={() => {
                   setShowSideModal(false);
                   setShowCheckInModal(true);
-                }}
-              >
+                }}>
                 Save Changes
               </Button>
+              {selectedRole === "qa" && (
+                <Button
+                  variant="gradient"
+                  className="px-5 py-2 rounded-[10px]"
+                  onClick={() => {
+                    submitModal.openModal();
+                  }}>
+                  Submit
+                </Button>
+              )}
             </div>
           ) : null}
 
@@ -251,6 +276,20 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, showToggleButton }) => {
           ) : null}
         </div>
       </Modal>
+      <SubmitModal
+        isOpen={submitModal.isOpen}
+        closeModal={submitModal.closeModal}
+        title="Submit Task for Review"
+        description="You are about to submit this task for final review and approval. Once submitted, no further edits can be made by you. Please ensure all coding, QA checks, and required notes are complete before proceeding."
+        onSubmit={async () => {
+          showToast(
+            "success",
+            "Task submitted successfully!",
+            "The task has been submitted for review."
+          );
+        }}
+        btnText="Submit"
+      />
     </div>
   );
 };

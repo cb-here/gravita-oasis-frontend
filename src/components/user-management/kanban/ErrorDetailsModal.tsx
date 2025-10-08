@@ -60,7 +60,7 @@ export default function ErrorDetailsModal({
       isOpen={isOpen}
       onClose={handleClose}
       showCloseButton={!selectedError}
-      className="max-w-[90vw] sm:max-w-[800px] p-3 sm:p-5 lg:p-10 m-2 sm:m-4"
+      className={`${selectedError? "max-w-[600px]": "max-w-[1000px]"} p-3 sm:p-5 lg:p-10 m-2 sm:m-4`}
     >
       <div className="space-y-4 sm:space-y-6">
         <div className="px-1 sm:px-2">
@@ -103,7 +103,7 @@ export default function ErrorDetailsModal({
               </div>
             </div>
           ) : (
-            <div className="w-full">
+            <div className="max-w-[900px]">
               <div className="font-bold text-lg sm:text-xl text-gray-900 dark:text-gray-100 mb-4 sm:mb-6">
                 Error List
               </div>

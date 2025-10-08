@@ -156,6 +156,18 @@ export default function TargetAchievedChart() {
       borderColor: "#F2F4F7",
       strokeDashArray: 0,
     },
+    states: {
+      hover: {
+        filter: {
+          type: "none",
+        },
+      },
+      active: {
+        filter: {
+          type: "none",
+        },
+      },
+    },
   };
 
   return (

@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Database,
-  Calendar,
-  Users,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { Database, Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SubmissionRecord } from "../types/planning";
 import { format } from "date-fns";
@@ -109,233 +103,237 @@ export const SubmittedDataTab: React.FC<SubmittedDataTabProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {submissions.map((submission) => (
-                  <tr key={submission.id} className="hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <td className="px-4 py-3">
-                      <div className="flex items-start gap-2">
-                        <Calendar className="h-4 w-4 text-gray-400 mt-1" />
-                        <div>
-                          <div className="font-medium text-foreground">
-                            {format(
-                              new Date(submission.timestamp),
-                              "MMM dd, yyyy"
+                {submissions.map((submission) => {
+                  const isExpanded = expandedSubmission === submission.id;
+                  return (
+                    <React.Fragment key={submission.id}>
+                      <tr
+                        className={cn(
+                          "hover:bg-gray-100 dark:hover:bg-gray-800",
+                          isExpanded &&
+                            "bg-blue-50 dark:bg-blue-950/20 border-l-4 border-l-blue-500 dark:border-l-blue-400"
+                        )}>
+                        <td className="px-4 py-3 border-l-0">
+                          <div className="flex items-start gap-2">
+                            <Calendar className="h-4 w-4 text-gray-400 mt-1" />
+                            <div>
+                              <div className="font-medium text-foreground">
+                                {format(
+                                  new Date(submission.timestamp),
+                                  "MMM dd, yyyy"
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {format(
+                                  new Date(submission.timestamp),
+                                  "HH:mm"
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <span className="font-bold text-coder">
+                            {submission.metrics.totalCodingTasks}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <span className="font-bold text-qa">
+                            {submission.metrics.totalQACapacity}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <span className="font-bold text-foreground">
+                            {submission.metrics.totalTargets}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <span className="font-bold text-foreground">
+                            {submission.metrics.totalCompleted}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <Badge
+                            className="text-xs font-medium"
+                            color={getStatusColor(
+                              submission.metrics.overallPerformance
+                            )}>
+                            {submission.metrics.overallPerformance}%
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <Badge
+                            className="text-xs font-medium"
+                            color="success">
+                            Submitted
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-center border-l-0">
+                          <button
+                            onClick={() => toggleExpansion(submission.id)}
+                            className="h-8 w-8 p-0">
+                            {isExpanded ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
                             )}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {format(new Date(submission.timestamp), "HH:mm")}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="font-bold text-coder">
-                        {submission.metrics.totalCodingTasks}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="font-bold text-qa">
-                        {submission.metrics.totalQACapacity}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="font-bold text-foreground">
-                        {submission.metrics.totalTargets}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="font-bold text-foreground">
-                        {submission.metrics.totalCompleted}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge
-                        className="text-xs font-medium"
-                        color={getStatusColor(
-                          submission.metrics.overallPerformance
-                        )}
-                      >
-                        {submission.metrics.overallPerformance}%
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge className="text-xs font-medium" color="success">
-                        Submitted
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => toggleExpansion(submission.id)}
-                        className="h-8 w-8 p-0"
-                      >
-                        {expandedSubmission === submission.id ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                          </button>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={8} className="p-0">
+                            <div className="bg-gray-50 dark:bg-gray-900/50 border-y border-gray-200 dark:border-gray-700">
+                              <div className="overflow-x-auto">
+                                <table className="w-full">
+                                  <thead className="bg-gray-100 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+                                    <tr>
+                                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                                        Member
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        Role
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        Coding
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        QA Cap.
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        Sampling
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        Target
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        Completed
+                                      </th>
+                                      <th className="px-4 py-3 text-center font-medium text-muted-foreground">
+                                        Performance
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    {submission.teamMembers.map((member) => {
+                                      const productivity =
+                                        member.target > 0
+                                          ? Math.round(
+                                              (member.completed /
+                                                member.target) *
+                                                100
+                                            )
+                                          : 0;
+                                      const samplingPercentage =
+                                        member.coding > 0
+                                          ? Math.round(
+                                              (member.sampling /
+                                                member.coding) *
+                                                100
+                                            )
+                                          : 0;
+
+                                      return (
+                                        <tr
+                                          key={member.id}
+                                          className="hover:bg-muted/30">
+                                          <td className="px-4 py-3 font-medium text-foreground">
+                                            {member.name}
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <Badge
+                                              className="text-xs font-medium border"
+                                              color={getRoleColor(member.role)}>
+                                              {member.role}
+                                            </Badge>
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <span
+                                              className={cn(
+                                                "font-medium",
+                                                member.coding > 0
+                                                  ? "text-coder"
+                                                  : "text-muted-foreground"
+                                              )}>
+                                              {member.coding || "-"}
+                                            </span>
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <span
+                                              className={cn(
+                                                "font-medium",
+                                                member.qa > 0
+                                                  ? "text-qa"
+                                                  : "text-muted-foreground"
+                                              )}>
+                                              {member.qa || "-"}
+                                            </span>
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <div
+                                              className={cn(
+                                                "font-medium",
+                                                member.sampling > 0
+                                                  ? "text-expert"
+                                                  : "text-muted-foreground"
+                                              )}>
+                                              {member.sampling > 0 ? (
+                                                <div className="space-y-1">
+                                                  <div>{member.sampling}</div>
+                                                  <div className="text-xs text-muted-foreground">
+                                                    ({samplingPercentage}%)
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <div>
+                                                  <div>-</div>
+                                                  {member.role ===
+                                                    "Coder/QA" && (
+                                                    <div className="text-xs text-muted-foreground">
+                                                      Expert
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              )}
+                                            </div>
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <span className="font-medium text-foreground">
+                                              {member.target}
+                                            </span>
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <span className="font-medium text-foreground">
+                                              {member.completed}
+                                            </span>
+                                          </td>
+                                          <td className="px-4 py-3 text-center">
+                                            <Badge
+                                              className=" text-xs font-medium"
+                                              color={getStatusColor(
+                                                productivity
+                                              )}>
+                                              {productivity}%
+                                            </Badge>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </CardContent>
       </Card>
-      {expandedSubmission &&
-        (() => {
-          const submission = submissions.find(
-            (s) => s.id === expandedSubmission
-          );
-          if (!submission) return null;
-
-          return (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  Detailed Breakdown -{" "}
-                  {format(new Date(submission.timestamp), "MMM dd, yyyy HH:mm")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-100 dark:bg-gray-800  border-b border-gray-100 dark:border-gray-700">
-                      <tr>
-                        <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                          Member
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          Role
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          Coding
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          QA Cap.
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          Sampling
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          Target
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          Completed
-                        </th>
-                        <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                          Performance
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                      {submission.teamMembers.map((member) => {
-                        const productivity =
-                          member.target > 0
-                            ? Math.round(
-                                (member.completed / member.target) * 100
-                              )
-                            : 0;
-                        const samplingPercentage =
-                          member.coding > 0
-                            ? Math.round(
-                                (member.sampling / member.coding) * 100
-                              )
-                            : 0;
-
-                        return (
-                          <tr key={member.id} className="hover:bg-muted/30">
-                            <td className="px-4 py-3 font-medium text-foreground">
-                              {member.name}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <Badge
-                                className="text-xs font-medium border"
-                                color={getRoleColor(member.role)}
-                              >
-                                {member.role}
-                              </Badge>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <span
-                                className={cn(
-                                  "font-medium",
-                                  member.coding > 0
-                                    ? "text-coder"
-                                    : "text-muted-foreground"
-                                )}
-                              >
-                                {member.coding || "-"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <span
-                                className={cn(
-                                  "font-medium",
-                                  member.qa > 0
-                                    ? "text-qa"
-                                    : "text-muted-foreground"
-                                )}
-                              >
-                                {member.qa || "-"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <div
-                                className={cn(
-                                  "font-medium",
-                                  member.sampling > 0
-                                    ? "text-expert"
-                                    : "text-muted-foreground"
-                                )}
-                              >
-                                {member.sampling > 0 ? (
-                                  <div className="space-y-1">
-                                    <div>{member.sampling}</div>
-                                    <div className="text-xs text-muted-foreground">
-                                      ({samplingPercentage}%)
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <div>-</div>
-                                    {member.role === "Coder/QA" && (
-                                      <div className="text-xs text-muted-foreground">
-                                        Expert
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <span className="font-medium text-foreground">
-                                {member.target}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <span className="font-medium text-foreground">
-                                {member.completed}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <Badge
-                                className=" text-xs font-medium"
-                                color={getStatusColor(productivity)}
-                              >
-                                {productivity}%
-                              </Badge>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })()}
     </div>
   );
 };

@@ -17,6 +17,7 @@ import {
   CalendarClock,
   CogIcon,
   ListChecks,
+  Tickets,
   UserCogIcon,
   Users2,
 } from "lucide-react";
@@ -87,6 +88,11 @@ const navItems: NavItem[] = [
     icon: <BarChart3 className="h-5 w-5" />,
     path: "/reports",
   },
+  {
+    icon: <Tickets className="h-5 w-5" />,
+    name: "Support Tickets",
+    path: "/support-tickets",
+  },
 ];
 
 const supportItems: NavItem[] = [
@@ -136,15 +142,13 @@ const AppSidebar: React.FC = () => {
                 !isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
-              }`}
-            >
+              }`}>
               <span
                 className={` ${
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? "menu-item-icon-active"
                     : "menu-item-icon-inactive"
-                }`}
-              >
+                }`}>
                 {nav.icon}
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
@@ -157,8 +161,7 @@ const AppSidebar: React.FC = () => {
                     openSubmenu?.index === index
                       ? "menu-dropdown-badge-active"
                       : "menu-dropdown-badge-inactive"
-                  } menu-dropdown-badge`}
-                >
+                  } menu-dropdown-badge`}>
                   new
                 </span>
               )}
@@ -179,15 +182,13 @@ const AppSidebar: React.FC = () => {
                 href={nav.path}
                 className={`menu-item group ${
                   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
-              >
+                }`}>
                 <span
                   className={`${
                     isActive(nav.path)
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
-                  }`}
-                >
+                  }`}>
                   {nav.icon}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
@@ -199,8 +200,7 @@ const AppSidebar: React.FC = () => {
                           isActive(nav.path)
                             ? "menu-dropdown-badge-active"
                             : "menu-dropdown-badge-inactive"
-                        } menu-dropdown-badge`}
-                      >
+                        } menu-dropdown-badge`}>
                         new
                       </span>
                     )}
@@ -220,8 +220,7 @@ const AppSidebar: React.FC = () => {
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? `${subMenuHeight[`${menuType}-${index}`]}px`
                     : "0px",
-              }}
-            >
+              }}>
               <ul className="mt-2 space-y-1 ml-9">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
@@ -231,8 +230,7 @@ const AppSidebar: React.FC = () => {
                         isActive(subItem.path)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
-                      }`}
-                    >
+                      }`}>
                       {subItem.name}
                       <span className="flex items-center gap-1 ml-auto">
                         {subItem.new && (
@@ -241,8 +239,7 @@ const AppSidebar: React.FC = () => {
                               isActive(subItem.path)
                                 ? "menu-dropdown-badge-active"
                                 : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge `}
-                          >
+                            } menu-dropdown-badge `}>
                             new
                           </span>
                         )}
@@ -252,8 +249,7 @@ const AppSidebar: React.FC = () => {
                               isActive(subItem.path)
                                 ? "menu-dropdown-badge-pro-active"
                                 : "menu-dropdown-badge-pro-inactive"
-                            } menu-dropdown-badge-pro `}
-                          >
+                            } menu-dropdown-badge-pro `}>
                             pro
                           </span>
                         )}
@@ -355,26 +351,24 @@ const AppSidebar: React.FC = () => {
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         xl:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+      onMouseLeave={() => setIsHovered(false)}>
       <div
         className={`py-8 flex  ${
           !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
-        }`}
-      >
+        }`}>
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/auth-logo.svg"
+                src="/images/logo/app-logo.png"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={600}
+                height={75}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/auth-logo.svg"
+                src="/images/logo/app-logo.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -382,10 +376,11 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <Image
-              src="/images/logo/logo_icon.svg"
+              src="/images/logo/logo.png"
               alt="Logo"
               width={50}
               height={50}
+              className="object-cover"
             />
           )}
         </Link>

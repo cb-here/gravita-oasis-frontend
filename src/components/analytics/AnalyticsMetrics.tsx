@@ -20,7 +20,7 @@ const AnalyticsMetrics: React.FC = () => {
       iconColor: "text-blue-500 dark:text-blue-400",
     },
     {
-      title: "SLA Risk",
+      title: "Backlogs",
       value: "16",
       variant: "error" as const,
       icon: AlertTriangle,

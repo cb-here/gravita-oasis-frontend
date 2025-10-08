@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 interface TextareaProps {
   placeholder?: string; // Placeholder text
@@ -12,6 +12,7 @@ interface TextareaProps {
   readOnly?: boolean;
   required?: boolean;
   errorMessage?: string;
+  onKeyDown?: any;
 }
 
 const TextArea: React.FC<TextareaProps> = ({
@@ -25,7 +26,8 @@ const TextArea: React.FC<TextareaProps> = ({
   hint = "", // Default hint text
   readOnly = false,
   required = false,
-  errorMessage
+  errorMessage,
+  onKeyDown,
 }) => {
   const [touched, setTouched] = useState(false);
 
@@ -59,6 +61,7 @@ const TextArea: React.FC<TextareaProps> = ({
         disabled={disabled}
         className={textareaClasses}
         readOnly={readOnly}
+        onKeyDown={onKeyDown || null}
       />
 
       {showRequiredError && (
@@ -69,16 +72,13 @@ const TextArea: React.FC<TextareaProps> = ({
         <p
           className={`mt-2 text-sm ${
             error ? "text-error-500" : "text-gray-500 dark:text-gray-400"
-          }`}
-        >
+          }`}>
           {hint}
         </p>
       )}
-      {
-        error && errorMessage && (
-          <span className="mt-1.5 text-sm text-red-500">{errorMessage}</span>
-        )
-      }
+      {error && errorMessage && (
+        <span className="mt-1.5 text-sm text-red-500">{errorMessage}</span>
+      )}
     </div>
   );
 };

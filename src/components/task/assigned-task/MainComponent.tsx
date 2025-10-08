@@ -59,8 +59,8 @@ export default function MainComponent() {
         mri_number: "MRN-1001",
         type_of_chart: "Fresh",
         target_date: "2025-10-10",
-        task_name: "CT Scan Analysis",
-        project_name: "Neuro Study A",
+        task_name: "SOC",
+        project_name: "Project J",
         age: 45,
         priority: "High",
         patient_name: "John Doe",
@@ -72,10 +72,10 @@ export default function MainComponent() {
       {
         _id: "2",
         mri_number: "MRN-1002",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-12",
-        task_name: "MRI Review",
-        project_name: "Ortho Research",
+        task_name: "SOC(PT)",
+        project_name: "Origin",
         age: 34,
         priority: "Medium",
         patient_name: "Jane Smith",
@@ -89,8 +89,8 @@ export default function MainComponent() {
         mri_number: "MRN-1003",
         type_of_chart: "Fresh",
         target_date: "2025-10-15",
-        task_name: "X-Ray Report",
-        project_name: "Cardio Project",
+        task_name: "SOC(OT)",
+        project_name: "Metropolitan",
         age: 29,
         priority: "Low",
         patient_name: "Michael Johnson",
@@ -102,10 +102,10 @@ export default function MainComponent() {
       {
         _id: "4",
         mri_number: "MRN-1004",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-20",
-        task_name: "Ultrasound Check",
-        project_name: "",
+        task_name: "ROC",
+        project_name: "Jacksonville",
         age: 52,
         priority: "High",
         patient_name: "Sarah Lee",
@@ -119,8 +119,8 @@ export default function MainComponent() {
         mri_number: "MRN-1005",
         type_of_chart: "Fresh",
         target_date: "2025-10-22",
-        task_name: "Blood Test Panel",
-        project_name: "Hematology Survey",
+        task_name: "ROC(PT)",
+        project_name: "Making Memories",
         age: 41,
         priority: "Medium",
         patient_name: "David Brown",
@@ -132,10 +132,10 @@ export default function MainComponent() {
       {
         _id: "6",
         mri_number: "MRN-1006",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-25",
-        task_name: "Echo Cardiogram",
-        project_name: "Heart Study B",
+        task_name: "Recert",
+        project_name: "Project J",
         age: 60,
         priority: "High",
         patient_name: "Emily Davis",
@@ -149,8 +149,8 @@ export default function MainComponent() {
         mri_number: "MRN-1007",
         type_of_chart: "Fresh",
         target_date: "2025-10-28",
-        task_name: "PET Scan Evaluation",
-        project_name: "Cancer Research",
+        task_name: "Recert(OT)",
+        project_name: "Origin",
         age: 38,
         priority: "Low",
         patient_name: "Robert Wilson",
@@ -162,10 +162,10 @@ export default function MainComponent() {
       {
         _id: "8",
         mri_number: "MRN-1008",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-30",
-        task_name: "EEG Monitoring",
-        project_name: "Neuro Study C",
+        task_name: "SN Assessment E",
+        project_name: "Metropolitan",
         age: 27,
         priority: "Medium",
         patient_name: "Olivia Martinez",
@@ -296,8 +296,7 @@ export default function MainComponent() {
             setSelectedTask(item);
             setReadOnly(true);
             setShowSideModal(true);
-          }}
-        >
+          }}>
           {item?.mri_number}
         </button>
       ),
@@ -310,8 +309,7 @@ export default function MainComponent() {
         <div className="flex justify-center">
           <Badge
             className="text-xs"
-            color={item?.type_of_chart === "Fresh" ? "success" : "error"}
-          >
+            color={item?.type_of_chart === "Fresh" ? "success" : "error"}>
             {item.type_of_chart}
           </Badge>
         </div>
@@ -339,8 +337,7 @@ export default function MainComponent() {
           <Badge
             variant="light"
             color={item?.project_name ? "success" : "error"}
-            size="sm"
-          >
+            size="sm">
             {item?.project_name}
           </Badge>
         ) : (
@@ -523,8 +520,7 @@ export default function MainComponent() {
               setBulkModalType("unassign");
               bulkModal.openModal();
             }}
-            disabled={!selectedItems || selectedItems.length === 0}
-          >
+            disabled={!selectedItems || selectedItems.length === 0}>
             <FileStackIcon className="h-4 w-4" />
             Bulk Retrieval
           </Button>
@@ -547,16 +543,14 @@ export default function MainComponent() {
                   ? "Resolve Hold "
                   : "Unassign Task"
               }
-              position="left"
-            >
+              position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
                 onClick={() => {
                   setModalType(tabToModalType[activeTab]);
                   setSelectedTask(item);
                   mainModal.openModal();
-                }}
-              >
+                }}>
                 {activeTab === "hold" && <PauseCircle className="w-5 h-5" />}
                 {activeTab === "rehold" && <RefreshCcw className="w-5 h-5" />}
                 {activeTab === "assign" && (
@@ -566,8 +560,7 @@ export default function MainComponent() {
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 transition-transform duration-200 hover:scale-110 active:scale-95 cursor-pointer"
-                  >
+                    className="w-6 h-6 transition-transform duration-200 hover:scale-110 active:scale-95 cursor-pointer">
                     <g clipPath="url(#clip0_2776_45625)">
                       <path
                         d="M9.06641 19.3125C10.3632 21.5543 12.787 23.0625 15.563 23.0625C19.7052 23.0625 23.063 19.7047 23.063 15.5625C23.063 11.4203 19.7052 8.0625 15.563 8.0625H9.93805"
@@ -638,8 +631,7 @@ export default function MainComponent() {
         isOpen={showSideModal}
         onClose={handleSideModalClose}
         openFromRight={true}
-        sidebarContent={<NoteList />}
-      >
+        sidebarContent={<NoteList />}>
         <div className="p-2 w-full h-full flex flex-col">
           <TaskModalTabs
             activeTab={activeMainTab}
@@ -682,16 +674,14 @@ export default function MainComponent() {
             <div className="mt-auto pt-6 border-t flex justify-end gap-3">
               <button
                 className="px-4 py-2 rounded-[10px] bg-[#EAECF0] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
-                onClick={handleSideModalClose}
-              >
+                onClick={handleSideModalClose}>
                 Cancel
               </button>
               <button
                 className="px-5 py-2 rounded-[10px] bg-brand-primary text-white"
                 onClick={() => {
                   setShowSideModal(false);
-                }}
-              >
+                }}>
                 Save Changes
               </button>
             </div>

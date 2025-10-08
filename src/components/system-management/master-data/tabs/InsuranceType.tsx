@@ -241,8 +241,8 @@ export default function InsuranceType() {
           <FilterModal
             isOpen={isFilterModalOpen}
             onClose={() => setIsFilterModalOpen(false)}
-            title="Filter User Lists"
-            description="Filter user lists based on your criteria"
+            title="Filter Insurances..."
+            description="Filter insurances based on your criteria"
             filters={[
               {
                 key: "status",
