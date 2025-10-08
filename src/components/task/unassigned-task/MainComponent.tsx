@@ -11,15 +11,17 @@ import Button from "@/components/ui/button/Button";
 import ExportButton from "@/components/ui/button/ExportButton";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
-import { formatDate } from "@/utils/formateDate";
 import React, { useState, useRef } from "react";
-import { PackageIcon, Plus, UserPlus } from "lucide-react";
+import { ArrowLeftRight, Flag, PackageIcon, Plus, UserPlus } from "lucide-react";
 import BulkTaskModal from "../bulkTaskModals/BulkTaskModal";
 import UnassignedModal from "../assigned-task/modals/UnassignedModal";
 import TaskModal from "./modals/TaskModal";
 import ViewModal from "../assigned-task/modals/ViewModal";
 import CustomDateRange from "@/components/common/CustomDateRange";
-
+import { formatDate } from "@/utils/formateDate";
+import { projectOptions } from "@/components/user-management/user-list/MainComponent";
+import MarkModal from "./modals/MarkModal";
+import SwapModal from "./modals/SwapModal";
 
 const getPriorityColor = (
   priority: string
@@ -39,6 +41,8 @@ export default function MainComponent() {
   const mainModal = useModal();
   const bulkModal = useModal();
   const viewModal = useModal();
+  const markModal = useModal();
+  const swapModal = useModal();
 
   const [taskData, setTaskData] = useState<any>({
     totalRecords: 8,
@@ -48,8 +52,8 @@ export default function MainComponent() {
         mri_number: "MRN-1001",
         type_of_chart: "Fresh",
         target_date: "2025-10-10",
-        task_name: "CT Scan Analysis",
-        project_name: "Neuro Study A",
+        task_name: "SOC",
+        project_name: "Project J",
         age: 45,
         priority: "High",
         patient_name: "John Doe",
@@ -58,10 +62,10 @@ export default function MainComponent() {
       {
         _id: "2",
         mri_number: "MRN-1002",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-12",
-        task_name: "MRI Review",
-        project_name: "Ortho Research",
+        task_name: "SOC(PT)",
+        project_name: "Origin",
         age: 34,
         priority: "Medium",
         patient_name: "Jane Smith",
@@ -72,8 +76,8 @@ export default function MainComponent() {
         mri_number: "MRN-1003",
         type_of_chart: "Fresh",
         target_date: "2025-10-15",
-        task_name: "X-Ray Report",
-        project_name: "Cardio Project",
+        task_name: "SOC(OT)",
+        project_name: "Metropolitan",
         age: 29,
         priority: "Low",
         patient_name: "Michael Johnson",
@@ -82,10 +86,10 @@ export default function MainComponent() {
       {
         _id: "4",
         mri_number: "MRN-1004",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-20",
-        task_name: "Ultrasound Check",
-        project_name: "",
+        task_name: "ROC",
+        project_name: "Jacksonville",
         age: 52,
         priority: "High",
         patient_name: "Sarah Lee",
@@ -96,8 +100,8 @@ export default function MainComponent() {
         mri_number: "MRN-1005",
         type_of_chart: "Fresh",
         target_date: "2025-10-22",
-        task_name: "Blood Test Panel",
-        project_name: "Hematology Survey",
+        task_name: "ROC(PT)",
+        project_name: "Making Memories",
         age: 41,
         priority: "Medium",
         patient_name: "David Brown",
@@ -106,10 +110,10 @@ export default function MainComponent() {
       {
         _id: "6",
         mri_number: "MRN-1006",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-25",
-        task_name: "Echo Cardiogram",
-        project_name: "Heart Study B",
+        task_name: "Recert",
+        project_name: "Project J",
         age: 60,
         priority: "High",
         patient_name: "Emily Davis",
@@ -120,8 +124,8 @@ export default function MainComponent() {
         mri_number: "MRN-1007",
         type_of_chart: "Fresh",
         target_date: "2025-10-28",
-        task_name: "PET Scan Evaluation",
-        project_name: "Cancer Research",
+        task_name: "Recert(OT)",
+        project_name: "Origin",
         age: 38,
         priority: "Low",
         patient_name: "Robert Wilson",
@@ -130,10 +134,10 @@ export default function MainComponent() {
       {
         _id: "8",
         mri_number: "MRN-1008",
-        type_of_chart: "Old",
+        type_of_chart: "RTC",
         target_date: "2025-10-30",
-        task_name: "EEG Monitoring",
-        project_name: "Neuro Study C",
+        task_name: "SN Assessment E",
+        project_name: "Metropolitan",
         age: 27,
         priority: "Medium",
         patient_name: "Olivia Martinez",
@@ -266,8 +270,7 @@ export default function MainComponent() {
           onClick={() => {
             setSelectedTask(item);
             viewModal.openModal();
-          }}
-        >
+          }}>
           {item?.mri_number}
         </p>
       ),
@@ -280,8 +283,7 @@ export default function MainComponent() {
         <div className="flex justify-center">
           <Badge
             className="text-xs"
-            color={item?.type_of_chart === "Fresh" ? "success" : "error"}
-          >
+            color={item?.type_of_chart === "Fresh" ? "success" : "error"}>
             {item.type_of_chart}
           </Badge>
         </div>
@@ -310,8 +312,7 @@ export default function MainComponent() {
           <Badge
             variant="light"
             color={item?.project_name ? "success" : "error"}
-            size="sm"
-          >
+            size="sm">
             {item?.project_name}
           </Badge>
         ) : (
@@ -363,8 +364,7 @@ export default function MainComponent() {
               className="w-4 h-4"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -380,8 +380,7 @@ export default function MainComponent() {
               className="w-4 h-4"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -400,8 +399,7 @@ export default function MainComponent() {
               setSelectedTask(null);
               setModalType("add");
               openModal();
-            }}
-          >
+            }}>
             <Plus className="h-5 w-5" />
             Create New Task
           </Button>
@@ -451,16 +449,13 @@ export default function MainComponent() {
                 label: "Type of Chart",
                 options: [
                   { label: "Fresh", value: "Fresh" },
-                  { label: "Old", value: "Old" },
+                  { label: "RTC", value: "RTC" },
                 ],
               },
               {
                 key: "project_name",
                 label: "Project Name",
-                options: [
-                  { label: "Project 1", value: "Project 1" },
-                  { label: "Project 2", value: "Project 2" },
-                ],
+                options: projectOptions,
               },
               {
                 key: "insurance",
@@ -492,8 +487,7 @@ export default function MainComponent() {
               setBulkModalType("assign");
               bulkModal.openModal();
             }}
-            disabled={!selectedItems || selectedItems.length === 0}
-          >
+            disabled={!selectedItems || selectedItems.length === 0}>
             <PackageIcon className="w-4 h-4" />
             Bulk Assign
           </Button>
@@ -506,7 +500,7 @@ export default function MainComponent() {
         setSelectedItems={setSelectedItems}
         selectedItems={selectedItems}
         actions={(item: any) => (
-          <>
+          <div className="flex items-center gap-2">
             <Tooltip content="Edit" position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
@@ -514,12 +508,31 @@ export default function MainComponent() {
                   setModalType("assign");
                   setSelectedTask(item);
                   mainModal.openModal();
-                }}
-              >
+                }}>
                 <UserPlus className="w-5 h-5" />
               </button>
             </Tooltip>
-          </>
+            <Tooltip content="Mark" position="left">
+              <button
+                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                onClick={() => {
+                  setSelectedTask(item);
+                  markModal.openModal();
+                }}>
+                <Flag className="w-5 h-5" />
+              </button>
+            </Tooltip>
+            <Tooltip content="Swap" position="left">
+              <button
+                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                onClick={() => {
+                  setSelectedTask(item);
+                  swapModal.openModal();
+                }}>
+                <ArrowLeftRight className="w-5 h-5" />
+              </button>
+            </Tooltip>
+          </div>
         )}
         loading={loading}
       />
@@ -564,6 +577,18 @@ export default function MainComponent() {
       <ViewModal
         isOpen={viewModal.isOpen}
         closeModal={viewModal.closeModal}
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
+      <MarkModal
+        isOpen={markModal.isOpen}
+        closeModal={markModal.closeModal}
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
+      <SwapModal
+        isOpen={swapModal.isOpen}
+        closeModal={swapModal.closeModal}
         selectedTask={selectedTask}
         setSelectedTask={setSelectedTask}
       />

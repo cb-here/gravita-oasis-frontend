@@ -30,10 +30,11 @@ export default function DownloadModal({
       isOpen={isOpen}
       onClose={handleClose}
       className={`max-w-[600px]
-       p-5 lg:p-10 m-4`}
-    >
+       p-5 lg:p-10 m-4`}>
       <div>
-        <h3 className="text-xl font-bold mb-4">Download XLS File</h3>
+        <h3 className="text-xl font-bold mb-4 text-heading">
+          Download XLS File
+        </h3>
         <div className="flex-1 overflow-auto">
           <div className="space-y-4">
             <p className="text-gray-700 dark:text-gray-300">
@@ -41,13 +42,17 @@ export default function DownloadModal({
             </p>
 
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
                 <DownloadIcon />
-                <span className="text-sm font-medium">{selectedItem?.name || "hello_word.xlsx"}</span>
+                <span className="text-sm font-medium ">
+                  {selectedItem?.name || "hello_word.xlsx"}
+                </span>
               </div>
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-2">
                 <p className="text-sm text-brand-500">Total Rows: {20}</p>
-                <p className="text-sm text-success-500">Successfully Created: {10}</p>
+                <p className="text-sm text-success-500">
+                  Successfully Created: {10}
+                </p>
                 <p className="text-sm text-error-500">Failed Tasks: {5}</p>
               </div>
             </div>

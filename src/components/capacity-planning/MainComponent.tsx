@@ -9,7 +9,6 @@ import { SubmittedDataTab } from "./tabs/SubmittedDataTab";
 import { AdminApprovalTab } from "./tabs/AdminApprovalTab";
 import { AdminHistoryTab } from "./tabs/AdminHistoryTab";
 
-// Define types for our data structures
 interface Team {
   _id: string;
   name: string;
@@ -668,14 +667,12 @@ export default function MainComponent() {
   useEffect(() => {
     if (selectedTeam && selectedTeam._id) {
       const teamMembersData = mockTeamMembers[selectedTeam._id] || [];
-      // Reset team members when team changes - you can customize this logic
-      // based on whether you want to preserve existing data or load new data
       if (teamMembersData.length > 0 && teamMembers.length === 0) {
         setTeamMembers(
           teamMembersData.map((m) => ({
             id: m.id,
             name: m.name,
-            role: "Coder", // Default role
+            role: "Coder",
             coding: 0,
             qa: 0,
             sampling: 0,
@@ -734,11 +731,11 @@ export default function MainComponent() {
         <SubmittedDataTab submissions={submissions} />
       ) : activeTab === "approvalQueue" ? (
         <AdminApprovalTab
-          submissions={submissions}
+          // submissions={submissions}
           onApprovalAction={handleApprovalAction}
         />
       ) : (
-        <AdminHistoryTab submissions={submissions} />
+        <AdminHistoryTab  />
       )}
     </div>
   );

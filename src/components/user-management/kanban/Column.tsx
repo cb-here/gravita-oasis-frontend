@@ -7,6 +7,7 @@ interface ColumnProps {
   status: string;
   moveTask: (dragIndex: number, hoverIndex: number) => void;
   changeTaskStatus: (taskId: string, newStatus: string) => void;
+  selectedRole?: string | null;
 }
 
 const Column: React.FC<ColumnProps> = ({
@@ -15,6 +16,7 @@ const Column: React.FC<ColumnProps> = ({
   status,
   moveTask,
   changeTaskStatus,
+  selectedRole,
 }) => {
   const getColumnHeaderColor = () => {
     switch (status) {
@@ -36,14 +38,12 @@ const Column: React.FC<ColumnProps> = ({
   return (
     <div className="flex flex-col dark:bg-gray-800 rounded-lg">
       <div
-        className={`border-t-4 ${getColumnHeaderColor()} rounded-t-lg bg-white dark:bg-gray-800 flex-none`}
-      >
+        className={`border-t-4 ${getColumnHeaderColor()} rounded-t-lg bg-white dark:bg-gray-800 flex-none`}>
         <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
           <h3 className="flex items-center gap-2 text-[18px] leading-[28px] font-semibold text-gray-900 dark:text-white ">
             {title}
             <span
-              className={`inline-flex items-center justify-center w-6 h-6 text-[12px]  tracking-[0%] font-medium rounded-full bg-brand-primary-100 dark:bg-brand-primary-900/20 text-brand-primary dark:text-brand-primary-300`}
-            >
+              className={`inline-flex items-center justify-center w-6 h-6 text-[12px]  tracking-[0%] font-medium rounded-full bg-brand-primary-100 dark:bg-brand-primary-900/20 text-brand-primary dark:text-brand-primary-300`}>
               {tasks.length}
             </span>
           </h3>
@@ -58,6 +58,7 @@ const Column: React.FC<ColumnProps> = ({
             moveTask={moveTask}
             showToggleButton={status === "workflow"}
             changeTaskStatus={changeTaskStatus}
+            selectedRole={selectedRole}
           />
         ))}
       </div>

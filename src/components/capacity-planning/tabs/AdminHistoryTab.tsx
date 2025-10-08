@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { format } from "date-fns";
-import { SubmissionRecord } from "../types/planning";
+import { SubmissionRecord, TeamMember } from "../types/planning";
 import FilterButton from "@/components/common/filter/FilterButton";
 import FilterModal from "@/components/common/filter/FilterModal";
 import Search from "@/components/common/Search";
@@ -8,14 +8,43 @@ import CommonTable, { HeaderType } from "@/components/common/CommonTable";
 import TableFooter from "@/components/common/TableFooter";
 import ExportButton from "@/components/ui/button/ExportButton";
 import { getStatusBadge } from "./AdminApprovalTab";
+import { formatDate } from "@/utils/formateDate";
+import AvatarText from "@/components/ui/avatar/AvatarText";
 
-interface AdminHistoryTabProps {
-  submissions: SubmissionRecord[];
-}
+const mockTeamMembers: TeamMember[] = [
+  {
+    id: 1,
+    name: "Member 1",
+    role: "Coder",
+    coding: 5,
+    qa: 0,
+    sampling: 2,
+    target: 5,
+    completed: 3,
+  },
+  {
+    id: 2,
+    name: "Member 2",
+    role: "QA",
+    coding: 0,
+    qa: 3,
+    sampling: 0,
+    target: 3,
+    completed: 2,
+  },
+  {
+    id: 3,
+    name: "Member 3",
+    role: "Coder/QA",
+    coding: 4,
+    qa: 2,
+    sampling: 1,
+    target: 6,
+    completed: 5,
+  },
+];
 
-export const AdminHistoryTab: React.FC<AdminHistoryTabProps> = ({
-  submissions,
-}) => {
+export const AdminHistoryTab: React.FC = () => {
   const initParams = {
     search: "",
     page: 1,
@@ -28,6 +57,167 @@ export const AdminHistoryTab: React.FC<AdminHistoryTabProps> = ({
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   // const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const submissions: SubmissionRecord[] = useMemo(
+    () => [
+      // Processed submissions for history
+      {
+        id: "4",
+        timestamp: new Date("2025-10-05T11:00:00"),
+        teamName: "Team Delta",
+        raisedBy: "Sarah Wilson",
+        teamMembers: mockTeamMembers,
+        metrics: {
+          totalCodingTasks: 15,
+          totalQACapacity: 6,
+          totalTargets: 21,
+          totalCompleted: 18,
+          overallPerformance: 85,
+          samplingBalance: -9,
+          isBalanced: false,
+        },
+        status: "approved",
+        adminApproval: {
+          approvedBy: "Admin User 1",
+          approvedAt: new Date("2025-10-06T15:00:00"),
+          comments: "Approved after capacity review. Proceed with adjustments.",
+        },
+      },
+      {
+        id: "5",
+        timestamp: new Date("2025-10-04T13:20:00"),
+        teamName: "Team Epsilon",
+        raisedBy: "Tom Brown",
+        teamMembers: [
+          {
+            id: 1,
+            name: "David",
+            role: "Coder",
+            coding: 8,
+            qa: 0,
+            sampling: 4,
+            target: 8,
+            completed: 5,
+          },
+        ],
+        metrics: {
+          totalCodingTasks: 8,
+          totalQACapacity: 0,
+          totalTargets: 8,
+          totalCompleted: 5,
+          overallPerformance: 62,
+          samplingBalance: -4,
+          isBalanced: false,
+        },
+        status: "rejected",
+        adminApproval: {
+          approvedBy: "Admin User 2",
+          approvedAt: new Date("2025-10-05T09:00:00"),
+          comments: "Rejected due to imbalanced sampling and QA capacity.",
+        },
+      },
+      {
+        id: "6",
+        timestamp: new Date("2025-10-06T16:45:00"),
+        teamName: "Team Zeta",
+        raisedBy: "Lisa Davis",
+        teamMembers: mockTeamMembers,
+        metrics: {
+          totalCodingTasks: 12,
+          totalQACapacity: 7,
+          totalTargets: 19,
+          totalCompleted: 19,
+          overallPerformance: 100,
+          samplingBalance: -5,
+          isBalanced: false,
+        },
+        status: "approved",
+        adminApproval: {
+          approvedBy: "Admin User 1",
+          approvedAt: new Date("2025-10-07T10:30:00"),
+          comments: "Fully approved. Excellent performance metrics.",
+        },
+      },
+      {
+        id: "7",
+        timestamp: new Date("2025-10-03T09:15:00"),
+        teamName: "Team Alpha",
+        raisedBy: "John Doe",
+        teamMembers: [
+          {
+            id: 1,
+            name: "Alice",
+            role: "Coder",
+            coding: 10,
+            qa: 0,
+            sampling: 3,
+            target: 10,
+            completed: 7,
+          },
+        ],
+        metrics: {
+          totalCodingTasks: 10,
+          totalQACapacity: 0,
+          totalTargets: 10,
+          totalCompleted: 7,
+          overallPerformance: 70,
+          samplingBalance: -3,
+          isBalanced: false,
+        },
+        status: "rejected",
+        adminApproval: {
+          approvedBy: "Admin User 3",
+          approvedAt: new Date("2025-10-04T14:20:00"),
+          comments: "Rejected - insufficient QA capacity for sampling needs.",
+        },
+      },
+      {
+        id: "8",
+        timestamp: new Date("2025-10-02T12:00:00"),
+        teamName: "Team Beta",
+        raisedBy: "Jane Smith",
+        teamMembers: [
+          {
+            id: 1,
+            name: "Bob",
+            role: "QA",
+            coding: 0,
+            qa: 5,
+            sampling: 0,
+            target: 5,
+            completed: 4,
+          },
+          {
+            id: 2,
+            name: "Carol",
+            role: "Coder/QA",
+            coding: 2,
+            qa: 3,
+            sampling: 1,
+            target: 5,
+            completed: 3,
+          },
+        ],
+        metrics: {
+          totalCodingTasks: 2,
+          totalQACapacity: 8,
+          totalTargets: 10,
+          totalCompleted: 7,
+          overallPerformance: 70,
+          samplingBalance: 7,
+          isBalanced: true,
+        },
+        status: "approved",
+        adminApproval: {
+          approvedBy: "Admin User 2",
+          approvedAt: new Date("2025-10-03T16:45:00"),
+          comments:
+            "Approved with balanced workflow. Monitor sampling progress.",
+        },
+      },
+    ],
+    []
+  );
 
   // Filter only processed submissions
   const processedSubmissions = submissions.filter(
@@ -156,19 +346,23 @@ export const AdminHistoryTab: React.FC<AdminHistoryTabProps> = ({
     },
     {
       label: "Raised By",
-      render: (item) => item.raisedBy,
-      width: 180,
+      render: (item) => (
+        <div className="flex gap-2 items-center">
+          <AvatarText name={item.raisedBy} />
+          <span>{item.raisedBy}</span>
+        </div>
+      ),
     },
     {
       label: "Submitted",
-      render: (item) => format(item.timestamp, "MMM dd, yyyy HH:mm"),
+      render: (item) => formatDate(item.timestamp, true),
       width: 180,
     },
     {
       label: "Decision Date",
       render: (item) =>
         item.adminApproval
-          ? format(item.adminApproval.approvedAt, "MMM dd, yyyy HH:mm")
+          ? formatDate(item.adminApproval.approvedAt, true)
           : "-",
       width: 180,
     },
@@ -187,8 +381,7 @@ export const AdminHistoryTab: React.FC<AdminHistoryTabProps> = ({
       render: (item) => (
         <span
           className="max-w-xs truncate block"
-          title={item.adminApproval?.comments}
-        >
+          title={item.adminApproval?.comments}>
           {item.adminApproval?.comments || "-"}
         </span>
       ),

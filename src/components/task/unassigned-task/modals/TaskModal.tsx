@@ -10,6 +10,7 @@ import SearchableSelect from "@/components/form/SearchableSelect";
 import Tabs from "@/components/common/tabs/Tabs";
 import { FileTextIcon, UploadCloud, Download, X, FileUp } from "lucide-react";
 import DateTimePicker from "@/components/common/DateTimePicker";
+import { projectOptions } from "@/components/user-management/user-list/MainComponent";
 
 const priorityOptions = [
   { value: "low", label: "Low", color: "text-green-600" },
@@ -52,12 +53,6 @@ const taskNameOptions = [
   { value: "SN_ASSESSMENT_E", label: "SN Assessment E" },
 ];
 
-const projectOptions = [
-  { value: "project_a", label: "Project Alpha" },
-  { value: "project_b", label: "Project Beta" },
-  { value: "project_c", label: "Project Gamma" },
-  { value: "project_d", label: "Project Delta" },
-];
 
 interface TaskFormData {
   mrn: string;

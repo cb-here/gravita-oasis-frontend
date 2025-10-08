@@ -6,6 +6,8 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Column from "./Column";
 import SearchableSelect from "@/components/form/SearchableSelect";
 import Search from "@/components/common/Search";
+import Switch from "@/components/form/switch/Switch";
+import Label from "@/components/form/Label";
 
 export const initialTasks: any[] = [
   {
@@ -176,6 +178,7 @@ const KanbanBoard: React.FC = () => {
   };
 
   const [activeTab, setActiveTab] = useState("workflow");
+  const [selectedRole, setSelectedRole] = useState<string | null>("coderqa");
 
   const tabGroups = [
     { key: "workflow", name: "Workflow", count: 4 },
@@ -199,16 +202,14 @@ const KanbanBoard: React.FC = () => {
                     activeTab === group.key
                       ? "text-gray-900 dark:text-white bg-white dark:bg-gray-800"
                       : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
+                  }`}>
                   {group.name}
                   <span
                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium leading-normal group-hover:bg-brand-50 group-hover:text-brand-500 dark:group-hover:bg-brand-500/15 dark:group-hover:text-brand-400 ${
                       activeTab === group.key
                         ? "text-brand-500 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/15"
                         : "bg-white dark:bg-white/[0.03]"
-                    }`}
-                  >
+                    }`}>
                     {group.count}
                   </span>
                 </button>
@@ -242,6 +243,36 @@ const KanbanBoard: React.FC = () => {
             </div>
           </div>
         </div>
+        <div className="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 mt-3 w-fit">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={selectedRole === "coderqa"}
+              onChange={() =>
+                setSelectedRole(selectedRole === "coderqa" ? null : "coderqa")
+              }
+            />
+            <Label htmlFor="coderqa-switch">Coder/QA</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={selectedRole === "coder"}
+              onChange={() =>
+                setSelectedRole(selectedRole === "coder" ? null : "coder")
+              }
+            />
+            <Label htmlFor="coder-switch">Coder</Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={selectedRole === "qa"}
+              onChange={() =>
+                setSelectedRole(selectedRole === "qa" ? null : "qa")
+              }
+            />
+            <Label htmlFor="qa-switch">QA</Label>
+          </div>
+        </div>
       </div>
 
       <DndProvider backend={HTML5Backend}>
@@ -254,6 +285,7 @@ const KanbanBoard: React.FC = () => {
                 status="workflow"
                 moveTask={moveTask}
                 changeTaskStatus={changeTaskStatus}
+                selectedRole={selectedRole}
               />
             </div>
             <div className="w-[350px] flex-shrink-0">
@@ -263,6 +295,7 @@ const KanbanBoard: React.FC = () => {
                 status="onHold"
                 moveTask={moveTask}
                 changeTaskStatus={changeTaskStatus}
+                selectedRole={selectedRole}
               />
             </div>
             <div className="w-[350px] flex-shrink-0">
@@ -272,6 +305,7 @@ const KanbanBoard: React.FC = () => {
                 status="rehold"
                 moveTask={moveTask}
                 changeTaskStatus={changeTaskStatus}
+                selectedRole={selectedRole}
               />
             </div>
             <div className="w-[350px] flex-shrink-0">
@@ -281,6 +315,7 @@ const KanbanBoard: React.FC = () => {
                 status="underQA"
                 moveTask={moveTask}
                 changeTaskStatus={changeTaskStatus}
+                selectedRole={selectedRole}
               />
             </div>
             <div className="w-[350px] flex-shrink-0">
@@ -290,6 +325,7 @@ const KanbanBoard: React.FC = () => {
                 status="completed"
                 moveTask={moveTask}
                 changeTaskStatus={changeTaskStatus}
+                selectedRole={selectedRole}
               />
             </div>
           </div>

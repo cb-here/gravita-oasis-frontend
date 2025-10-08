@@ -15,6 +15,7 @@ type DateTimePickerProps = {
   onlyPast?: boolean;
   maxRangeDays?: number | null;
   error?: boolean;
+  className?: string;
 };
 
 export default function DateTimePicker({
@@ -26,6 +27,7 @@ export default function DateTimePicker({
   onlyPast = false,
   maxRangeDays = null,
   error,
+  className,
 }: DateTimePickerProps) {
   const [showCalender, setShowCalender] = useState(false);
   const calendarRef = useRef<HTMLDivElement | null>(null);
@@ -124,19 +126,18 @@ export default function DateTimePicker({
             : ""
         }
         readOnly
-        className={`text-sm h-11 w-full rounded-lg border appearance-none px-4 py-2.5 shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900  dark:placeholder:text-white/30 bg-transparent text-gray-800 focus:border-brand-300 focus:ring-brand-500/20 dark:text-white/90  dark:focus:border-brand-800 ${
+        className={`text-sm h-10 w-full rounded-lg border appearance-none px-4 py-2.5 shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900  dark:placeholder:text-white/30 bg-transparent text-gray-800 focus:border-brand-300 focus:ring-brand-500/20 dark:text-white/90  dark:focus:border-brand-800 ${
           error
             ? "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:text-error-400 dark:border-error-500 dark:focus:border-error-800"
             : "border-gray-300 dark:border-gray-700"
-        }`}
+        } ${className}`}
       />
 
       {value && (
         <button
           type="button"
           onClick={() => onChange(mode === "range" ? [null, null] : null)}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-        >
+          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
           <X className="w-5 h-5" />
         </button>
       )}
@@ -154,8 +155,7 @@ export default function DateTimePicker({
               zIndex: 99999,
               width: inputWidth ?? "auto",
             }}
-            onClick={(e) => e.stopPropagation()}
-          >
+            onClick={(e) => e.stopPropagation()}>
             {mode === "range" ? (
               <DatePicker
                 onChange={handleChange}

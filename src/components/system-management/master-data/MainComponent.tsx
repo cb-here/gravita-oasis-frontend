@@ -8,6 +8,7 @@ import InsuranceType from "./tabs/InsuranceType";
 import TeamManagement from "./tabs/TeamManagement";
 import RoleManagement from "./tabs/RoleManagement";
 import ErrorManagement from "./tabs/ErrorManagement";
+import HoldReasons from "./tabs/HoldReasons";
 
 export const tagsColors: StatusColor[] = [
   "primary",
@@ -51,6 +52,7 @@ export default function MainComponent() {
     { name: "Team Management", key: "Team" },
     { name: "Role Management", key: "Role" },
     { name: "Error Category Management", key: "Error" },
+    { name: "Hold Reasons", key: "Hold" },
   ];
 
   const handleTabClick = (tab: any) => {
@@ -80,6 +82,8 @@ export default function MainComponent() {
         <RoleManagement />
       ) : activeTab === "Error" ? (
         <ErrorManagement />
+      ) : activeTab === "Hold" ? (
+        <HoldReasons />
       ) : null}
     </div>
   );

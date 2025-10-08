@@ -51,6 +51,14 @@ export const getTagsColor = (tag: string | { value: string }): StatusColor => {
   return tagsColors[index];
 };
 
+export const projectOptions = [
+  { label: "Project J", value: "Project J" },
+  { label: "Origin", value: "Origin" },
+  { label: "Metropolitan", value: "Metropolitan" },
+  { label: "Jacksonville", value: "Jacksonville" },
+  { label: "Making Memories", value: "Making Memories" },
+];
+
 export default function MainComponent() {
   const mainModel = useModal();
 
@@ -311,8 +319,7 @@ export default function MainComponent() {
                 ? "warning"
                 : "info"
             }
-            variant="light"
-          >
+            variant="light">
             {row?.status ?? "Unknown"}
           </Badge>
         </div>
@@ -331,8 +338,7 @@ export default function MainComponent() {
                 variant="light"
                 color={`${getTagsColor(item?.name || item || "")}`}
                 className="text-xs"
-                key={item?._id || item?.name || item}
-              >
+                key={item?._id || item?.name || item}>
                 {item?.name || item || ""}
               </Badge>
             ))}
@@ -364,8 +370,7 @@ export default function MainComponent() {
             setModalType("add");
             mainModel.openModal();
           }}
-          className="sm:w-auto w-full"
-        >
+          className="sm:w-auto w-full">
           <PlusIcon className="h-4 w-4" />
           Add New User
         </Button>
@@ -406,10 +411,7 @@ export default function MainComponent() {
               {
                 key: "project",
                 label: "Project",
-                options: [
-                  { label: "Project 1", value: "Project 1" },
-                  { label: "Project 2", value: "Project 2" },
-                ],
+                options: projectOptions,
               },
               {
                 key: "team",
@@ -454,8 +456,7 @@ export default function MainComponent() {
                   setModalType("read");
                   mainModel.openModal();
                 }}
-                className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary"
-              >
+                className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary">
                 <InfoIcon />
               </button>
             </Tooltip>
@@ -466,8 +467,7 @@ export default function MainComponent() {
                   setModalType("edit");
                   setSelectedUserList(item);
                   mainModel.openModal();
-                }}
-              >
+                }}>
                 <PencilIcon />
               </button>
             </Tooltip>
@@ -478,8 +478,7 @@ export default function MainComponent() {
                   setModalType("delete");
                   setSelectedUserList(item);
                   mainModel.openModal();
-                }}
-              >
+                }}>
                 <TrashBinIcon />
               </button>
             </Tooltip>

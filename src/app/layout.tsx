@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import ToastProvider from "@/components/ToastProvider";
 import { TimerProvider } from "@/lib/contexts/TimerContext";
 import FloatingTimer from "@/components/common/FloatingTimer";
+import SupportPopupForm from "@/components/support-tickets/modals/SupportPopupForm";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
           <TimerProvider>
             <SidebarProvider>
               {children}
+              <SupportPopupForm />
               <FloatingTimer />
             </SidebarProvider>
           </TimerProvider>

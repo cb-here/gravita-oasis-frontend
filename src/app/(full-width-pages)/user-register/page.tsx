@@ -392,8 +392,7 @@ export default function UserRegistrationForm() {
                         ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
                         : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
                     }`}
-                    onClick={() => handleSelect("gender", g)}
-                  >
+                    onClick={() => handleSelect("gender", g)}>
                     {g}
                   </button>
                 ))}
@@ -414,8 +413,7 @@ export default function UserRegistrationForm() {
                         ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
                         : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
                     }`}
-                    onClick={() => handleSelect("maritalStatus", m)}
-                  >
+                    onClick={() => handleSelect("maritalStatus", m)}>
                     {m}
                   </button>
                 ))}
@@ -443,8 +441,7 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handleNext}
-          >
+            onClick={handleNext}>
             Next
           </Button>
         </div>
@@ -527,8 +524,7 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handlePrevious}
-          >
+            onClick={handlePrevious}>
             Previous
           </Button>
           <Button
@@ -544,8 +540,7 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handleNext}
-          >
+            onClick={handleNext}>
             Next
           </Button>
         </div>
@@ -572,16 +567,14 @@ export default function UserRegistrationForm() {
         />
         <div
           className="flex flex-col items-center justify-center py-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-brand-300 dark:hover:border-brand-700 transition-all backdrop-blur-sm"
-          onClick={() => handleFileClick(name)}
-        >
+          onClick={() => handleFileClick(name)}>
           {form[name] ? (
             <div className="text-center">
               <svg
                 className="w-10 h-10 text-green-500 mx-auto mb-2"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+                viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -602,8 +595,7 @@ export default function UserRegistrationForm() {
                 className="w-10 h-10 text-brand-500 mb-3"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+                viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -665,16 +657,14 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handlePrevious}
-          >
+            onClick={handlePrevious}>
             Previous
           </Button>
           <Button
             variant="gradient"
             size="md"
             onClick={handleSubmit}
-            disabled={!isStepValid(2)}
-          >
+            disabled={!isStepValid(2)}>
             Submit
           </Button>
         </div>
@@ -722,7 +712,7 @@ export default function UserRegistrationForm() {
             <Image
               width={200}
               height={42}
-              src="/images/logo/auth-logo.svg"
+              src="/images/logo/app-logo.png"
               alt="Logo"
               className="text-gray-900 dark:text-gray-100"
             />
@@ -753,15 +743,13 @@ export default function UserRegistrationForm() {
                           : idx < step
                           ? "bg-brand-500 text-white shadow-md"
                           : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 shadow-sm"
-                      }`}
-                    >
+                      }`}>
                       {idx < step ? (
                         <svg
                           className="w-5 h-5 sm:w-6 sm:h-6"
                           fill="none"
                           stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                          viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -776,8 +764,7 @@ export default function UserRegistrationForm() {
                               className="w-5 h-5 sm:w-6 sm:h-6"
                               fill="none"
                               stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
+                              viewBox="0 0 24 24">
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -791,8 +778,7 @@ export default function UserRegistrationForm() {
                               className="w-5 h-5 sm:w-6 sm:h-6"
                               fill="none"
                               stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
+                              viewBox="0 0 24 24">
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -806,8 +792,7 @@ export default function UserRegistrationForm() {
                               className="w-5 h-5 sm:w-6 sm:h-6"
                               fill="none"
                               stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
+                              viewBox="0 0 24 24">
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -824,16 +809,14 @@ export default function UserRegistrationForm() {
                         idx <= step
                           ? "text-brand-500 dark:text-brand-400 font-semibold"
                           : "text-gray-400 dark:text-gray-500"
-                      }`}
-                    >
+                      }`}>
                       {s.label}
                     </span>
                   </div>
                   {idx < steps.length - 1 && (
                     <div
                       className="flex-1 mx-2 sm:mx-4"
-                      style={{ maxWidth: "120px" }}
-                    >
+                      style={{ maxWidth: "120px" }}>
                       <div
                         className={`h-1 rounded-full transition-all duration-500 ${
                           idx < step
