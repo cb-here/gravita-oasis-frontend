@@ -1,8 +1,26 @@
 "use client";
 import { Task } from "@/components/task/task-list/types/Task";
 import TaskLane from "@/components/task/task-list/TaskLane";
-import TaskHeader from "@/components/task/TaskHeader";
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import Button from "@/components/ui/button/Button";
+import FilterButton from "@/components/common/filter/FilterButton";
+import { Layout, List, PlusIcon } from "lucide-react";
+import { useModal } from "@/hooks/useModal";
+import Tabs from "@/components/common/tabs/Tabs";
+import AddTaskModal from "./modals/AddTaskModal";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import Column from "../kanban/Column";
+
+const mapToKanbanTask = (task: any) => ({
+  id: task.id,
+  title: task.title,
+  dueDate: task.dueDate,
+  comments: task.commentCount,
+  assignee: task.userAvatar,
+  status: task.status === "in-progress" ? "inProgress" : task.status,
+  category: { name: task.category, color: "default" },
+});
 
 const initialTasks: Task[] = [
   {
@@ -128,6 +146,7 @@ const initialTasks: Task[] = [
 const lanes = ["todo", "in-progress", "completed"];
 
 export default function TaskList() {
+  const { isOpen, openModal, closeModal } = useModal();
   const [tasks, setTasks] = useState<Task[]>(
     initialTasks.map((task) => ({
       ...task,
@@ -135,6 +154,56 @@ export default function TaskList() {
     }))
   );
   const [dragging, setDragging] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("All");
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+
+  const todoCount = useMemo(
+    () => tasks.filter((task) => task.status === "todo").length,
+    [tasks]
+  );
+  const inProgressCount = useMemo(
+    () => tasks.filter((task) => task.status === "in-progress").length,
+    [tasks]
+  );
+  const completedCount = useMemo(
+    () => tasks.filter((task) => task.status === "completed").length,
+    [tasks]
+  );
+
+  const taskGroups = useMemo(
+    () => [
+      { name: "All Tasks", key: "All", count: tasks.length },
+      { name: "To do", key: "Todo", count: todoCount },
+      { name: "In Progress", key: "InProgress", count: inProgressCount },
+      { name: "Completed", key: "Completed", count: completedCount },
+    ],
+    [tasks, todoCount, inProgressCount, completedCount]
+  );
+
+  const getVisibleLanes = () => {
+    switch (activeTab) {
+      case "All":
+        return lanes;
+      case "Todo":
+        return ["todo"];
+      case "InProgress":
+        return ["in-progress"];
+      case "Completed":
+        return ["completed"];
+      default:
+        return lanes;
+    }
+  };
+
+  const visibleLanes = getVisibleLanes();
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  const handleViewToggle = () => {
+    setViewMode((prev) => (prev === "list" ? "kanban" : "list"));
+  };
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -155,7 +224,6 @@ export default function TaskList() {
       task.id === dragging ? { ...task, status } : task
     );
 
-    // Sort tasks within the same status
     const statusTasks = updatedTasks.filter((task) => task.status === status);
     const otherTasks = updatedTasks.filter((task) => task.status !== status);
 
@@ -187,23 +255,130 @@ export default function TaskList() {
       )
     );
   };
+
+  const moveTaskInKanban = useCallback(
+    (dragIndex: number, hoverIndex: number, status: string) => {
+      setTasks((prevTasks) => {
+        const normalizedStatus =
+          status === "inProgress" ? "in-progress" : status;
+        const statusTasks = prevTasks.filter(
+          (task) => task.status === normalizedStatus
+        );
+        const otherTasks = prevTasks.filter(
+          (task) => task.status !== normalizedStatus
+        );
+
+        const draggedTask = statusTasks[dragIndex];
+        if (draggedTask) {
+          statusTasks.splice(dragIndex, 1);
+          statusTasks.splice(hoverIndex, 0, draggedTask);
+        }
+
+        return [...otherTasks, ...statusTasks];
+      });
+    },
+    []
+  );
+
+  const changeTaskStatusInKanban = useCallback(
+    (taskId: string, newStatus: string) => {
+      const normalizedStatus =
+        newStatus === "inProgress" ? "in-progress" : newStatus;
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? { ...task, status: normalizedStatus } : task
+        )
+      );
+    },
+    []
+  );
+
+  const kanbanTasks = useMemo(() => tasks.map(mapToKanbanTask), [tasks]);
+
+  const getGridClasses = (numLanes: number) => {
+    const baseClasses =
+      "border-t border-gray-200 mt-7 dark:border-white/[0.05] sm:mt-0";
+    if (numLanes === 1) {
+      return `grid grid-cols-1 ${baseClasses}`;
+    }
+    if (numLanes === 2) {
+      return `grid grid-cols-1 divide-x divide-gray-200 dark:divide-white/[0.05] ${baseClasses} sm:grid-cols-2`;
+    }
+    return `grid grid-cols-1 divide-x divide-gray-200 dark:divide-white/[0.05] ${baseClasses} sm:grid-cols-2 xl:grid-cols-3`;
+  };
+
+  const renderListView = () => (
+    <>
+      <div className="p-4 space-y-8 border-t border-gray-200 mt-7 dark:border-gray-800 sm:mt-0 xl:p-6">
+        {visibleLanes.map((lane) => (
+          <TaskLane
+            key={lane}
+            lane={lane}
+            tasks={tasks.filter((task) => task.status === lane)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, lane)}
+            onDragStart={handleDragStart}
+          />
+        ))}
+      </div>
+      <AddTaskModal isOpen={isOpen} closeModal={closeModal} />
+    </>
+  );
+
+  const renderKanbanView = () => (
+    <DndProvider backend={HTML5Backend}>
+      <div className={getGridClasses(visibleLanes.length)}>
+        {visibleLanes.map((lane) => {
+          const kanbanStatus = lane === "in-progress" ? "inProgress" : lane;
+          const title =
+            lane === "todo"
+              ? "To Do"
+              : lane === "in-progress"
+              ? "In Progress"
+              : "Completed";
+          return (
+            <Column
+              key={lane}
+              title={title}
+              tasks={kanbanTasks.filter((task) => task.status === kanbanStatus)}
+              status={kanbanStatus}
+              moveTask={moveTaskInKanban}
+              changeTaskStatus={changeTaskStatusInKanban}
+            />
+          );
+        })}
+      </div>
+      <AddTaskModal isOpen={isOpen} closeModal={closeModal} />
+    </DndProvider>
+  );
+
   return (
     <div>
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-        <TaskHeader />
-
-        <div className="p-4 space-y-8 border-t border-gray-200 mt-7 dark:border-gray-800 sm:mt-0 xl:p-6">
-          {lanes.map((lane) => (
-            <TaskLane
-              key={lane}
-              lane={lane}
-              tasks={tasks.filter((task) => task.status === lane)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, lane)}
-              onDragStart={handleDragStart}
-            />
-          ))}
+        <div className="flex items-center justify-between px-4 py-5 xl:px-6 xl:py-6">
+          <Tabs
+            tabGroups={taskGroups}
+            setSelectedTabGroup={handleTabChange}
+            selectedTabGroup={activeTab}
+          />
+          <div className="flex items-center gap-2">
+            <FilterButton onClick={() => {}} />
+            <Button size="sm" onClick={handleViewToggle} variant="primary">
+              {viewMode === "list" ? (
+                <Layout className="h-5 w-5" />
+              ) : (
+                <List className="h-5 w-5" />
+              )}
+              {viewMode === "list" ? "Kanban View" : "List View"}
+            </Button>
+            <Button size="sm" onClick={openModal}>
+              <PlusIcon className="h-5 w-5" />
+              Add New Task
+            </Button>
+          </div>
         </div>
+
+        {viewMode === "list" ? renderListView() : renderKanbanView()}
       </div>
     </div>
   );

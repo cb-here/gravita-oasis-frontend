@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Task, DropResult } from "./types/types";
 import Image from "next/image";
+import Badge from "@/components/ui/badge/Badge";
 
 interface TaskItemProps {
   task: Task;
@@ -81,8 +82,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       ref={ref}
       style={{ opacity }}
       className="relative p-5 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5"
-      data-handler-id={handlerId}
-    >
+      data-handler-id={handlerId}>
       <div className="space-y-4">
         <div>
           <h4 className="mb-5 mr-10 text-base text-gray-800 dark:text-white/90">
@@ -112,8 +112,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 height="16"
                 viewBox="0 0 16 16"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -130,8 +129,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 height="18"
                 viewBox="0 0 18 18"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M9 15.6343C12.6244 15.6343 15.5625 12.6961 15.5625 9.07178C15.5625 5.44741 12.6244 2.50928 9 2.50928C5.37563 2.50928 2.4375 5.44741 2.4375 9.07178C2.4375 10.884 3.17203 12.5246 4.35961 13.7122L2.4375 15.6343H9Z"
                   stroke=""
@@ -149,8 +147,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   height="16"
                   viewBox="0 0 16 16"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                  xmlns="http://www.w3.org/2000/svg">
                   <path
                     fillRule="evenodd"
                     clipRule="evenodd"
@@ -162,13 +159,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
               </span>
             )}
           </div>
-          <span
-            className={`mt-3 inline-flex rounded-full px-2 py-0.5 text-theme-xs font-medium ${getCategoryStyles(
-              task.category.color
-            )}`}
-          >
-            {task.category.name}
-          </span>
+          {task?.category?.name && (
+            <Badge
+              color={getCategoryStyles(task.category.color)}
+              className={`mt-3 ext-theme-xs font-medium `}>
+              {task.category.name}
+            </Badge>
+          )}
         </div>
       </div>
       <div className="h-6 absolute top-5 right-5 top w-full max-w-6 overflow-hidden rounded-full border-[0.5px] border-gray-200 dark:border-gray-800">
@@ -181,17 +178,17 @@ const TaskItem: React.FC<TaskItemProps> = ({
 const getCategoryStyles = (color: string) => {
   switch (color) {
     case "error":
-      return "bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400";
+      return "error";
     case "success":
-      return "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-400";
+      return "success";
     case "brand":
-      return "bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400";
+      return "primary";
     case "orange":
-      return "bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400";
+      return "warning";
     case "purple":
-      return "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400";
+      return "purple";
     default:
-      return "bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-400";
+      return "dark";
   }
 };
 

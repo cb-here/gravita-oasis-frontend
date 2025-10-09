@@ -17,6 +17,7 @@ import {
   CalendarClock,
   CogIcon,
   ListChecks,
+  ListTodo,
   Tickets,
   UserCogIcon,
   Users2,
@@ -92,6 +93,11 @@ const navItems: NavItem[] = [
     icon: <Tickets className="h-5 w-5" />,
     name: "Support Tickets",
     path: "/support-tickets",
+  },
+  {
+    icon: <ListTodo className="h-5 w-5" />,
+    name: "To Do",
+    path: "/to-do",
   },
 ];
 
@@ -370,8 +376,8 @@ const AppSidebar: React.FC = () => {
                 className="hidden dark:block"
                 src="/images/logo/app-logo.png"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={600}
+                height={75}
               />
             </>
           ) : (
