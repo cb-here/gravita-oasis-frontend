@@ -21,60 +21,129 @@ export default function HoldReasons() {
   const mainModal = useModal();
 
   const [reasons, setReasons] = useState<any>({
-    totalRecords: 8,
+    totalRecords: 18,
     Reasons: [
       {
         id: 1,
-        fullName: "Awaiting Customer Response",
-        description: "The customer has not replied to recent communication.",
+        fullName: "Vinod’s Open",
+        description:
+          "Task is currently assigned to Vinod and is being reviewed or worked on.",
         status: "Active",
       },
       {
         id: 2,
-        fullName: "Missing Documentation",
+        fullName: "Under QA",
         description:
-          "Required documents or verification details are pending from the customer.",
-        status: "Active",
+          "The task is under Quality Assurance review to ensure accuracy.",
+        status: "Pending",
       },
       {
         id: 3,
-        fullName: "Payment Pending",
+        fullName: "Ready for Vinod",
         description:
-          "The customer has not completed the payment or deposit required to proceed.",
+          "Task is completed by the previous stage and is ready for Vinod’s review.",
         status: "Active",
       },
       {
         id: 4,
-        fullName: "Internal Review Required",
-        description:
-          "The case is under review by compliance or management before moving forward.",
-        status: "Pending",
+        fullName: "Pre-Coding Review",
+        description: "The case requires review before being sent for coding.",
+        status: "Active",
       },
       {
         id: 5,
-        fullName: "Technical Issue",
+        fullName: "Rushil",
         description:
-          "A system or integration issue is preventing further processing.",
+          "Task is assigned to Rushil for next action or validation.",
         status: "Active",
       },
       {
         id: 6,
-        fullName: "Awaiting Third-Party Approval",
+        fullName: "Need NOC",
         description:
-          "Waiting for confirmation or approval from an external vendor or partner.",
+          "Awaiting No Objection Certificate (NOC) or equivalent clearance before proceeding.",
         status: "Pending",
       },
       {
         id: 7,
-        fullName: "Customer Requested Hold",
-        description: "The customer has asked to pause the process temporarily.",
-        status: "Inactive",
+        fullName: "Need Eval",
+        description:
+          "Evaluation details or results are missing and required for further progress.",
+        status: "Pending",
       },
       {
         id: 8,
-        fullName: "Resource Unavailable",
+        fullName: "High Priority",
         description:
-          "Internal resource or staff availability is delaying the process.",
+          "This case has been marked as urgent and needs immediate attention.",
+        status: "Active",
+      },
+      {
+        id: 9,
+        fullName: "Dx Verify",
+        description:
+          "Diagnosis verification is required before coding or finalizing documentation.",
+        status: "Pending",
+      },
+      {
+        id: 10,
+        fullName: "Medication Queries",
+        description:
+          "Clarification needed regarding prescribed or recorded medications.",
+        status: "Pending",
+      },
+      {
+        id: 11,
+        fullName: "Missing Chart Info",
+        description:
+          "Important patient or case information is missing from the chart.",
+        status: "Pending",
+      },
+      {
+        id: 12,
+        fullName: "Clerical Follow up",
+        description:
+          "Clerical team follow-up required to confirm or update details.",
+        status: "Active",
+      },
+      {
+        id: 13,
+        fullName: "Awaiting Clinician Response",
+        description:
+          "Waiting for response or clarification from the clinician or physician.",
+        status: "Pending",
+      },
+      {
+        id: 14,
+        fullName: "Need Nurse",
+        description: "Input or confirmation required from the nursing team.",
+        status: "Pending",
+      },
+      {
+        id: 15,
+        fullName: "Audit Completed",
+        description: "The case has successfully passed the audit process.",
+        status: "Inactive",
+      },
+      {
+        id: 16,
+        fullName: "Orders/Foley and Other Notes",
+        description:
+          "Pending review of orders, Foley details, or other relevant notes.",
+        status: "Pending",
+      },
+      {
+        id: 17,
+        fullName: "Patient Discharged",
+        description:
+          "The patient has been discharged; awaiting final documentation or closure.",
+        status: "Inactive",
+      },
+      {
+        id: 18,
+        fullName: "Coding Completed",
+        description:
+          "All coding for this case has been completed and finalized.",
         status: "Active",
       },
     ],
@@ -176,6 +245,25 @@ export default function HoldReasons() {
     }
   };
 
+  const handleToggleStatus = (id: number) => {
+    setReasons((prev: any) => {
+      const updatedReasons = prev.Reasons.map((reason: any) =>
+        reason.id === id
+          ? {
+              ...reason,
+              status:
+                reason.status === "Active"
+                  ? "Inactive"
+                  : reason.status === "Inactive"
+                  ? "Active"
+                  : "Active",
+            }
+          : reason
+      );
+      return { ...prev, Reasons: updatedReasons };
+    });
+  };
+
   const headers = [
     {
       label: "Name",
@@ -274,7 +362,10 @@ export default function HoldReasons() {
         data={reasons?.Reasons || []}
         actions={(item: any) => (
           <>
-            <Switch />
+            <Switch
+              checked={item.status === "Active"}
+              onChange={() => handleToggleStatus(item.id)}
+            />
             <Tooltip content="Edit" position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"

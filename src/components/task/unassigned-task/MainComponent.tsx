@@ -12,7 +12,14 @@ import ExportButton from "@/components/ui/button/ExportButton";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
 import React, { useState, useRef } from "react";
-import { ArrowLeftRight, Flag, PackageIcon, Plus, UserPlus } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Flag,
+  MoreHorizontal,
+  PackageIcon,
+  Plus,
+  UserPlus,
+} from "lucide-react";
 import BulkTaskModal from "../bulkTaskModals/BulkTaskModal";
 import UnassignedModal from "../assigned-task/modals/UnassignedModal";
 import TaskModal from "./modals/TaskModal";
@@ -22,6 +29,13 @@ import { formatDate } from "@/utils/formateDate";
 import { projectOptions } from "@/components/user-management/user-list/MainComponent";
 import MarkModal from "./modals/MarkModal";
 import SwapModal from "./modals/SwapModal";
+import { PencilIcon } from "@/icons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const getPriorityColor = (
   priority: string
@@ -173,6 +187,7 @@ export default function MainComponent() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [modalType, setModalType] = useState<any>("");
+  const [swapModelType, setSwapModelType] = useState<any>("");
   const [bulkModalType, setBulkModalType] = useState<any>("");
   const [selectedItems, setSelectedItems] = useState<any>();
   const [exportLoading, setExportLoading] = useState(false);
@@ -487,9 +502,23 @@ export default function MainComponent() {
               setBulkModalType("assign");
               bulkModal.openModal();
             }}
-            disabled={!selectedItems || selectedItems.length === 0}>
+            disabled={
+              !selectedItems || Object.keys(selectedItems).length === 0
+            }>
             <PackageIcon className="w-4 h-4" />
             Bulk Assign
+          </Button>
+          <Button
+            className="sm:w-auto w-full"
+            onClick={() => {
+              setSwapModelType("bulk");
+              swapModal.openModal();
+            }}
+            disabled={
+              !selectedItems || Object.keys(selectedItems).length === 0
+            }>
+            <ArrowLeftRight className="w-4 h-4" />
+            Bulk Swap
           </Button>
         </div>
       </div>
@@ -497,10 +526,21 @@ export default function MainComponent() {
         headers={headers}
         data={taskData?.Tasks || []}
         showCheckbox={true}
-        setSelectedItems={setSelectedItems}
         selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
         actions={(item: any) => (
           <div className="flex items-center gap-2">
+            <Tooltip content="Edit" position="left">
+              <button
+                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                onClick={() => {
+                  setSelectedTask(item);
+                  setModalType("edit");
+                  openModal();
+                }}>
+                <PencilIcon />
+              </button>
+            </Tooltip>
             <Tooltip content="Edit" position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
@@ -522,16 +562,27 @@ export default function MainComponent() {
                 <Flag className="w-5 h-5" />
               </button>
             </Tooltip>
-            <Tooltip content="Swap" position="left">
-              <button
-                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                onClick={() => {
-                  setSelectedTask(item);
-                  swapModal.openModal();
-                }}>
-                <ArrowLeftRight className="w-5 h-5" />
-              </button>
-            </Tooltip>
+
+            <DropdownMenu>
+              <Tooltip content="More" position="left">
+                <DropdownMenuTrigger asChild>
+                  <MoreHorizontal className="h-5 w-5 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90" />
+                </DropdownMenuTrigger>
+              </Tooltip>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedTask(item);
+                    setSwapModelType("single");
+                    swapModal.openModal();
+                  }}>
+                  <button className="flex items-center gap-1 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
+                    <ArrowLeftRight className="w-5 h-5" />
+                    Swap Task
+                  </button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
         loading={loading}
@@ -589,8 +640,12 @@ export default function MainComponent() {
       <SwapModal
         isOpen={swapModal.isOpen}
         closeModal={swapModal.closeModal}
+        modelType={swapModelType}
+        setModelType={setSwapModelType}
         selectedTask={selectedTask}
         setSelectedTask={setSelectedTask}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
     </div>
   );
