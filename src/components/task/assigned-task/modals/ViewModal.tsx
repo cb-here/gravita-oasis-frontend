@@ -23,6 +23,22 @@ interface ViewModalProps {
   setSelectedTask: any;
 }
 
+export const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "completed":
+      return "success";
+    case "in progress":
+    case "in_progress":
+      return "info";
+    case "assigned":
+      return "primary";
+    case "unassigned":
+      return "warning";
+    default:
+      return "info";
+  }
+};
+
 export default function ViewModal({
   isOpen,
   closeModal,
@@ -54,21 +70,6 @@ export default function ViewModal({
         return "warning";
       case "low":
         return "success";
-      default:
-        return "info";
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-        return "success";
-      case "in_progress":
-        return "info";
-      case "assigned":
-        return "primary";
-      case "unassigned":
-        return "warning";
       default:
         return "info";
     }

@@ -23,7 +23,7 @@ import {
 import BulkTaskModal from "../bulkTaskModals/BulkTaskModal";
 import UnassignedModal from "../assigned-task/modals/UnassignedModal";
 import TaskModal from "./modals/TaskModal";
-import ViewModal from "../assigned-task/modals/ViewModal";
+import ViewModal, { getStatusColor } from "../assigned-task/modals/ViewModal";
 import CustomDateRange from "@/components/common/CustomDateRange";
 import { formatDate } from "@/utils/formateDate";
 import { projectOptions } from "@/components/user-management/user-list/MainComponent";
@@ -59,106 +59,115 @@ export default function MainComponent() {
   const swapModal = useModal();
 
   const [taskData, setTaskData] = useState<any>({
-    totalRecords: 8,
-    Tasks: [
-      {
-        _id: "1",
-        mri_number: "MRN-1001",
-        type_of_chart: "Fresh",
-        target_date: "2025-10-10",
-        task_name: "SOC",
-        project_name: "Project J",
-        age: 45,
-        priority: "High",
-        patient_name: "John Doe",
-        insurance: "Blue Cross",
-      },
-      {
-        _id: "2",
-        mri_number: "MRN-1002",
-        type_of_chart: "RTC",
-        target_date: "2025-10-12",
-        task_name: "SOC(PT)",
-        project_name: "Origin",
-        age: 34,
-        priority: "Medium",
-        patient_name: "Jane Smith",
-        insurance: "Aetna",
-      },
-      {
-        _id: "3",
-        mri_number: "MRN-1003",
-        type_of_chart: "Fresh",
-        target_date: "2025-10-15",
-        task_name: "SOC(OT)",
-        project_name: "Metropolitan",
-        age: 29,
-        priority: "Low",
-        patient_name: "Michael Johnson",
-        insurance: "United Health",
-      },
-      {
-        _id: "4",
-        mri_number: "MRN-1004",
-        type_of_chart: "RTC",
-        target_date: "2025-10-20",
-        task_name: "ROC",
-        project_name: "Jacksonville",
-        age: 52,
-        priority: "High",
-        patient_name: "Sarah Lee",
-        insurance: "Cigna",
-      },
-      {
-        _id: "5",
-        mri_number: "MRN-1005",
-        type_of_chart: "Fresh",
-        target_date: "2025-10-22",
-        task_name: "ROC(PT)",
-        project_name: "Making Memories",
-        age: 41,
-        priority: "Medium",
-        patient_name: "David Brown",
-        insurance: "Humana",
-      },
-      {
-        _id: "6",
-        mri_number: "MRN-1006",
-        type_of_chart: "RTC",
-        target_date: "2025-10-25",
-        task_name: "Recert",
-        project_name: "Project J",
-        age: 60,
-        priority: "High",
-        patient_name: "Emily Davis",
-        insurance: "Kaiser",
-      },
-      {
-        _id: "7",
-        mri_number: "MRN-1007",
-        type_of_chart: "Fresh",
-        target_date: "2025-10-28",
-        task_name: "Recert(OT)",
-        project_name: "Origin",
-        age: 38,
-        priority: "Low",
-        patient_name: "Robert Wilson",
-        insurance: "Blue Shield",
-      },
-      {
-        _id: "8",
-        mri_number: "MRN-1008",
-        type_of_chart: "RTC",
-        target_date: "2025-10-30",
-        task_name: "SN Assessment E",
-        project_name: "Metropolitan",
-        age: 27,
-        priority: "Medium",
-        patient_name: "Olivia Martinez",
-        insurance: "Medicare",
-      },
-    ],
-  });
+  totalRecords: 8,
+  Tasks: [
+    {
+      _id: "1",
+      mri_number: "MRN-1001",
+      type_of_chart: "Fresh",
+      target_date: "2025-10-10",
+      task_name: "SOC",
+      project_name: "Project J",
+      age: 45,
+      priority: "High",
+      patient_name: "John Doe",
+      insurance: "Blue Cross",
+      task_status: "Completed",
+    },
+    {
+      _id: "2",
+      mri_number: "MRN-1002",
+      type_of_chart: "RTC",
+      target_date: "2025-10-12",
+      task_name: "SOC(PT)",
+      project_name: "Origin",
+      age: 34,
+      priority: "Medium",
+      patient_name: "Jane Smith",
+      insurance: "Aetna",
+      task_status: "In Progress",
+    },
+    {
+      _id: "3",
+      mri_number: "MRN-1003",
+      type_of_chart: "Fresh",
+      target_date: "2025-10-15",
+      task_name: "SOC(OT)",
+      project_name: "Metropolitan",
+      age: 29,
+      priority: "Low",
+      patient_name: "Michael Johnson",
+      insurance: "United Health",
+      task_status: "Assigned",
+    },
+    {
+      _id: "4",
+      mri_number: "MRN-1004",
+      type_of_chart: "RTC",
+      target_date: "2025-10-20",
+      task_name: "ROC",
+      project_name: "Jacksonville",
+      age: 52,
+      priority: "High",
+      patient_name: "Sarah Lee",
+      insurance: "Cigna",
+      task_status: "Unassigned",
+    },
+    {
+      _id: "5",
+      mri_number: "MRN-1005",
+      type_of_chart: "Fresh",
+      target_date: "2025-10-22",
+      task_name: "ROC(PT)",
+      project_name: "Making Memories",
+      age: 41,
+      priority: "Medium",
+      patient_name: "David Brown",
+      insurance: "Humana",
+      task_status: "Completed",
+    },
+    {
+      _id: "6",
+      mri_number: "MRN-1006",
+      type_of_chart: "RTC",
+      target_date: "2025-10-25",
+      task_name: "Recert",
+      project_name: "Project J",
+      age: 60,
+      priority: "High",
+      patient_name: "Emily Davis",
+      insurance: "Kaiser",
+      task_status: "In Progress",
+    },
+    {
+      _id: "7",
+      mri_number: "MRN-1007",
+      type_of_chart: "Fresh",
+      target_date: "2025-10-28",
+      task_name: "Recert(OT)",
+      project_name: "Origin",
+      age: 38,
+      priority: "Low",
+      patient_name: "Robert Wilson",
+      insurance: "Blue Shield",
+      task_status: "Assigned",
+    },
+    {
+      _id: "8",
+      mri_number: "MRN-1008",
+      type_of_chart: "RTC",
+      target_date: "2025-10-30",
+      task_name: "SN Assessment E",
+      project_name: "Metropolitan",
+      age: 27,
+      priority: "Medium",
+      patient_name: "Olivia Martinez",
+      insurance: "Medicare",
+      task_status: "Unassigned",
+    },
+  ],
+});
+
 
   const initParams = {
     search: "",
@@ -285,7 +294,8 @@ export default function MainComponent() {
           onClick={() => {
             setSelectedTask(item);
             viewModal.openModal();
-          }}>
+          }}
+        >
           {item?.mri_number}
         </p>
       ),
@@ -298,7 +308,8 @@ export default function MainComponent() {
         <div className="flex justify-center">
           <Badge
             className="text-xs"
-            color={item?.type_of_chart === "Fresh" ? "success" : "error"}>
+            color={item?.type_of_chart === "Fresh" ? "success" : "error"}
+          >
             {item.type_of_chart}
           </Badge>
         </div>
@@ -319,6 +330,20 @@ export default function MainComponent() {
       sortKey: "task_name",
     },
     {
+      label: "Status",
+      render: (item: any) => {
+        const status = item?.task_status;
+
+        return status ? (
+          <Badge variant="light" color={getStatusColor(status)} size="sm">
+            {status}
+          </Badge>
+        ) : (
+          <span>-</span>
+        );
+      },
+    },
+    {
       label: "Project Name",
       render: (item: any) => {
         const projectName = item?.project_name;
@@ -327,7 +352,8 @@ export default function MainComponent() {
           <Badge
             variant="light"
             color={item?.project_name ? "success" : "error"}
-            size="sm">
+            size="sm"
+          >
             {item?.project_name}
           </Badge>
         ) : (
@@ -379,7 +405,8 @@ export default function MainComponent() {
               className="w-4 h-4"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24">
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -395,7 +422,8 @@ export default function MainComponent() {
               className="w-4 h-4"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24">
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -414,7 +442,8 @@ export default function MainComponent() {
               setSelectedTask(null);
               setModalType("add");
               openModal();
-            }}>
+            }}
+          >
             <Plus className="h-5 w-5" />
             Create New Task
           </Button>
@@ -481,6 +510,16 @@ export default function MainComponent() {
                 ],
               },
               {
+                key: "status",
+                label: "Status",
+                options: [
+                  { label: "Completed", value: "completed" },
+                  { label: "In Progress", value: "in_progress" },
+                  { label: "Assigned", value: "assigned" },
+                  { label: "Unassigned", value: "unassigned" },
+                ],
+              },
+              {
                 key: "target_date",
                 label: "Target Date",
                 type: "dateRange",
@@ -502,9 +541,8 @@ export default function MainComponent() {
               setBulkModalType("assign");
               bulkModal.openModal();
             }}
-            disabled={
-              !selectedItems || Object.keys(selectedItems).length === 0
-            }>
+            disabled={!selectedItems || Object.keys(selectedItems).length === 0}
+          >
             <PackageIcon className="w-4 h-4" />
             Bulk Assign
           </Button>
@@ -514,9 +552,8 @@ export default function MainComponent() {
               setSwapModelType("bulk");
               swapModal.openModal();
             }}
-            disabled={
-              !selectedItems || Object.keys(selectedItems).length === 0
-            }>
+            disabled={!selectedItems || Object.keys(selectedItems).length === 0}
+          >
             <ArrowLeftRight className="w-4 h-4" />
             Bulk Swap
           </Button>
@@ -537,7 +574,8 @@ export default function MainComponent() {
                   setSelectedTask(item);
                   setModalType("edit");
                   openModal();
-                }}>
+                }}
+              >
                 <PencilIcon />
               </button>
             </Tooltip>
@@ -548,7 +586,8 @@ export default function MainComponent() {
                   setModalType("assign");
                   setSelectedTask(item);
                   mainModal.openModal();
-                }}>
+                }}
+              >
                 <UserPlus className="w-5 h-5" />
               </button>
             </Tooltip>
@@ -558,7 +597,8 @@ export default function MainComponent() {
                 onClick={() => {
                   setSelectedTask(item);
                   markModal.openModal();
-                }}>
+                }}
+              >
                 <Flag className="w-5 h-5" />
               </button>
             </Tooltip>
@@ -575,7 +615,8 @@ export default function MainComponent() {
                     setSelectedTask(item);
                     setSwapModelType("single");
                     swapModal.openModal();
-                  }}>
+                  }}
+                >
                   <button className="flex items-center gap-1 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
                     <ArrowLeftRight className="w-5 h-5" />
                     Swap Task

@@ -5,12 +5,16 @@ import Tabs from "../common/tabs/Tabs";
 import HoldReports from "./hold-reports/HoldReports";
 import RevenueReports from "./revenue-reports/RevenueReports";
 import TaskReports from "./task-reports/TaskReports";
+import CoderPersona from "./coder-persona/MainComponent";
+import ErrorReports from "./error-reports/ErrorReports";
 
 export default function MainComponent() {
   const [activeTab, setActiveTab] = useState("Hold");
 
   const tabGroups = [
     { name: "Hold Reports", key: "Hold" },
+    { name: "Coder Persona", key: "coderPersona" },
+    { name: "Error Reports", key: "Error" },
     { name: "Revenue Reports", key: "Revenue" },
     { name: "Task Reports", key: "Task" },
   ];
@@ -29,6 +33,10 @@ export default function MainComponent() {
       </div>
       {activeTab === "Hold" ? (
         <HoldReports />
+      ) : activeTab === "coderPersona" ? (
+        <CoderPersona />
+      ) : activeTab === "Error" ? (
+        <ErrorReports />
       ) : activeTab === "Revenue" ? (
         <RevenueReports />
       ) : activeTab === "Task" ? (
