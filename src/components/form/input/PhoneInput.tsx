@@ -34,7 +34,7 @@ type MyPhoneInputProps = {
   countryCode?: Country;
   onChange: (phone: string) => void;
   onCountryChange?: (country: Country) => void;
-  label: string;
+  label?: string;
   disabled?: boolean;
   placeholder?: string;
   error?: any;

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Button from "@/components/ui/button/Button";
 import AvatarText from "@/components/ui/avatar/AvatarText";
-import { InfoIcon, PencilIcon, TrashBinIcon } from "@/icons";
+import { InfoIcon, TrashBinIcon } from "@/icons";
 import { PlusIcon } from "lucide-react";
 import { StatusColor } from "@/type/commonUseType";
 import UserListModal from "./modals/UserListModal";
@@ -17,6 +17,7 @@ import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import TableFooter from "@/components/common/TableFooter";
 import { useModal } from "@/hooks/useModal";
 import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
+import Link from "next/link";
 
 export const tagsColors: StatusColor[] = [
   "primary",
@@ -319,7 +320,8 @@ export default function MainComponent() {
                 ? "warning"
                 : "info"
             }
-            variant="light">
+            variant="light"
+          >
             {row?.status ?? "Unknown"}
           </Badge>
         </div>
@@ -338,7 +340,8 @@ export default function MainComponent() {
                 variant="light"
                 color={`${getTagsColor(item?.name || item || "")}`}
                 className="text-xs"
-                key={item?._id || item?.name || item}>
+                key={item?._id || item?.name || item}
+              >
                 {item?.name || item || ""}
               </Badge>
             ))}
@@ -370,7 +373,8 @@ export default function MainComponent() {
             setModalType("add");
             mainModel.openModal();
           }}
-          className="sm:w-auto w-full">
+          className="sm:w-auto w-full"
+        >
           <PlusIcon className="h-4 w-4" />
           Add New User
         </Button>
@@ -450,27 +454,14 @@ export default function MainComponent() {
         actions={(item: any) => (
           <>
             <Tooltip content="View" position="left">
-              <button
-                onClick={() => {
-                  setSelectedUserList(item);
-                  setModalType("read");
-                  mainModel.openModal();
-                }}
-                className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary">
+              <Link
+                href={`user-list/${1}`}
+                className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary"
+              >
                 <InfoIcon />
-              </button>
+              </Link>
             </Tooltip>
-            <Tooltip content="Edit" position="left">
-              <button
-                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                onClick={() => {
-                  setModalType("edit");
-                  setSelectedUserList(item);
-                  mainModel.openModal();
-                }}>
-                <PencilIcon />
-              </button>
-            </Tooltip>
+
             <Tooltip content="Delete" position="left">
               <button
                 className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500"
@@ -478,7 +469,8 @@ export default function MainComponent() {
                   setModalType("delete");
                   setSelectedUserList(item);
                   mainModel.openModal();
-                }}>
+                }}
+              >
                 <TrashBinIcon />
               </button>
             </Tooltip>
