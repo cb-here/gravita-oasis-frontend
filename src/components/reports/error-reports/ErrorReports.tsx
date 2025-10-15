@@ -62,87 +62,75 @@ interface ChartData {
   }>;
 }
 
-const ErrorReportSystem = () => {
-  const mockData: MockData = {
-    teams: [
-      {
-        id: 1,
-        name: "Team Pramod",
-        members: [
-          { id: 101, name: "John Doe", role: "Senior Dev" },
-          { id: 102, name: "Jane Smith", role: "Dev" },
-          { id: 103, name: "Alice Johnson", role: "Dev" },
-          { id: 104, name: "Bob Brown", role: "Junior Dev" },
-          { id: 105, name: "Charlie Wilson", role: "Senior Dev" },
-          { id: 106, name: "David Lee", role: "Dev" },
-        ],
-      },
-      {
-        id: 2,
-        name: "Team Shijo",
-        members: [
-          { id: 201, name: "Ivy Walker", role: "Lead Dev" },
-          { id: 202, name: "Jack Hall", role: "Senior Dev" },
-          { id: 203, name: "Karen Allen", role: "Dev" },
-          { id: 204, name: "Liam Young", role: "Dev" },
-          { id: 205, name: "Mia King", role: "Junior Dev" },
-          { id: 206, name: "Noah Wright", role: "Senior Dev" },
-        ],
-      },
-      {
-        id: 3,
-        name: "Team Amira",
-        members: [
-          { id: 301, name: "Aaron Morgan", role: "Lead Dev" },
-          { id: 302, name: "Bella Rogers", role: "Senior Dev" },
-          { id: 303, name: "Cody Sanders", role: "Dev" },
-          { id: 304, name: "Diana Hunt", role: "Dev" },
-          { id: 305, name: "Ethan Cole", role: "Junior Dev" },
-          { id: 306, name: "Fiona Price", role: "QA Engineer" },
-        ],
-      },
-    ],
-    errorCategories: ["Coding", "POC", "Oasis"],
-    errors: {
-      Coding: [
-        "Vinod's Open",
-        "Under QA",
-        "Ready for Vinod",
-        "Pre-Coding Review",
-        "Rushil",
-        "Need NOC",
-        "Coding Completed",
-        "Need Eval",
-        "High Priority",
-        "Dx Verify",
-      ],
-      POC: [
-        "Medication Queries",
-        "Missing Chart Info",
-        "Clerical Follow up",
-        "Orders/Foley and Other Notes",
-        "Patient Discharged",
-        "Vinod's Open",
-        "Under QA",
-        "Ready for Vinod",
-        "Pre-Coding Review",
-        "Rushil",
-      ],
-      Oasis: [
-        "Need NOC",
-        "Coding Completed",
-        "Need Eval",
-        "High Priority",
-        "Dx Verify",
-        "Medication Queries",
-        "Missing Chart Info",
-        "Clerical Follow up",
-        "Orders/Foley and Other Notes",
-        "Patient Discharged",
+const mockData: MockData = {
+  teams: [
+    {
+      id: 1,
+      name: "Team Pramod",
+      members: [
+        { id: 101, name: "John Doe", role: "Senior Dev" },
+        { id: 102, name: "Jane Smith", role: "Dev" },
+        { id: 103, name: "Alice Johnson", role: "Dev" },
+        { id: 104, name: "Bob Brown", role: "Junior Dev" },
+        { id: 105, name: "Charlie Wilson", role: "Senior Dev" },
+        { id: 106, name: "David Lee", role: "Dev" },
       ],
     },
-  };
-
+    {
+      id: 2,
+      name: "Team Shijo",
+      members: [
+        { id: 201, name: "Ivy Walker", role: "Lead Dev" },
+        { id: 202, name: "Jack Hall", role: "Senior Dev" },
+        { id: 203, name: "Karen Allen", role: "Dev" },
+        { id: 204, name: "Liam Young", role: "Dev" },
+        { id: 205, name: "Mia King", role: "Junior Dev" },
+        { id: 206, name: "Noah Wright", role: "Senior Dev" },
+      ],
+    },
+    {
+      id: 3,
+      name: "Team Amira",
+      members: [
+        { id: 301, name: "Aaron Morgan", role: "Lead Dev" },
+        { id: 302, name: "Bella Rogers", role: "Senior Dev" },
+        { id: 303, name: "Cody Sanders", role: "Dev" },
+        { id: 304, name: "Diana Hunt", role: "Dev" },
+        { id: 305, name: "Ethan Cole", role: "Junior Dev" },
+        { id: 306, name: "Fiona Price", role: "QA Engineer" },
+      ],
+    },
+  ],
+  errorCategories: ["Coding", "POC", "Oasis"],
+  errors: {
+    Coding: [
+      "PDX Error",
+      "Process Error",
+      "Gender Discrepancy",
+      "Failure to Query",
+      "Covention Error",
+      "Dx Mission",
+    ],
+    POC: [
+      "Demograph",
+      "Statement",
+      "Goals and Interventions",
+      "Medication",
+      "F2F Data & MD",
+      "Other",
+    ],
+    Oasis: [
+      "Wound care worksheet",
+      "IV/Catheter/Ostemy/Other care",
+      "Goals and Interventions",
+      "Medication Profile",
+      "M item",
+      "Other Items",
+      "POC Locators",
+    ],
+  },
+};
+const ErrorReportSystem = () => {
   const [, setStartDate] = useState("2025-10-01");
   const [, setEndDate] = useState("2025-10-08");
 
@@ -186,7 +174,9 @@ const ErrorReportSystem = () => {
     if (selectedMember && selectedTeam) {
       // Show only one member's data with 3 bars (Coding, POC, Oasis)
       const team = mockData.teams.find((t) => t.id === parseInt(selectedTeam));
-      const member = team?.members.find((m) => m.id === parseInt(selectedMember));
+      const member = team?.members.find(
+        (m) => m.id === parseInt(selectedMember)
+      );
 
       if (!member || !team) {
         return {
@@ -209,7 +199,7 @@ const ErrorReportSystem = () => {
       return {
         type: "team",
         title: `${member.name} - Error Report`,
-        data: mockData.errorCategories.map(category => ({
+        data: mockData.errorCategories.map((category) => ({
           name: category,
           [category]: memberData[category],
         })),
@@ -410,7 +400,9 @@ const ErrorReportSystem = () => {
                     : null,
                 }}
                 displayProps={{
-                  placeholder: selectedTeam ? "Select member..." : "Select team first...",
+                  placeholder: selectedTeam
+                    ? "Select member..."
+                    : "Select team first...",
                   id: "member",
                   isClearable: true,
                   disabled: !selectedTeam,
@@ -522,7 +514,6 @@ const ErrorReportSystem = () => {
                   border: `1px solid ${chartTheme.dark.tooltipBorder}`,
                   borderRadius: "8px",
                   color: "rgb(248 250 252)",
-
                 }}
                 cursor={false}
                 itemStyle={{ color: "rgb(248 250 252)" }}

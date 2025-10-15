@@ -33,7 +33,6 @@ export default function Todo() {
         </div>
       </div>
 
-      {/* <!-- task item --> */}
       <div
         draggable="true"
         className="p-5 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5"

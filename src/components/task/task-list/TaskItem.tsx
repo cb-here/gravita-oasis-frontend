@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Task } from "./types/Task";
 import Image from "next/image";
 import Badge from "@/components/ui/badge/Badge";
+import { PencilIcon, TrashBinIcon } from "@/icons";
+import AddTaskModal from "./modals/AddTaskModal";
+import { useModal } from "@/hooks/useModal";
 
 interface TaskItemProps extends Task {
+  task: any;
   onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
@@ -17,13 +21,18 @@ const TaskItem: React.FC<TaskItemProps> = ({
   userAvatar,
   onDragStart,
   toggleChecked,
+  task,
 }) => {
+  const { isOpen, openModal, closeModal } = useModal();
+  const [modelType, setModelType] = useState<any>();
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   return (
     <div
       id={`task-${id}`}
       draggable="true"
       onDragStart={onDragStart}
-      className="p-5 mb-4 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5">
+      className="p-5 mb-4 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5"
+    >
       <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-start w-full gap-4">
           <span className="text-gray-400">
@@ -32,7 +41,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
               height="20"
               viewBox="0 0 20 20"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -44,7 +54,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
           <label
             htmlFor={`taskCheckbox${id}`}
-            className="w-full cursor-pointer">
+            className="w-full cursor-pointer"
+          >
             <div className="relative flex items-start">
               <input
                 type="checkbox"
@@ -60,7 +71,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     height="14"
                     viewBox="0 0 14 14"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       d="M11.6668 3.5L5.25016 9.91667L2.3335 7"
                       stroke="white"
@@ -79,6 +91,34 @@ const TaskItem: React.FC<TaskItemProps> = ({
         </div>
 
         <div className="flex flex-col-reverse items-start justify-end w-full gap-3 xl:flex-row xl:items-center xl:gap-5">
+          <div className="flex items-center gap-2">
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault(); 
+                setModelType("edit");
+                setSelectedTask(task);
+                openModal();
+              }}
+              draggable={false}
+            >
+              <PencilIcon className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary cursor-pointer" />
+            </span>
+
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setModelType("delete");
+                setSelectedTask(task);
+                openModal();
+              }}
+              draggable={false}
+            >
+              <TrashBinIcon className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500 cursor-pointer" />
+            </span>
+          </div>
+
           {category && (
             <Badge color="primary" className="text-theme-xs font-medium">
               {category}
@@ -94,7 +134,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   height="16"
                   viewBox="0 0 16 16"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     fillRule="evenodd"
                     clipRule="evenodd"
@@ -111,7 +152,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   height="18"
                   viewBox="0 0 18 18"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="M9 15.6343C12.6244 15.6343 15.5625 12.6961 15.5625 9.07178C15.5625 5.44741 12.6244 2.50928 9 2.50928C5.37563 2.50928 2.4375 5.44741 2.4375 9.07178C2.4375 10.884 3.17203 12.5246 4.35961 13.7122L2.4375 15.6343H9Z"
                     stroke="currentColor"
@@ -129,6 +171,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
         </div>
       </div>
+      <AddTaskModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        modelType={modelType}
+        setModelType={setModelType}
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
     </div>
   );
 };
