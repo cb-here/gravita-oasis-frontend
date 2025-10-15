@@ -452,10 +452,11 @@ export default function MainComponent() {
         headers={headers}
         data={userLists?.UserLists}
         actions={(item: any) => (
-          <>
+          <div className="flex items-center gap-1">
             <Tooltip content="View" position="left">
               <Link
                 href={`user-list/${1}`}
+                target="_blank"
                 className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary"
               >
                 <InfoIcon />
@@ -464,7 +465,7 @@ export default function MainComponent() {
 
             <Tooltip content="Delete" position="left">
               <button
-                className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500"
+                className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500 mt-1"
                 onClick={() => {
                   setModalType("delete");
                   setSelectedUserList(item);
@@ -474,7 +475,7 @@ export default function MainComponent() {
                 <TrashBinIcon />
               </button>
             </Tooltip>
-          </>
+          </div>
         )}
         loading={loading}
       />

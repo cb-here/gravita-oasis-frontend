@@ -147,6 +147,8 @@ const lanes = ["todo", "in-progress", "completed"];
 
 export default function TaskList() {
   const { isOpen, openModal, closeModal } = useModal();
+  const [modelType, setModelType] = useState<any>();
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const [tasks, setTasks] = useState<Task[]>(
     initialTasks.map((task) => ({
       ...task,
@@ -321,7 +323,6 @@ export default function TaskList() {
           />
         ))}
       </div>
-      <AddTaskModal isOpen={isOpen} closeModal={closeModal} />
     </>
   );
 
@@ -348,7 +349,6 @@ export default function TaskList() {
           );
         })}
       </div>
-      <AddTaskModal isOpen={isOpen} closeModal={closeModal} />
     </DndProvider>
   );
 
@@ -371,7 +371,13 @@ export default function TaskList() {
               )}
               {viewMode === "list" ? "Kanban View" : "List View"}
             </Button>
-            <Button size="sm" onClick={openModal}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setModelType("add");
+                openModal();
+              }}
+            >
               <PlusIcon className="h-5 w-5" />
               Add New Task
             </Button>
@@ -380,6 +386,15 @@ export default function TaskList() {
 
         {viewMode === "list" ? renderListView() : renderKanbanView()}
       </div>
+
+      <AddTaskModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        modelType={modelType}
+        setModelType={setModelType}
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
     </div>
   );
 }
