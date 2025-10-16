@@ -211,10 +211,10 @@ export function ConversationView() {
 
   return (
     <div className="h-full flex flex-col text-gray-600 dark:text-white/70 p-4 lg:p-6 bg-white dark:bg-white/[0.03] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
-      {/* Header */}
+      
       <div className="flex items-start justify-between gap-3 mb-5">
         <div className="flex items-center gap-3">
-          <Link href={"/support"}>
+          <Link href={"/support-tickets"}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -282,7 +282,7 @@ export function ConversationView() {
                         <AvatarFallback
                           className={`text-xs ${
                             isUserMessage
-                              ? "bg-primary text-foreground"
+                              ? "bg-primary text-white"
                               : "bg-blue-500 text-white"
                           }`}>
                           <User className="h-4 w-4" />

@@ -1,8 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Task, DropResult } from "./types/types";
 import Image from "next/image";
 import Badge from "@/components/ui/badge/Badge";
+import AddTaskModal from "../task-list/modals/AddTaskModal";
+import { useModal } from "@/hooks/useModal";
+import { PencilIcon, TrashBinIcon } from "@/icons";
 
 interface TaskItemProps {
   task: Task;
@@ -18,6 +21,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
   changeTaskStatus,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const { isOpen, openModal, closeModal } = useModal();
+  const [modelType, setModelType] = useState<any>();
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   // TaskItem.tsx
   const [{ handlerId }, drop] = useDrop<
@@ -82,7 +88,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
       ref={ref}
       style={{ opacity }}
       className="relative p-5 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5"
-      data-handler-id={handlerId}>
+      data-handler-id={handlerId}
+    >
       <div className="space-y-4">
         <div>
           <h4 className="mb-5 mr-10 text-base text-gray-800 dark:text-white/90">
@@ -112,7 +119,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 height="16"
                 viewBox="0 0 16 16"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -129,7 +137,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 height="18"
                 viewBox="0 0 18 18"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M9 15.6343C12.6244 15.6343 15.5625 12.6961 15.5625 9.07178C15.5625 5.44741 12.6244 2.50928 9 2.50928C5.37563 2.50928 2.4375 5.44741 2.4375 9.07178C2.4375 10.884 3.17203 12.5246 4.35961 13.7122L2.4375 15.6343H9Z"
                   stroke=""
@@ -147,7 +156,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   height="16"
                   viewBox="0 0 16 16"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     fillRule="evenodd"
                     clipRule="evenodd"
@@ -162,15 +172,56 @@ const TaskItem: React.FC<TaskItemProps> = ({
           {task?.category?.name && (
             <Badge
               color={getCategoryStyles(task.category.color)}
-              className={`mt-3 ext-theme-xs font-medium `}>
+              className={`mt-3 ext-theme-xs font-medium `}
+            >
               {task.category.name}
             </Badge>
           )}
         </div>
       </div>
+
+      {/* Edit and Delete buttons positioned at bottom right */}
+      <div className="flex items-center justify-end gap-2 mt-4">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setModelType("edit");
+            setSelectedTask(task);
+            openModal();
+          }}
+          draggable={false}
+          className="p-1 text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary cursor-pointer transition-colors"
+        >
+          <PencilIcon />
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setModelType("delete");
+            setSelectedTask(task);
+            openModal();
+          }}
+          draggable={false}
+          className="p-1 text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500 cursor-pointer transition-colors"
+        >
+          <TrashBinIcon />
+        </button>
+      </div>
+
       <div className="h-6 absolute top-5 right-5 top w-full max-w-6 overflow-hidden rounded-full border-[0.5px] border-gray-200 dark:border-gray-800">
         <Image width={24} height={24} src={task.assignee} alt="user" />
       </div>
+      <AddTaskModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        modelType={modelType}
+        setModelType={setModelType}
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
     </div>
   );
 };
