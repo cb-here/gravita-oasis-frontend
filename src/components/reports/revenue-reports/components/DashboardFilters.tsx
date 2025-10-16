@@ -16,6 +16,8 @@ interface DashboardFiltersProps {
   timeFrames: any[];
   timeFrame: any;
   setTimeFrame: any;
+  dateRange: Date[]; // Change to array of dates for flatpickr compatibility
+  setDateRange: any;
 }
 
 export const DashboardFilters = ({
@@ -31,7 +33,12 @@ export const DashboardFilters = ({
   timeFrames,
   setTimeFrame,
   timeFrame,
+  setDateRange,
 }: DashboardFiltersProps) => {
+  const handleDateChange = (selectedDates: Date[]) => {
+    setDateRange(selectedDates);
+  };
+
   return (
     <div className="rounded-xl shadow-lg p-6 mb-6 border border-gray-200 dark:border-gray-800">
       <div className="flex items-center gap-2 mb-4">
@@ -159,6 +166,8 @@ export const DashboardFilters = ({
             id="dateRange"
             mode="range"
             placeholder="Select date range..."
+            maxSelectableDates={20}
+            onChange={handleDateChange}
           />
         </div>
       </div>

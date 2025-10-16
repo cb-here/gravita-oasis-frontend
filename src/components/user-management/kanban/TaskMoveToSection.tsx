@@ -8,12 +8,24 @@ interface TaskMoveToSectionProps {
 }
 
 const holdReasons = [
-  "Need Noc",
-  "Dx Verify / med question",
-  "Missing chart info",
-  "Clerical follow up",
-  "Need evolution",
-  "Other",
+  "Vinod’s Open",
+  "Under QA",
+  "Ready for Vinod",
+  "Pre-Coding Review",
+  "Rushil",
+  "Need NOC",
+  "Need Eval",
+  "High Priority",
+  "Dx Verify",
+  "Medication Queries",
+  "Missing Chart Info",
+  "Clerical Follow up",
+  "Awaiting Clinician Response",
+  "Need Nurse",
+  "Audit Completed",
+  "Orders/Foley and Other Notes",
+  "Patient Discharged",
+  "Coding Completed",
 ];
 
 const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
@@ -28,15 +40,13 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
 
   const handleReasonClick = (reason: string) => {
     if (reason === "Other") {
-      // If "Other" is clicked, deselect all other reasons and select only "Other"
       setSelectedReasons(["Other"]);
     } else {
-      // If another reason is clicked, toggle it and ensure "Other" is deselected
       setSelectedReasons((prev) => {
         const newReasons = prev.includes(reason)
           ? prev.filter((r) => r !== reason)
           : [...prev, reason];
-        // Remove "Other" if it's in the list
+
         return newReasons.filter((r) => r !== "Other");
       });
     }
@@ -48,7 +58,9 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
 
   return (
     <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-4 mt-4">
-      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">Move to</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">
+        Move to
+      </div>
       <div className="flex gap-4">
         {[getHoldLabel(), "Under QA", "Submission"].map((option) => (
           <button
@@ -84,7 +96,7 @@ const TaskMoveToSection: React.FC<TaskMoveToSectionProps> = ({
             Select your reasons for hold
           </h1>
 
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center max-h-[350px] overflow-auto custom-scrollbar">
             {holdReasons.map((reason) => (
               <button
                 key={reason}

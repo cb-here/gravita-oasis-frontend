@@ -96,9 +96,8 @@ const RevenueReports = () => {
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [selectedProject, setSelectedProject] = useState<string>("all");
   const [selectedGroup, setSelectedGroup] = useState<string>("overview");
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<Date[]>([]);
 
-  // Reset to overview when team/project filters are cleared
   const handleTeamChange = (team: string | null) => {
     const newTeam = team || "all";
     setSelectedTeam(newTeam);
@@ -121,17 +120,9 @@ const RevenueReports = () => {
     if (newGroup === "overview") {
       setSelectedTeam("all");
       setSelectedProject("all");
-      setSelectedDate(null);
+      setDateRange([]);
     }
   };
-
-  // const handleDateChange = (dateStr: string | null) => {
-  //   setSelectedDate(dateStr);
-
-  //   if (dateStr && selectedGroup !== "overview") {
-  //     setSelectedGroup("overview");
-  //   }
-  // };
 
   const teams: any = useMemo(
     () => ["all", ...new Set(allData.map((d: any) => d.team))],
@@ -143,68 +134,27 @@ const RevenueReports = () => {
       const teamMatch = selectedTeam === "all" || item.team === selectedTeam;
       const projectMatch =
         selectedProject === "all" || item.project === selectedProject;
-      
-      // Date filtering logic
+
+      // Date range filtering logic
       let dateMatch = true;
-      if (selectedDate) {
+      if (dateRange && dateRange.length === 2) {
         const itemDate = new Date(item.date);
-        const selectedDateObj = new Date(selectedDate);
-        // For daily view, match exact date
-        // For weekly/monthly, match the period
-        if (timeFrame === "daily") {
-          dateMatch = itemDate.toISOString().split("T")[0] === selectedDate;
-        } else if (timeFrame === "weekly") {
-          // Match week
-          const itemWeekStart = new Date(itemDate);
-          itemWeekStart.setDate(itemDate.getDate() - itemDate.getDay() + 1);
-          const selectedWeekStart = new Date(selectedDateObj);
-          selectedWeekStart.setDate(selectedDateObj.getDate() - selectedDateObj.getDay() + 1);
-          dateMatch = itemWeekStart.toISOString().split("T")[0] === selectedWeekStart.toISOString().split("T")[0];
-        } else {
-          // Monthly - match year and month
-          dateMatch = 
-            itemDate.getFullYear() === selectedDateObj.getFullYear() &&
-            itemDate.getMonth() === selectedDateObj.getMonth();
-        }
+        const startDate = new Date(dateRange[0]);
+        const endDate = new Date(dateRange[1]);
+
+        // Set time to beginning and end of day for proper range comparison
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        itemDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+
+        dateMatch = itemDate >= startDate && itemDate <= endDate;
       }
 
       return teamMatch && projectMatch && dateMatch;
     });
-  }, [allData, selectedTeam, selectedProject, selectedDate, timeFrame]);
+  }, [allData, selectedTeam, selectedProject, dateRange]);
 
   const getAggregatedData = useMemo((): AggregatedDataItem[] => {
-    // If a specific date is selected and timeframe is daily, just use that day's data
-    if (selectedDate && timeFrame === "daily") {
-      const dateData = filteredData.filter((item: any) => 
-        new Date(item.date).toISOString().split("T")[0] === selectedDate
-      );
-      
-      if (dateData.length > 0) {
-        const dateObj = new Date(selectedDate);
-        return [{
-          periodKey: selectedDate,
-          timestamp: dateObj.getTime(),
-          revenue: dateData.reduce((sum: number, item: any) => sum + item.revenue, 0),
-          projected: dateData.reduce((sum: number, item: any) => sum + item.projectedRevenue, 0),
-          displayDate: dateObj.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
-          }),
-          date: selectedDate,
-          ...teams.reduce((acc: any, team: any) => {
-            if (team !== "all") {
-              acc[team] = dateData
-                .filter((d: any) => d.team === team)
-                .reduce((sum: number, item: any) => sum + item.revenue, 0);
-            }
-            return acc;
-          }, {})
-        }];
-      }
-    }
-
-    // Fallback to original aggregation logic for broader timeframes or no date selected
     const grouped: Record<string, AggregatedDataItem> = {};
 
     filteredData.forEach((item: any) => {
@@ -221,12 +171,16 @@ const RevenueReports = () => {
           (date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)
         );
         const weekNumber = Math.ceil((days + 1) / 7);
-        periodKey = `${date.getFullYear()}-W${weekNumber.toString().padStart(2, "0")}`;
+        periodKey = `${date.getFullYear()}-W${weekNumber
+          .toString()
+          .padStart(2, "0")}`;
         const monday = new Date(date);
         monday.setDate(date.getDate() - date.getDay() + 1);
         timestamp = monday.getTime();
       } else {
-        periodKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        periodKey = `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, "0")}`;
         timestamp = new Date(date.getFullYear(), date.getMonth(), 15).getTime();
       }
 
@@ -256,26 +210,6 @@ const RevenueReports = () => {
       (a: AggregatedDataItem, b: AggregatedDataItem) =>
         a.timestamp - b.timestamp
     );
-
-    // Apply date filtering constraints
-    if (selectedDate) {
-      const selectedDateObj = new Date(selectedDate);
-      aggregatedData = aggregatedData.filter((item: AggregatedDataItem) => {
-        const itemDate = new Date(item.timestamp);
-        if (timeFrame === "daily") {
-          return item.periodKey === selectedDate;
-        } else if (timeFrame === "weekly") {
-          const itemWeekStart = new Date(itemDate);
-          itemWeekStart.setDate(itemDate.getDate() - itemDate.getDay() + 1);
-          const selectedWeekStart = new Date(selectedDateObj);
-          selectedWeekStart.setDate(selectedDateObj.getDate() - selectedDateObj.getDay() + 1);
-          return itemWeekStart.toISOString().split("T")[0] === selectedWeekStart.toISOString().split("T")[0];
-        } else {
-          return itemDate.getFullYear() === selectedDateObj.getFullYear() && 
-                 itemDate.getMonth() === selectedDateObj.getMonth();
-        }
-      });
-    }
 
     // Limit data points based on time frame
     if (timeFrame === "daily" && aggregatedData.length > 20) {
@@ -312,7 +246,7 @@ const RevenueReports = () => {
         date: item.timestamp.toString(),
       };
     });
-  }, [filteredData, teams, timeFrame, selectedDate]);
+  }, [filteredData, teams, timeFrame]);
 
   const metrics: Metrics = useMemo(() => {
     const totalRevenue = filteredData.reduce(
@@ -505,11 +439,7 @@ const RevenueReports = () => {
     },
   ];
 
-  // Safe percentage calculation for the achievement section
-  const achievementPercentage =
-    metrics.totalProjected > 0
-      ? (metrics.totalRevenue / metrics.totalProjected) * 100
-      : 0;
+  
 
   return (
     <div className="p-6">
@@ -536,7 +466,8 @@ const RevenueReports = () => {
           timeFrames={timeFrames}
           setTimeFrame={setTimeFrame}
           timeFrame={timeFrame}
-          
+          dateRange={dateRange}
+          setDateRange={setDateRange}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -698,33 +629,6 @@ const RevenueReports = () => {
             </div>
           </>
         )}
-
-        <div className="bg-gradient-to-bl from-[#00C6FF] to-[#9B5FFF] rounded-xl shadow-glow p-6 ">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-heading text-white mb-1">
-                Revenue Achievement
-              </h3>
-              <p className="text-subtitle text-white">
-                Current performance vs projected targets
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-4xl font-bold text-white">
-                {achievementPercentage.toFixed(1)}%
-              </p>
-              <p className="text-subtitle text-white">of projected revenue</p>
-            </div>
-          </div>
-          <div className="mt-4 bg-brand-200/20 rounded-full h-3 overflow-hidden">
-            <div
-              className="bg-success-500 h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${Math.min(achievementPercentage, 100)}%`,
-              }}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

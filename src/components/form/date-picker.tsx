@@ -2,22 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.css"; // Always load the base stylesheet
+import "flatpickr/dist/flatpickr.css";
 import Label from "./Label";
 import { CalenderIcon } from "../../icons";
 import Hook = flatpickr.Options.Hook;
-import DateOption = flatpickr.Options.DateOption;
 import { useTheme } from "@/context/ThemeContext";
-
+import { showToast } from "@/lib/toast";
 
 type PropsType = {
   id: string;
   mode?: "single" | "multiple" | "range" | "time";
   onChange?: Hook | Hook[];
-  defaultDate?: DateOption;
+  defaultDate?: any;
   label?: string;
   placeholder?: string;
   isClearable?: boolean;
+  maxSelectableDates?: number;
 };
 
 export default function DatePicker({
@@ -28,32 +28,153 @@ export default function DatePicker({
   defaultDate,
   placeholder,
   isClearable = true,
+  maxSelectableDates
 }: PropsType) {
   const flatpickrInstance = useRef<flatpickr.Instance | null>(null);
   const [hasValue, setHasValue] = useState(!!defaultDate);
-  const { theme } = useTheme(); // Use the theme from the conuuuuu
+  const { theme } = useTheme();
+
+  // Helper function to calculate days between two dates
+  const getDaysDifference = (startDate: Date, endDate: Date): number => {
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    return dayDiff + 1; // +1 to include both start and end dates
+  };
 
   useEffect(() => {
-    // Dynamic import for the theme CSS
     const loadTheme = async () => {
-      const themeFile = theme === "dark" ? "dark.css" : "light.css"; // Assuming a light theme file exists, otherwise use a default
-      // Note: `import()` returns a promise, which is handled here
+      const themeFile = theme === "dark" ? "dark.css" : "light.css";
       await import(`flatpickr/dist/themes/${themeFile}`);
 
-      // Destroy any existing instance before creating a new one with the correct theme
       if (flatpickrInstance.current) {
         flatpickrInstance.current.destroy();
       }
 
       const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-      const flatPickr = flatpickr(`#${id}`, {
+      const config: flatpickr.Options.Options = {
         mode: mode || "single",
-        static: !isMobile, // Use native picker on mobile for better UX unless explicitly disabled
+        static: !isMobile,
         monthSelectorType: "static",
         dateFormat: "Y-m-d",
         defaultDate,
-        onChange: (selectedDates, dateStr, instance) => {
+      };
+
+      // Handle maxSelectableDates for different modes
+      if (maxSelectableDates) {
+        if (mode === "range") {
+          // For RANGE mode - limit the number of days in the range
+          config.onChange = (selectedDates, dateStr, instance) => {
+            console.log("Range mode - Selected dates:", selectedDates);
+            
+            if (selectedDates.length === 2) {
+              const [startDate, endDate] = selectedDates;
+              const daysInRange = getDaysDifference(startDate, endDate);
+              console.log("Days in range:", daysInRange);
+              
+              if (daysInRange > maxSelectableDates) {
+                showToast(
+                  "error", 
+                  `Maximum ${maxSelectableDates} days allowed`, 
+                  `Your selection spans ${daysInRange} days. Please select a smaller range.`
+                );
+                
+                // Calculate valid end date
+                const validEndDate = new Date(startDate);
+                validEndDate.setDate(startDate.getDate() + (maxSelectableDates - 1));
+                
+                // Set the valid date range
+                instance.setDate([startDate, validEndDate], false);
+                
+                setHasValue(true);
+                
+                
+                if (onChange) {
+                  const correctedDates = [startDate, validEndDate];
+                  const correctedDateStr = instance.formatDate(correctedDates as any, "Y-m-d");
+                  if (Array.isArray(onChange)) {
+                    onChange.forEach((fn) => fn(correctedDates, correctedDateStr, instance));
+                  } else {
+                    onChange(correctedDates, correctedDateStr, instance);
+                  }
+                }
+                return;
+              }
+            }
+            
+            // If within limits or not a complete range yet
+            setHasValue(selectedDates.length > 0);
+            if (onChange) {
+              if (Array.isArray(onChange)) {
+                onChange.forEach((fn) => fn(selectedDates, dateStr, instance));
+              } else {
+                onChange(selectedDates, dateStr, instance);
+              }
+            }
+          };
+
+          // Visual feedback for disabled days in range mode
+          config.onDayCreate = (dObj, dStr, fp, dayElem) => {
+            const selectedDates = fp.selectedDates;
+            
+            if (selectedDates.length === 1) {
+              const startDate = selectedDates[0];
+              const currentDate = dayElem.dateObj;
+              const daysDifference = getDaysDifference(startDate, currentDate);
+              
+              // Disable days that would exceed the maximum range
+              if (daysDifference > maxSelectableDates) {
+                dayElem.classList.add("flatpickr-disabled");
+                dayElem.style.opacity = "0.5";
+                dayElem.style.cursor = "not-allowed";
+              }
+            }
+          };
+
+        } else if (mode === "multiple") {
+          // For MULTIPLE mode - limit the number of individual dates selected
+          config.onChange = (selectedDates, dateStr, instance) => {
+            if (selectedDates.length > maxSelectableDates) {
+              showToast("error", `Maximum ${maxSelectableDates} dates allowed`, "Please select fewer dates");
+              
+              const trimmedDates = selectedDates.slice(0, maxSelectableDates);
+              instance.setDate(trimmedDates, true);
+              setHasValue(trimmedDates.length > 0);
+              
+              if (onChange) {
+                if (Array.isArray(onChange)) {
+                  onChange.forEach((fn) => fn(trimmedDates, dateStr, instance));
+                } else {
+                  onChange(trimmedDates, dateStr, instance);
+                }
+              }
+            } else {
+              setHasValue(selectedDates.length > 0);
+              if (onChange) {
+                if (Array.isArray(onChange)) {
+                  onChange.forEach((fn) => fn(selectedDates, dateStr, instance));
+                } else {
+                  onChange(selectedDates, dateStr, instance);
+                }
+              }
+            }
+          };
+        } else {
+          // For SINGLE mode - use the original onChange
+          config.onChange = (selectedDates, dateStr, instance) => {
+            setHasValue(selectedDates.length > 0);
+            if (onChange) {
+              if (Array.isArray(onChange)) {
+                onChange.forEach((fn) => fn(selectedDates, dateStr, instance));
+              } else {
+                onChange(selectedDates, dateStr, instance);
+              }
+            }
+          };
+        }
+      } else {
+        // No maxSelectableDates - use original onChange
+        config.onChange = (selectedDates, dateStr, instance) => {
           setHasValue(selectedDates.length > 0);
           if (onChange) {
             if (Array.isArray(onChange)) {
@@ -62,10 +183,11 @@ export default function DatePicker({
               onChange(selectedDates, dateStr, instance);
             }
           }
-        },
-      });
+        };
+      }
 
-      // Ensure flatPickr is always a single instance
+      const flatPickr = flatpickr(`#${id}`, config);
+
       flatpickrInstance.current = Array.isArray(flatPickr)
         ? flatPickr[0]
         : flatPickr;
@@ -78,7 +200,7 @@ export default function DatePicker({
         flatpickrInstance.current.destroy();
       }
     };
-  }, [mode, onChange, id, defaultDate, theme]); // Add `theme` to the dependency array
+  }, [mode, onChange, id, defaultDate, theme, maxSelectableDates]);
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
