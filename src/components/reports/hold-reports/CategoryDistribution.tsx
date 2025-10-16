@@ -72,6 +72,7 @@ export default function CategoryDistribution({
         borderRadius: 5,
         borderRadiusApplication: "end",
         distributed: true,
+        barHeight: "80%",
       },
     },
     dataLabels: {
@@ -92,7 +93,7 @@ export default function CategoryDistribution({
       },
       labels: {
         rotate: -45,
-        rotateAlways: categories.length > 10,
+        rotateAlways: categories.length > 20,
         style: {
           fontSize: "11px",
         },
@@ -136,7 +137,6 @@ export default function CategoryDistribution({
 
   const series = [
     {
-      // name: "Percentage",
       data: values,
     },
   ];
@@ -150,9 +150,8 @@ export default function CategoryDistribution({
           </h2>
         </div>
       </div>
-      <div className="max-w-full overflow-x-auto custom-scrollbar">
+      <div className="max-w-full overflow-x-auto custom-scrollbar mt-2">
         <div className="-ml-5 pl-2">
-          {" "}
           <ReactApexChart
             options={options}
             series={series}

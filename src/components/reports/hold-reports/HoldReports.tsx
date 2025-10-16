@@ -474,10 +474,6 @@ export default function HoldReports() {
    },
  ];
 
-
-
-
-
   const [startDate, setStartDate] = useState("2025-10-01");
   const [endDate, setEndDate] = useState("2025-10-08");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -585,7 +581,7 @@ export default function HoldReports() {
   return (
     <div>
       <div className="space-y-6">
-        <div className="p-6">
+        <div>
           <div className="flex items-center gap-4">
             <div className="w-full">
               <SearchableSelect

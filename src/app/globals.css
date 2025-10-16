@@ -188,6 +188,13 @@
 
   --color-muted: 217.2 32.6% 17.5%;
   --color-muted-foreground: 215 20.2% 65.1%;
+  --orgchart-bg: #ffffff;
+  --orgchart-border: #e0e0e0;
+  --orgchart-border-radius: 8px;
+  --orgchart-text: #333333;
+  --orgchart-line: #c0c0c0;
+  --orgchart-shadow: rgba(0, 0, 0, 0.1);
+  --orgchart-hover-bg: #f5f5f5;
 }
 
 /*
@@ -216,7 +223,13 @@
     --color-new-green: #1f7a4a; /* deep green */
     --color-text-green: #6ee7b7; /* mint text green */
     --color-new-gray-500: #1f2937; /* dark gray for surfaces */
-    --color-new-brand-50: #1e1f38; /* dark indigo surface */
+    --color-new-brand-50: #1e1f38;   /* dark indigo surface */
+    --orgchart-bg: #01010130;
+    --orgchart-border: #404040;
+    --orgchart-text: #e0e0e0;
+    --orgchart-line: #555555;
+    --orgchart-shadow: rgba(0, 0, 0, 0.3);
+    --orgchart-hover-bg: #3a3a3a;
   }
 
   button:not(:disabled),
@@ -1094,4 +1107,59 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
+}
+
+.p-organizationchart {
+  --pc-orgchart-node-bg: var(--orgchart-bg);
+  --pc-orgchart-node-border: 1px solid var(--orgchart-border);
+  --pc-orgchart-node-color: var(--orgchart-text);
+}
+
+.p-organizationchart .p-organizationchart-lines {
+  --pc-orgchart-line-color: var(--orgchart-line);
+}
+
+.p-organizationchart .p-organizationchart-node-content {
+  background: var(--orgchart-bg) !important;
+  border: var(--pc-orgchart-node-border) !important;
+  color: var(--orgchart-text) !important;
+  box-shadow: 0 2px 8px var(--orgchart-shadow) !important;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  border-radius: 10px;
+}
+
+.p-organizationchart .p-organizationchart-node-content:hover {
+  background: var(--orgchart-hover-bg) !important;
+}
+
+.p-organizationchart .p-organizationchart-line-down,
+.p-organizationchart .p-organizationchart-line-left,
+.p-organizationchart .p-organizationchart-line-right {
+  border-color: var(--orgchart-line) !important;
+}
+
+/* Ensure table layout works with themes */
+.p-organizationchart-table {
+  background: transparent;
+}
+
+/* Person node specific styling */
+.p-person .p-organizationchart-node-content {
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.p-person .p-organizationchart-node-content strong {
+  color: var(--orgchart-text);
+}
+
+.p-organizationchart .pi-chevron-up,
+.p-organizationchart .pi-chevron-down {
+    display: none !important;
+}
+
+.data-radix-popper-content-wrapper {
+  z-index: 100001 !important;
 }

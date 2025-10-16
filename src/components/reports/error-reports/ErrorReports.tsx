@@ -11,6 +11,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  RadialBarChart,
+  RadialBar,
 } from "recharts";
 import { Download, Users, AlertCircle, TrendingUp } from "lucide-react";
 import Button from "@/components/ui/button/Button";
@@ -797,51 +799,55 @@ const ErrorReportSystem = () => {
               Error Category Distribution
             </h2>
 
-            <div className="w-96 h-96 flex justify-center items-center mb-6">
+            <div className="w-96 h-96 flex justify-center items-center">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={Object.entries(summaryStats.categoryBreakdown).map(
-                      ([name, value]) => ({ name, value })
-                    )}
-                    cx="50%"
-                    cy="50%"
-                    startAngle={90}
-                    endAngle={-270}
-                    innerRadius={65}
-                    outerRadius={120}
-                    paddingAngle={0}
+                <RadialBarChart
+                  innerRadius="10%"
+                  outerRadius="90%"
+                  data={Object.entries(summaryStats.categoryBreakdown).map(
+                    ([name, value], index) => ({
+                      name,
+                      value,
+                      fill: COLORS[index % COLORS.length],
+                    })
+                  )}
+                  startAngle={180}
+                  endAngle={0}
+                >
+                  <RadialBar
+                    background
                     dataKey="value"
-                    nameKey="name"
-                  >
-                    {Object.keys(summaryStats.categoryBreakdown).map(
-                      (entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      )
-                    )}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: chartTheme.dark.tooltipBg,
-                      border: `1px solid ${chartTheme.dark.tooltipBorder}`,
-                      borderRadius: "8px",
-                      color: "rgb(248 250 252)",
+                    label={{
+                      position: "insideStart",
+                      fill: "#fff",
                     }}
-                    itemStyle={{ color: "rgb(248 250 252)" }}
-                    labelStyle={{ color: "rgb(248 250 252)" }}
-                    formatter={(value) => [value, "Errors"]}
-                    labelFormatter={(name) => `${name} Category`}
                   />
-                </PieChart>
+                  <Tooltip
+                    formatter={(value) => [value, "Errors"]}
+                    labelFormatter={(name) => `Category: ${name}`}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-white dark:bg-slate-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
+                              {payload[0].payload.name}{" "}
+                            </p>
+                            <p className="text-slate-600 dark:text-slate-300">
+                              Errors: {payload[0].value}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                </RadialBarChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex justify-center gap-6 -mt-[100px]">
               {Object.entries(summaryStats.categoryBreakdown).map(
-                ([name, value], index) => (
+                ([name], index) => (
                   <div key={name} className="flex items-center gap-2">
                     <div
                       className="w-4 h-4 rounded-full"
@@ -851,9 +857,6 @@ const ErrorReportSystem = () => {
                     />
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors duration-200">
                       {name}
-                    </span>
-                    <span className="text-sm text-slate-600 dark:text-slate-400 transition-colors duration-200">
-                      ({value})
                     </span>
                   </div>
                 )

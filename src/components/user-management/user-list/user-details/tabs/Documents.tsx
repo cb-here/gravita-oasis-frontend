@@ -321,13 +321,26 @@ export default function Documents({
                   </Tooltip>
                 </button>
                 <button
-                  className="flex rounded-lg p-1 items-center gap-1 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                  onClick={() => handleEdit(item)}
+                  className={`flex rounded-lg p-1 items-center gap-1 
+    text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90
+    ${
+      item.status === "approved"
+        ? "opacity-50 cursor-not-allowed hover:text-gray-500 dark:hover:text-gray-400"
+        : ""
+    }`}
+                  onClick={() => item.status !== "approved" && handleEdit(item)}
+                  disabled={item.status === "approved"}
                 >
-                  <Tooltip content="Edit" position="left">
+                  <Tooltip
+                    content={
+                      item.status === "approved" ? "Already approved" : "Edit"
+                    }
+                    position="left"
+                  >
                     <PencilIcon />
                   </Tooltip>
                 </button>
+
                 <button
                   className="flex rounded-lg p-1 items-center gap-1 text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-600"
                   onClick={() => handleDelete(item)}
