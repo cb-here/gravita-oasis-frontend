@@ -22,6 +22,7 @@ import {
   UserCogIcon,
   Users2,
 } from "lucide-react";
+import { FaSitemap } from "react-icons/fa";
 
 type NavItem = {
   name: string;
@@ -98,6 +99,11 @@ const navItems: NavItem[] = [
     icon: <ListTodo className="h-5 w-5" />,
     name: "To Do",
     path: "/to-do",
+  },
+  {
+    icon: <FaSitemap className="h-5 w-5" />,
+    name: "Organization",
+    path: "/organization-structure",
   },
 ];
 

@@ -12,7 +12,6 @@ import { Card } from "@/components/ui/card";
 import CommonTable, { HeaderType } from "@/components/common/CommonTable";
 import { BarChart3, Calendar, Sun } from "lucide-react";
 
-// Types
 interface TeamOption {
   label: string;
   value: string;
@@ -439,10 +438,8 @@ const RevenueReports = () => {
     },
   ];
 
-  
-
   return (
-    <div className="p-6">
+    <div>
       <div>
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-black dark:text-white">

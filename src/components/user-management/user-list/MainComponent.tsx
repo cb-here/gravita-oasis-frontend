@@ -276,7 +276,13 @@ export default function MainComponent() {
         return (
           <div className="flex items-center gap-2">
             <AvatarText name={safeFullName} />
-            <span>{safeFullName}</span>
+            <Link
+              href={`user-list/${1}`}
+              target="_blank"
+              className="hover:text-brand-500 hover:underline"
+            >
+              {safeFullName}
+            </Link>
           </div>
         );
       },

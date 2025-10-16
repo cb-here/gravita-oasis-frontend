@@ -6,7 +6,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-interface LineChartComponentProps {
+interface AreaChartComponentProps {
   data: any[];
   teams: any[];
   title: string;
@@ -27,7 +27,7 @@ export const LineChartComponent = ({
   data,
   teams,
   title,
-}: LineChartComponentProps) => {
+}: AreaChartComponentProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export const LineChartComponent = ({
 
   const options: ApexOptions = {
     chart: {
-      type: "line",
+      type: "area",
       height: 350,
       toolbar: {
         show: false,
@@ -51,7 +51,16 @@ export const LineChartComponent = ({
     },
     stroke: {
       curve: "smooth",
-      width: 3,
+      width: 2,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.3,
+        stops: [0, 90, 100]
+      },
     },
     legend: {
       position: "top",
@@ -106,7 +115,7 @@ export const LineChartComponent = ({
           <ReactApexChart
             options={options}
             series={series}
-            type="line"
+            type="area"
             height={350}
           />
         </div>
