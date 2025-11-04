@@ -156,7 +156,7 @@ export default function DocumentModal({
     setLoading(true);
     try {
       // Prepare form data for submission
-      const submitData = {
+      const submitData = {   
         fileName: formData.fileName,
         file: uploadedFiles.length > 0 ? uploadedFiles[0].file : null,
         // Include existing file for edit mode if no new file selected
