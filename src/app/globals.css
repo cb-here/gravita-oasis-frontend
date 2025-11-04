@@ -230,6 +230,7 @@
     --orgchart-line: #555555;
     --orgchart-shadow: rgba(0, 0, 0, 0.3);
     --orgchart-hover-bg: #3a3a3a;
+    --color-foreground: #fff;
   }
 
   button:not(:disabled),

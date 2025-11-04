@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Button from "@/components/ui/button/Button";
 import AvatarText from "@/components/ui/avatar/AvatarText";
-import { InfoIcon, TrashBinIcon } from "@/icons";
+import { EyeIcon, TrashBinIcon } from "@/icons";
 import { PlusIcon } from "lucide-react";
 import { StatusColor } from "@/type/commonUseType";
 import UserListModal from "./modals/UserListModal";
@@ -465,7 +465,7 @@ export default function MainComponent() {
                 target="_blank"
                 className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary"
               >
-                <InfoIcon />
+                <EyeIcon />
               </Link>
             </Tooltip>
 
