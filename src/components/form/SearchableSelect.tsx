@@ -8,6 +8,8 @@ import React, {
 } from "react";
 import Select, { components } from "react-select";
 import Loading from "../Loading";
+import Badge from "../ui/badge/Badge";
+import { X } from "lucide-react";
 
 export interface OptionType {
   label?: string;
@@ -50,6 +52,7 @@ export default function SearchableSelect({
     isRequired = false,
     layoutProps = {},
     customCreateOption = null,
+    showPill = false,
   } = displayProps;
 
   const { className } = layoutProps;
@@ -176,6 +179,11 @@ export default function SearchableSelect({
         ...base,
         minHeight: "44px",
         fontSize: "0.95rem",
+        ...(showCheckboxes &&
+          showPill && {
+            maxHeight: "150px",
+            overflowY: "auto",
+          }),
         ...(state.isDisabled && {
           backgroundColor:
             theme === "dark" ? "rgb(31 41 55)" : "rgb(243 244 246)",
@@ -234,6 +242,20 @@ export default function SearchableSelect({
         ...base,
         color: theme === "dark" ? "#9ca3af" : "#374151",
       }),
+      multiValue: (base: any) => ({
+        ...base,
+        backgroundColor: "transparent",
+        margin: "2px",
+        padding: 0,
+      }),
+      multiValueLabel: (base: any) => ({
+        ...base,
+        padding: 0,
+      }),
+      multiValueRemove: (base: any) => ({
+        ...base,
+        display: "none", // Hide the default remove button since Badge handles it
+      }),
     }),
     [theme]
   );
@@ -261,7 +283,9 @@ export default function SearchableSelect({
   };
 
   const CustomOption = (props: any) => {
-    const isChecked = selectedOptions.some((sel: any) => sel.value === props.value);
+    const isChecked = selectedOptions.some(
+      (sel: any) => sel.value === props.value
+    );
 
     const handleCheckboxChange = (
       e: React.ChangeEvent<HTMLInputElement> | null,
@@ -290,7 +314,7 @@ export default function SearchableSelect({
           const newChecked = !isChecked;
           handleCheckboxChange(null, newChecked);
         }}
-        style={{ cursor: "pointer", padding: "8px" }}
+        style={{ cursor: "pointer" }}
       >
         <components.Option {...props}>
           <div className="relative flex items-center">
@@ -326,15 +350,60 @@ export default function SearchableSelect({
     );
   };
 
+  const CustomMultiValue = (props: any) => {
+    return (
+      <div className="mr-1 my-0.5">
+        <Badge
+          variant="light"
+          color="primary"
+          size="sm"
+          endIcon={
+            <X
+              className="w-3 h-3 cursor-pointer hover:opacity-70"
+              onClick={(e) => {
+                e.stopPropagation();
+                props.removeProps.onClick(e);
+              }}
+            />
+          }
+        >
+          {props.data.label}
+        </Badge>
+      </div>
+    );
+  };
+
+  const CustomMultiValueRemove = () => {
+    return null;
+  };
+
   const CustomMenuList = (props: any) => {
     const { children } = props;
 
-    // Store scroll position on every scroll
+    const allSelectableOptions = options.filter(
+      (opt) => !opt.isDisabled && opt.value !== "placeholder"
+    );
+    const allSelected =
+      selectedOptions &&
+      selectedOptions.length > 0 &&
+      selectedOptions.length === allSelectableOptions.length;
+
+    const handleSelectAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
+
+      handleCheckbox(
+        allSelectableOptions,
+        true, // is select all
+        selectedOptions,
+        null,
+        checked
+      );
+    };
+
     const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
       const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
       scrollPositionRef.current = scrollTop;
 
-      // Load more when near bottom
       if (
         scrollHeight - scrollTop - clientHeight < 50 &&
         hasMore &&
@@ -349,20 +418,17 @@ export default function SearchableSelect({
         {...props}
         innerRef={(ref: HTMLDivElement) => {
           menuListRef.current = ref;
-          if (props.innerRef) {
-            props.innerRef(ref);
-          }
+          if (props.innerRef) props.innerRef(ref);
 
-          // Restore scroll position when ref is set
+          // if (ref && scrollPositionRef.current > 0) {
+          //   requestAnimationFrame(() => {
+          //     requestAnimationFrame(() => {
+          //       if (ref) ref.scrollTop = scrollPositionRef.current;
+          //     });
+          //   });
+          // }
           if (ref && scrollPositionRef.current > 0) {
-            // Use multiple animation frames to ensure DOM is ready
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                if (ref) {
-                  ref.scrollTop = scrollPositionRef.current;
-                }
-              });
-            });
+            ref.scrollTop = scrollPositionRef.current;
           }
         }}
         innerProps={{
@@ -370,7 +436,39 @@ export default function SearchableSelect({
           onScroll: handleScroll,
         }}
       >
+        {showCheckboxes && allSelectableOptions.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "6px 10px",
+              borderBottom:
+                theme === "dark"
+                  ? "1px solid rgba(255,255,255,0.1)"
+                  : "1px solid #e5e7eb",
+              backgroundColor:
+                theme === "dark" ? "rgb(55 65 81)" : "rgb(249 250 251)",
+              cursor: "pointer",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelectAllChange({
+                target: { checked: !allSelected },
+              } as any);
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={handleSelectAllChange}
+              style={{ marginRight: 8 }}
+            />
+            <label>Select All</label>
+          </div>
+        )}
+
         {children}
+
         {isLoading && (
           <div
             style={{
@@ -391,18 +489,24 @@ export default function SearchableSelect({
   // Fix the value calculation
   const getCurrentValue = () => {
     if (showCheckboxes && selectedOptions && selectedOptions.length > 0) {
-      return selectedOptions[0]; // Show first selected option
+      // If showPill is true, return all selected options for multi-value display
+      if (showPill) {
+        return selectedOptions;
+      }
+      // Otherwise, show first selected option with count
+      return selectedOptions[0];
     }
-    
+
     if (selectedValue) {
       const foundOption = options.find(
         (option) =>
-          option.value === (selectedValue?.value || selectedValue?._id || selectedValue) &&
+          option.value ===
+            (selectedValue?.value || selectedValue?._id || selectedValue) &&
           option.value !== "placeholder"
       );
       return foundOption || null;
     }
-    
+
     return null;
   };
 
@@ -441,11 +545,20 @@ export default function SearchableSelect({
         // }
         components={{
           Option: CustomOptionWrapper,
-          ...(showCheckboxes ? { SingleValue: CustomSingleValue } : {}),
+          ...(showCheckboxes && !showPill
+            ? { SingleValue: CustomSingleValue }
+            : {}),
+          ...(showCheckboxes && showPill
+            ? {
+                MultiValue: CustomMultiValue,
+                MultiValueRemove: CustomMultiValueRemove,
+              }
+            : {}),
           MenuList: CustomMenuList,
         }}
         placeholder={placeholder}
         isSearchable
+        isMulti={showCheckboxes && showPill}
         menuPlacement={placement}
         menuPosition="absolute"
         menuShouldScrollIntoView={false}
@@ -460,7 +573,10 @@ export default function SearchableSelect({
           if (actionMeta.action === "input-change") {
             setInputValue(value);
             handleSearch(value);
-          } else if (actionMeta.action === "input-blur" || actionMeta.action === "menu-close") {
+          } else if (
+            actionMeta.action === "input-blur" ||
+            actionMeta.action === "menu-close"
+          ) {
             // Don't clear input on blur or menu close when there's a selected value
             if (!getCurrentValue()) {
               setInputValue("");
@@ -486,12 +602,41 @@ export default function SearchableSelect({
             handleClear();
             return;
           }
-          
+
+          // Handle pill removal in multi-select mode
+          if (
+            showCheckboxes &&
+            showPill &&
+            actionMeta.action === "remove-value"
+          ) {
+            const removedOption = actionMeta.removedValue;
+            const filteredOptions = options.filter(
+              (opt) => opt.value !== "placeholder" && !opt.isDisabled
+            );
+
+            // Create a props-like object for the removed option
+            const optionProps = {
+              value: removedOption.value,
+              label: removedOption.label,
+              data: removedOption,
+            };
+
+            // Call handleCheckbox to uncheck this option
+            handleCheckbox(
+              filteredOptions,
+              false, // not select all
+              selectedOptions, // pass current selectedOptions
+              optionProps, // the option being unchecked
+              false // uncheck it
+            );
+            return;
+          }
+
           if (!showCheckboxes) {
             if (option?.value === "placeholder") return;
-            const result = showFullOption 
-              ? (option || { id, value: null })
-              : (option || null);
+            const result = showFullOption
+              ? option || { id, value: null }
+              : option || null;
             onChange(result);
           }
         }}
