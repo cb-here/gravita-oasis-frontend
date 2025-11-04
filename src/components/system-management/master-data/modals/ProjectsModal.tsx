@@ -10,6 +10,12 @@ import Input from "@/components/form/input/InputField";
 import TextArea from "@/components/form/input/TextArea";
 import SearchableSelect from "@/components/form/SearchableSelect";
 import Checkbox from "@/components/form/input/Checkbox";
+import {
+  DollarSign,
+  BarChart3,
+  CheckCircle2,
+  Package,
+} from "lucide-react";
 
 interface ProjectsModalProps {
   isOpen: boolean;
@@ -42,6 +48,18 @@ const CHART_TYPES = {
 };
 
 type ProjectStepKey = keyof typeof CHART_TYPES;
+
+// Mock data for view mode - Sample configured chart types with prices
+const mockAmounts = [
+  { title: "SOC", price: "250.00" },
+  { title: "SOC_PT", price: "300.00" },
+  { title: "SOC_OT", price: "275.00" },
+  { title: "ROC", price: "200.00" },
+  { title: "ROC_PT", price: "225.00" },
+  { title: "RECERT", price: "150.00" },
+  { title: "RECERT_PT", price: "180.00" },
+  { title: "SN_ASSESSMENT_E", price: "350.00" },
+];
 
 export default function ProjectsModal({
   isOpen,
@@ -92,7 +110,7 @@ export default function ProjectsModal({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (modelType === "edit" && selectedProject) {
+    if ((modelType === "edit" || modelType === "read") && selectedProject) {
       setFormData({
         name: selectedProject.name || "",
         description: selectedProject.description || "",
@@ -274,7 +292,7 @@ export default function ProjectsModal({
       isOpen={isOpen}
       onClose={handleClose}
       className={`${
-        modelType !== "delete" ? "max-w-[800px]" : "max-w-[600px]"
+        modelType !== "delete" ? "max-w-[900px]" : "max-w-[600px]"
       } p-5 lg:p-10 m-4`}
     >
       <div className="space-y-6">
@@ -288,7 +306,209 @@ export default function ProjectsModal({
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {modelType !== "delete" ? (
+          {modelType === "read" ? (
+            /* VIEW MODE */
+            (() => {
+              // Use mock data for display purposes in view mode
+              const displayAmounts = amounts.length > 0 ? amounts : mockAmounts;
+              const displayBillType =
+                amounts.length > 0 ? billType : "TASKWISE";
+
+              return (
+                <div className="space-y-6">
+                  {/* Project Overview Card */}
+                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800/50 rounded-lg p-6 border border-purple-100 dark:border-gray-700">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                          {formData.name || "Project Name"}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          {formData.description || "No description available"}
+                        </p>
+                      </div>
+                      <div className="ml-4">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            formData.status === "Active"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                          }`}
+                        >
+                          {formData.status || "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Project Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Project Price */}
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                            Project Price
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5">
+                            ${formData.price || "0.00"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Billing Type */}
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                          <Package className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                            Billing Type
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5">
+                            {displayBillType === "TASKWISE"
+                              ? "Task-wise"
+                              : "Project-wise"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Configured Tasks */}
+                    {displayBillType === "TASKWISE" && (
+                      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                              Configured Tasks
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5">
+                              {
+                                displayAmounts.filter(
+                                  (task) => task?.price && task.price !== ""
+                                ).length
+                              }{" "}
+                              / {Object.keys(CHART_TYPES).length}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Chart Types / Tasks Section */}
+                  {displayAmounts.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+                        <BarChart3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Chart Types & Pricing
+                        </h4>
+                        <span className="ml-auto text-sm text-gray-500 dark:text-gray-400">
+                          {
+                            displayAmounts.filter(
+                              (task) => task?.price && task.price !== ""
+                            ).length
+                          }{" "}
+                          configured
+                        </span>
+                      </div>
+
+                      {/* Chart Types Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {Object.entries(CHART_TYPES).map(([key, label]) => {
+                          const chartKey = key as ProjectStepKey;
+                          const task = displayAmounts.find(
+                            (t) => t.title === chartKey
+                          );
+                          const hasPrice = task?.price && task.price !== "";
+
+                          return (
+                            <div
+                              key={key}
+                              className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${
+                                hasPrice
+                                  ? "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800"
+                                  : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-50"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {hasPrice ? (
+                                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                ) : (
+                                  <div className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 flex-shrink-0" />
+                                )}
+                                <span
+                                  className={`text-sm font-medium truncate ${
+                                    hasPrice
+                                      ? "text-gray-900 dark:text-white"
+                                      : "text-gray-500 dark:text-gray-400"
+                                  }`}
+                                >
+                                  {label}
+                                </span>
+                              </div>
+                              {hasPrice && (
+                                <span className="text-sm font-bold text-green-700 dark:text-green-400 ml-2 flex-shrink-0">
+                                  ${task.price}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Total Calculation */}
+                      {displayAmounts.filter(
+                        (task) => task?.price && task.price !== ""
+                      ).length > 0 && (
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Total Task Price
+                                </p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  Sum of all configured chart types
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                                $
+                                {displayAmounts
+                                  .filter(
+                                    (task) => task?.price && task.price !== ""
+                                  )
+                                  .reduce(
+                                    (sum, task) =>
+                                      sum + parseFloat(task.price || "0"),
+                                    0
+                                  )
+                                  .toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()
+          ) : modelType !== "delete" ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <Label required>Name</Label>
@@ -529,32 +749,49 @@ export default function ProjectsModal({
               )}
             </div>
           )}
-          <div className="flex justify-between gap-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              type="button"
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="px-6 py-2 min-w-[175px]"
-              disabled={loading}
-            >
-              {loading ? (
-                <Loading size={1} style={2} />
-              ) : (
-                `${
-                  modelType === "delete"
-                    ? "Delete"
-                    : modelType === "edit"
-                    ? "Update"
-                    : "Create"
-                } Project`
-              )}
-            </Button>
+          <div
+            className={`flex gap-3 pt-4 ${
+              modelType === "read" ? "justify-end" : "justify-between"
+            }`}
+          >
+            {modelType !== "read" && (
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                type="button"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+            )}
+            {modelType === "read" ? (
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                type="button"
+                className="px-6 py-2 min-w-[120px]"
+              >
+                Close
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="px-6 py-2 min-w-[175px]"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loading size={1} style={2} />
+                ) : (
+                  `${
+                    modelType === "delete"
+                      ? "Delete"
+                      : modelType === "edit"
+                      ? "Update"
+                      : "Create"
+                  } Project`
+                )}
+              </Button>
+            )}
           </div>
         </form>
       </div>

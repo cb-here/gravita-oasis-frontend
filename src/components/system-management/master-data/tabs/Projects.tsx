@@ -11,7 +11,7 @@ import Button from "@/components/ui/button/Button";
 import ExportButton from "@/components/ui/button/ExportButton";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
-import { PencilIcon, TrashBinIcon } from "@/icons";
+import { EyeIcon, PencilIcon, TrashBinIcon } from "@/icons";
 import React, { useState, useRef } from "react";
 import ProjectsModal from "../modals/ProjectsModal";
 import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
@@ -269,6 +269,18 @@ export default function Projects() {
         data={projects?.Projects || []}
         actions={(item: any) => (
           <>
+            <Tooltip content="View" position="left">
+              <button
+                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                onClick={() => {
+                  setModalType("read");
+                  setSelectedProject(item);
+                  mainModal.openModal();
+                }}
+              >
+                <EyeIcon />
+              </button>
+            </Tooltip>
             <Tooltip content="Edit" position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"

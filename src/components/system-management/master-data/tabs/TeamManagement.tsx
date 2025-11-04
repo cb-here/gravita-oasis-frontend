@@ -10,11 +10,12 @@ import Button from "@/components/ui/button/Button";
 import ExportButton from "@/components/ui/button/ExportButton";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
-import { PencilIcon, TrashBinIcon } from "@/icons";
+import { EyeIcon, PencilIcon, TrashBinIcon } from "@/icons";
 import React, { useState, useRef } from "react";
 import TeamManagementModal from "../modals/TeamManagementModal";
 import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
 import AvatarText from "@/components/ui/avatar/AvatarText";
+import { UserPlus } from "lucide-react";
 
 export default function TeamManagement() {
   const mainModal = useModal();
@@ -328,6 +329,28 @@ export default function TeamManagement() {
         data={teamData?.Teams || []}
         actions={(item: any) => (
           <>
+            <Tooltip content="Add Member" position="left">
+              <button
+                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                onClick={() => {
+                  setModalType("add-member");
+                  setSelectedTeam(item);
+                  mainModal.openModal();
+                }}>
+                <UserPlus className="h-5 w-5" />
+              </button>
+            </Tooltip>
+            <Tooltip content="View" position="left">
+              <button
+                className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                onClick={() => {
+                  setModalType("view");
+                  setSelectedTeam(item);
+                  mainModal.openModal();
+                }}>
+                <EyeIcon />
+              </button>
+            </Tooltip>
             <Tooltip content="Edit" position="left">
               <button
                 className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
