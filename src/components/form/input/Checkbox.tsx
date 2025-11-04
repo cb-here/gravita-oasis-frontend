@@ -1,8 +1,12 @@
+"use client";
+
 import type React from "react";
+import { useEffect, useRef } from "react";
 
 interface CheckboxProps {
   label?: string;
   checked: boolean;
+  indeterminate?: boolean;
   className?: string;
   id?: string;
   onChange: (checked: boolean) => void;
@@ -12,11 +16,18 @@ interface CheckboxProps {
 const Checkbox: React.FC<CheckboxProps> = ({
   label,
   checked,
+  indeterminate = false,
   id,
   onChange,
   className = "",
   disabled = false,
 }) => {
+  const checkboxRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
   return (
     <label
       className={`flex items-center space-x-3 group cursor-pointer ${
@@ -33,6 +44,11 @@ const Checkbox: React.FC<CheckboxProps> = ({
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
         />
+        {indeterminate && !checked && (
+          <div className="absolute inset-0 bg-brand-500 rounded-md">
+            <div className="absolute top-1/2 left-1/2 w-2.5 h-0.5 bg-white dark:bg-gray-200 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none rounded-sm" />
+          </div>
+        )}
         {checked && (
           <svg
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"

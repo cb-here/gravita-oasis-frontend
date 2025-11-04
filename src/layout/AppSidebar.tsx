@@ -18,6 +18,7 @@ import {
   CogIcon,
   ListChecks,
   ListTodo,
+  Receipt,
   Tickets,
   UserCogIcon,
   Users2,
@@ -46,18 +47,19 @@ const navItems: NavItem[] = [
     name: "User Management",
     icon: <UserCogIcon />,
     subItems: [
-      { name: "User List", path: "/user-list", pro: false },
-      { name: "Access Group", path: "/access-groups", pro: false },
-      { name: "Kanban", path: "/kanban", pro: false },
+      { name: "User List", path: "/user-list" },
+      { name: "Access Group", path: "/access-groups" },
+      { name: "Kanban", path: "/kanban" },
+      { name: "User Master Data", path: "/user-master-data" },
     ],
   },
   {
     name: "Task",
     icon: <TaskIcon />,
     subItems: [
-      { name: "Unassigned Task", path: "/unassigned-task", pro: false },
-      { name: "Assigned Task", path: "/assigned-task", pro: false },
-      { name: "Bulk Creation Log", path: "/bulk-creation-log", pro: false },
+      { name: "Unassigned Task", path: "/unassigned-task" },
+      { name: "Assigned Task", path: "/assigned-task" },
+      { name: "Bulk Creation Log", path: "/bulk-creation-log" },
     ],
   },
   {
@@ -99,6 +101,11 @@ const navItems: NavItem[] = [
     icon: <ListTodo className="h-5 w-5" />,
     name: "To Do",
     path: "/to-do",
+  },
+   {
+    icon: <Receipt className="h-5 w-5" />,
+    name: "Invoice",
+    path: "/invoice",
   },
   {
     icon: <FaSitemap className="h-5 w-5" />,

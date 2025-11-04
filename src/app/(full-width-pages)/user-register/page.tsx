@@ -7,6 +7,7 @@ import Input from "@/components/form/input/InputField";
 import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 import Label from "@/components/form/Label";
 import MyPhoneInput from "@/components/form/input/PhoneInput";
+import DateTimePicker from "@/components/common/DateTimePicker";
 
 const steps = [
   { label: "Personal Details", icon: "👤" },
@@ -16,19 +17,26 @@ const steps = [
 
 const genderOptions = ["Male", "Female", "Other", "Prefer not to say"];
 const maritalStatusOptions = ["Single", "Married", "Divorced", "Widowed"];
+const bloodGroupOptions = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 interface FormData {
   firstName: string;
   lastName: string;
-  username: string;
   email: string;
   phone: string;
   backupPhone: string;
-  dob: string;
+  dob: Date | null;
   fatherName: string;
   motherName: string;
   gender: string;
   maritalStatus: string;
+  bloodGroup: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
   accountNumber: string;
   ifscCode: string;
   bankName: string;
@@ -38,7 +46,7 @@ interface FormData {
   experienceCertificate: File | null;
   educationalCertificate: File | null;
   otherDocuments: File | null;
-  [key: string]: string | File | null;
+  [key: string]: string | File | Date | null;
 }
 
 export default function UserRegistrationForm() {
@@ -49,15 +57,21 @@ export default function UserRegistrationForm() {
   const [form, setForm] = useState<FormData>({
     firstName: "",
     lastName: "",
-    username: "",
     email: "",
     phone: "",
     backupPhone: "",
-    dob: "",
+    dob: null,
     fatherName: "",
     motherName: "",
     gender: "",
     maritalStatus: "",
+    bloodGroup: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
     accountNumber: "",
     ifscCode: "",
     bankName: "",
@@ -87,17 +101,23 @@ export default function UserRegistrationForm() {
       if (!form.firstName.trim())
         newErrors.firstName = "First name is required";
       if (!form.lastName.trim()) newErrors.lastName = "Last name is required";
-      if (!form.username.trim()) newErrors.username = "Username is required";
       if (!form.email.trim()) newErrors.email = "Email is required";
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
         newErrors.email = "Invalid email format";
       if (!form.phone.trim()) newErrors.phone = "Phone number is required";
       else if (!/^\+\d{10,15}$/.test(form.phone))
         newErrors.phone = "Invalid phone number format";
-      if (!form.dob.trim()) newErrors.dob = "Date of birth is required";
+      if (!form.dob) newErrors.dob = "Date of birth is required";
       if (!form.gender.trim()) newErrors.gender = "Gender is required";
       if (!form.maritalStatus.trim())
         newErrors.maritalStatus = "Marital status is required";
+      if (!form.addressLine1.trim())
+        newErrors.addressLine1 = "Address is required";
+      if (!form.city.trim()) newErrors.city = "City is required";
+      if (!form.state.trim()) newErrors.state = "State is required";
+      if (!form.postalCode.trim())
+        newErrors.postalCode = "Postal code is required";
+      if (!form.country.trim()) newErrors.country = "Country is required";
     }
 
     if (currentStep === 1) {
@@ -126,14 +146,18 @@ export default function UserRegistrationForm() {
       return !!(
         form.firstName.trim() &&
         form.lastName.trim() &&
-        form.username.trim() &&
         form.email.trim() &&
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
         form.phone.trim() &&
         /^\+\d{10,15}$/.test(form.phone) &&
-        form.dob.trim() &&
+        form.dob &&
         form.gender.trim() &&
-        form.maritalStatus.trim()
+        form.maritalStatus.trim() &&
+        form.addressLine1.trim() &&
+        form.city.trim() &&
+        form.state.trim() &&
+        form.postalCode.trim() &&
+        form.country.trim()
       );
     }
 
@@ -286,18 +310,7 @@ export default function UserRegistrationForm() {
                 errorMessage={errors.lastName}
               />
             </div>
-            <div>
-              <Label required>Username</Label>
-              <Input
-                type="text"
-                name="username"
-                value={form.username}
-                onChange={handleChange}
-                placeholder="Enter your username"
-                error={!!errors.username}
-                errorMessage={errors.username}
-              />
-            </div>
+
             <div>
               <Label required>Personal Email</Label>
               <Input
@@ -343,15 +356,26 @@ export default function UserRegistrationForm() {
             </div>
             <div>
               <Label required>Date of Birth</Label>
-              <Input
-                type="date"
-                name="dob"
+              <DateTimePicker
                 value={form.dob}
-                onChange={handleChange}
-                placeholder="dd-mm-yyyy"
+                onChange={(date) => {
+                  setForm((prev) => ({ ...prev, dob: date }));
+                  if (errors.dob) {
+                    setErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.dob;
+                      return newErrors;
+                    });
+                  }
+                }}
+                onlyPast={true}
                 error={!!errors.dob}
-                errorMessage={errors.dob}
               />
+              {errors.dob && (
+                <p className="mt-1 text-sm text-red-500 error-message">
+                  {errors.dob}
+                </p>
+              )}
             </div>
             <div>
               <Label>Father&apos;s Name</Label>
@@ -379,6 +403,112 @@ export default function UserRegistrationForm() {
             </div>
           </div>
 
+          {/* Address Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+              Address Information
+            </h3>
+            <div className="grid grid-cols-1 gap-5">
+              <div>
+                <Label required>Address Line 1</Label>
+                <Input
+                  type="text"
+                  name="addressLine1"
+                  value={form.addressLine1}
+                  onChange={handleChange}
+                  placeholder="Street address, P.O. box"
+                  error={!!errors.addressLine1}
+                  errorMessage={errors.addressLine1}
+                />
+              </div>
+              <div>
+                <Label>Address Line 2</Label>
+                <Input
+                  type="text"
+                  name="addressLine2"
+                  value={form.addressLine2}
+                  onChange={handleChange}
+                  placeholder="Apartment, suite, unit, building (optional)"
+                  error={!!errors.addressLine2}
+                  errorMessage={errors.addressLine2}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div>
+                <Label required>City</Label>
+                <Input
+                  type="text"
+                  name="city"
+                  value={form.city}
+                  onChange={handleChange}
+                  placeholder="Enter city"
+                  error={!!errors.city}
+                  errorMessage={errors.city}
+                />
+              </div>
+              <div>
+                <Label required>State/Province</Label>
+                <Input
+                  type="text"
+                  name="state"
+                  value={form.state}
+                  onChange={handleChange}
+                  placeholder="Enter state"
+                  error={!!errors.state}
+                  errorMessage={errors.state}
+                />
+              </div>
+              <div>
+                <Label required>Postal Code</Label>
+                <Input
+                  type="text"
+                  name="postalCode"
+                  value={form.postalCode}
+                  onChange={handleChange}
+                  placeholder="Enter postal code"
+                  error={!!errors.postalCode}
+                  errorMessage={errors.postalCode}
+                />
+              </div>
+            </div>
+            <div>
+              <Label required>Country</Label>
+              <Input
+                type="text"
+                name="country"
+                value={form.country}
+                onChange={handleChange}
+                placeholder="Enter country"
+                error={!!errors.country}
+                errorMessage={errors.country}
+              />
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-5 backdrop-blur-sm">
+            <Label>Blood Group</Label>
+            <div className="flex flex-wrap gap-2">
+              {bloodGroupOptions.map((bg) => (
+                <button
+                  type="button"
+                  key={bg}
+                  className={`px-4 py-2 rounded-lg border transition-all font-medium focus:outline-none text-sm ${
+                    form.bloodGroup === bg
+                      ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
+                      : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
+                  }`}
+                  onClick={() => handleSelect("bloodGroup", bg)}
+                >
+                  {bg}
+                </button>
+              ))}
+            </div>
+            {errors.bloodGroup && (
+              <p className="mt-2 text-sm text-error-500">{errors.bloodGroup}</p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-5 backdrop-blur-sm">
               <Label required>Gender</Label>
@@ -392,7 +522,8 @@ export default function UserRegistrationForm() {
                         ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
                         : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
                     }`}
-                    onClick={() => handleSelect("gender", g)}>
+                    onClick={() => handleSelect("gender", g)}
+                  >
                     {g}
                   </button>
                 ))}
@@ -413,7 +544,8 @@ export default function UserRegistrationForm() {
                         ? "bg-brand-500 text-white border-brand-500 shadow-theme-xs"
                         : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-brand-50 hover:border-brand-300 dark:hover:bg-brand-500/10 backdrop-blur-sm"
                     }`}
-                    onClick={() => handleSelect("maritalStatus", m)}>
+                    onClick={() => handleSelect("maritalStatus", m)}
+                  >
                     {m}
                   </button>
                 ))}
@@ -441,7 +573,8 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handleNext}>
+            onClick={handleNext}
+          >
             Next
           </Button>
         </div>
@@ -524,7 +657,8 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handlePrevious}>
+            onClick={handlePrevious}
+          >
             Previous
           </Button>
           <Button
@@ -540,7 +674,8 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handleNext}>
+            onClick={handleNext}
+          >
             Next
           </Button>
         </div>
@@ -567,14 +702,16 @@ export default function UserRegistrationForm() {
         />
         <div
           className="flex flex-col items-center justify-center py-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-brand-300 dark:hover:border-brand-700 transition-all backdrop-blur-sm"
-          onClick={() => handleFileClick(name)}>
+          onClick={() => handleFileClick(name)}
+        >
           {form[name] ? (
             <div className="text-center">
               <svg
                 className="w-10 h-10 text-green-500 mx-auto mb-2"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24">
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -595,7 +732,8 @@ export default function UserRegistrationForm() {
                 className="w-10 h-10 text-brand-500 mb-3"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24">
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -657,14 +795,16 @@ export default function UserRegistrationForm() {
                 />
               </svg>
             }
-            onClick={handlePrevious}>
+            onClick={handlePrevious}
+          >
             Previous
           </Button>
           <Button
             variant="gradient"
             size="md"
             onClick={handleSubmit}
-            disabled={!isStepValid(2)}>
+            disabled={!isStepValid(2)}
+          >
             Submit
           </Button>
         </div>
@@ -743,13 +883,15 @@ export default function UserRegistrationForm() {
                           : idx < step
                           ? "bg-brand-500 text-white shadow-md"
                           : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 shadow-sm"
-                      }`}>
+                      }`}
+                    >
                       {idx < step ? (
                         <svg
                           className="w-5 h-5 sm:w-6 sm:h-6"
                           fill="none"
                           stroke="currentColor"
-                          viewBox="0 0 24 24">
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -764,7 +906,8 @@ export default function UserRegistrationForm() {
                               className="w-5 h-5 sm:w-6 sm:h-6"
                               fill="none"
                               stroke="currentColor"
-                              viewBox="0 0 24 24">
+                              viewBox="0 0 24 24"
+                            >
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -778,7 +921,8 @@ export default function UserRegistrationForm() {
                               className="w-5 h-5 sm:w-6 sm:h-6"
                               fill="none"
                               stroke="currentColor"
-                              viewBox="0 0 24 24">
+                              viewBox="0 0 24 24"
+                            >
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -792,7 +936,8 @@ export default function UserRegistrationForm() {
                               className="w-5 h-5 sm:w-6 sm:h-6"
                               fill="none"
                               stroke="currentColor"
-                              viewBox="0 0 24 24">
+                              viewBox="0 0 24 24"
+                            >
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -809,14 +954,16 @@ export default function UserRegistrationForm() {
                         idx <= step
                           ? "text-brand-500 dark:text-brand-400 font-semibold"
                           : "text-gray-400 dark:text-gray-500"
-                      }`}>
+                      }`}
+                    >
                       {s.label}
                     </span>
                   </div>
                   {idx < steps.length - 1 && (
                     <div
                       className="flex-1 mx-2 sm:mx-4"
-                      style={{ maxWidth: "120px" }}>
+                      style={{ maxWidth: "120px" }}
+                    >
                       <div
                         className={`h-1 rounded-full transition-all duration-500 ${
                           idx < step

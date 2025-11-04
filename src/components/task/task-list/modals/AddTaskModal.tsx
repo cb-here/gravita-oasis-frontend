@@ -5,12 +5,14 @@ import Label from "@/components/form/Label";
 import Loading from "@/components/Loading";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
+import SearchableSelect from "@/components/form/SearchableSelect";
+import DateTimePicker from "@/components/common/DateTimePicker";
 import React, { useState } from "react";
 import * as yup from "yup";
 
 interface AddTaskFormData {
   title: string;
-  dueDate?: string;
+  dueDate?: Date | null;
   status: "todo" | "in-progress" | "completed";
   category: "Marketing" | "Template" | "Development";
   assignee: string;
@@ -56,7 +58,7 @@ export default function AddTaskModal({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<AddTaskFormData>({
     title: "",
-    dueDate: "",
+    dueDate: null,
     status: "todo",
     category: "Marketing",
     assignee: "Mayad Ahmed",
@@ -123,7 +125,7 @@ export default function AddTaskModal({
       closeModal();
       setFormData({
         title: "",
-        dueDate: "",
+        dueDate: null,
         status: "todo",
         category: "Marketing",
         assignee: "Mayad Ahmed",
@@ -191,6 +193,7 @@ export default function AddTaskModal({
                 <Input
                   type="text"
                   name="title"
+                  placeholder="Enter task title"
                   value={formData.title}
                   onChange={handleChange}
                   error={!!errors.title}
@@ -202,32 +205,18 @@ export default function AddTaskModal({
 
               <div>
                 <Label>Due Date</Label>
-                <div className="relative">
-                  <Input
-                    type="date"
-                    name="dueDate"
-                    value={formData.dueDate || ""}
-                    onChange={handleChange}
-                    error={!!errors.dueDate}
-                  />
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2">
-                    <svg
-                      className="fill-gray-700 dark:fill-gray-400"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.33317 0.0830078C4.74738 0.0830078 5.08317 0.418794 5.08317 0.833008V1.24967H8.9165V0.833008C8.9165 0.418794 9.25229 0.0830078 9.6665 0.0830078C10.0807 0.0830078 10.4165 0.418794 10.4165 0.833008V1.24967L11.3332 1.24967C12.2997 1.24967 13.0832 2.03318 13.0832 2.99967V4.99967V11.6663C13.0832 12.6328 12.2997 13.4163 11.3332 13.4163H2.6665C1.70001 13.4163 0.916504 12.6328 0.916504 11.6663V4.99967V2.99967C0.916504 2.03318 1.70001 1.24967 2.6665 1.24967L3.58317 1.24967V0.833008C3.58317 0.418794 3.91896 0.0830078 4.33317 0.0830078ZM4.33317 2.74967H2.6665C2.52843 2.74967 2.4165 2.8616 2.4165 2.99967V4.24967H11.5832V2.99967C11.5832 2.8616 11.4712 2.74967 11.3332 2.74967H9.6665H4.33317ZM11.5832 5.74967H2.4165V11.6663C2.4165 11.8044 2.52843 11.9163 2.6665 11.9163H11.3332C11.4712 11.9163 11.5832 11.8044 11.5832 11.6663V5.74967Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </span>
-                </div>
+                <DateTimePicker
+                  value={formData.dueDate}
+                  onChange={(date) => {
+                    setFormData((prev) => ({ ...prev, dueDate: date }));
+                    if (errors.dueDate) {
+                      setErrors((prev) => ({ ...prev, dueDate: "" }));
+                    }
+                  }}
+                  mode="single"
+                  allowTime={false}
+                  error={!!errors.dueDate}
+                />
                 {errors.dueDate && (
                   <p className="mt-1 text-sm text-red-600">{errors.dueDate}</p>
                 )}
@@ -235,38 +224,33 @@ export default function AddTaskModal({
 
               <div>
                 <Label>Status</Label>
-                <div className="relative z-20 bg-transparent dark:bg-form-input">
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    className={`dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border ${
-                      errors.status ? "border-red-500" : "border-gray-300"
-                    } bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800`}
-                  >
-                    <option value="todo">To Do</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                  <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-4 top-1/2 dark:text-gray-400">
-                    <svg
-                      className="stroke-current"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </div>
+                <SearchableSelect
+                  dataProps={{
+                    optionData: [
+                      { _id: "todo", name: "To Do" },
+                      { _id: "in-progress", name: "In Progress" },
+                      { _id: "completed", name: "Completed" },
+                    ],
+                  }}
+                  selectionProps={{
+                    selectedValue: formData.status,
+                  }}
+                  displayProps={{
+                    placeholder: "Select status",
+                    isClearable: false,
+                  }}
+                  eventHandlers={{
+                    onChange: (option: any) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        status: option?.value || "todo",
+                      }));
+                      if (errors.status) {
+                        setErrors((prev) => ({ ...prev, status: "" }));
+                      }
+                    },
+                  }}
+                />
                 {errors.status && (
                   <p className="mt-1 text-sm text-red-600">{errors.status}</p>
                 )}
@@ -276,38 +260,33 @@ export default function AddTaskModal({
                 <Label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   Tags
                 </Label>
-                <div className="relative z-20 bg-transparent dark:bg-form-input">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className={`dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border ${
-                      errors.category ? "border-red-500" : "border-gray-300"
-                    } bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800`}
-                  >
-                    <option value="Marketing">Marketing</option>
-                    <option value="Template">Template</option>
-                    <option value="Development">Development</option>
-                  </select>
-                  <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-4 top-1/2 dark:text-gray-400">
-                    <svg
-                      className="stroke-current"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </div>
+                <SearchableSelect
+                  dataProps={{
+                    optionData: [
+                      { _id: "Marketing", name: "Marketing" },
+                      { _id: "Template", name: "Template" },
+                      { _id: "Development", name: "Development" },
+                    ],
+                  }}
+                  selectionProps={{
+                    selectedValue: formData.category,
+                  }}
+                  displayProps={{
+                    placeholder: "Select tag",
+                    isClearable: false,
+                  }}
+                  eventHandlers={{
+                    onChange: (option: any) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        category: option?.value || "Marketing",
+                      }));
+                      if (errors.category) {
+                        setErrors((prev) => ({ ...prev, category: "" }));
+                      }
+                    },
+                  }}
+                />
                 {errors.category && (
                   <p className="mt-1 text-sm text-red-600">{errors.category}</p>
                 )}

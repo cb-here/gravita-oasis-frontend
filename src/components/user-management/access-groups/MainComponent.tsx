@@ -101,7 +101,7 @@ export default function MainComponent() {
 
   const [accessGroupParams, setAccessGroupParams] = useState<any>(initParams);
   const [loading, setLoading] = useState(false);
-  const [modalType, setModalType] = useState("");
+  const [modalType, setModalType] = useState<any>("");
   const [selectedAccessGroup, setSelectedAccessGroup] = useState<any>(null);
 
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -173,7 +173,7 @@ export default function MainComponent() {
           <Button
             onClick={() => {
               setSelectedAccessGroup(null);
-              setModalType("add");
+              setModalType("Add");
               openModal();
             }}
             className="w-full sm:w-auto whitespace-nowrap"
@@ -200,7 +200,7 @@ export default function MainComponent() {
                 <button
                   onClick={() => {
                     setSelectedAccessGroup(item);
-                    setModalType("read");
+                    setModalType("Read");
                     openModal();
                   }}
                   className="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary"
@@ -212,7 +212,7 @@ export default function MainComponent() {
                 <button
                   onClick={() => {
                     setSelectedAccessGroup(item);
-                    setModalType("edit");
+                    setModalType("Edit");
                     openModal();
                   }}
                   className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
@@ -224,7 +224,7 @@ export default function MainComponent() {
                 <button
                   onClick={() => {
                     setSelectedAccessGroup(item);
-                    setModalType("delete");
+                    setModalType("Delete");
                     openModal();
                   }}
                   className="text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500 "
@@ -247,13 +247,13 @@ export default function MainComponent() {
           endIndex={endIndex}
         />
       </div>
-      <AccessGroupModel
+       <AccessGroupModel
         isOpen={isOpen}
         closeModal={closeModal}
+        editAccesssGroupData={selectedAccessGroup}
+        setEditAccesssGroupData={setSelectedAccessGroup}
         modelType={modalType}
         setModelType={setModalType}
-        setSelectedAccessGroup={setSelectedAccessGroup}
-        selectedAccessGroup={selectedAccessGroup}
       />
     </>
   );
