@@ -1,0 +1,758 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Button from "@/components/ui/button/Button";
+import Loading from "@/components/Loading";
+import { showToast } from "@/lib/toast";
+import { AxiosError } from "axios";
+import * as yup from "yup";
+import { Modal } from "@/components/ui/modal";
+import Label from "@/components/form/Label";
+import Input from "@/components/form/input/InputField";
+import axios from "@/lib/axiosInstance";
+import { ChevronDown, Upload } from "lucide-react";
+import CountrySelector from "react-phone-number-input/input";
+import "react-phone-number-input/style.css";
+
+interface ClientModalProps {
+  isOpen: boolean;
+  closeModal: () => void;
+  modelType: any;
+  setModelType: any;
+  selectedClient: any;
+  setSelectedClient: any;
+  setClients: any;
+  rowsPerPage: any;
+}
+
+export const industryOptions = [
+  { label: "Technology", value: "Technology" },
+  { label: "Healthcare", value: "Healthcare" },
+  { label: "Finance", value: "Finance" },
+  { label: "Education", value: "Education" },
+  { label: "Manufacturing", value: "Manufacturing" },
+  { label: "Retail", value: "Retail" },
+  { label: "Real Estate", value: "Real Estate" },
+  { label: "Transportation", value: "Transportation" },
+  { label: "Energy", value: "Energy" },
+  { label: "Construction", value: "Construction" },
+  { label: "Hospitality", value: "Hospitality" },
+  { label: "Telecommunications", value: "Telecommunications" },
+  { label: "Media & Entertainment", value: "Media & Entertainment" },
+  { label: "Agriculture", value: "Agriculture" },
+  { label: "Consulting", value: "Consulting" },
+];
+
+
+export default function ClientModal({
+  isOpen,
+  closeModal,
+  modelType,
+  setModelType,
+  selectedClient,
+  setSelectedClient,
+  setClients,
+  rowsPerPage,
+}: ClientModalProps) {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>("basic");
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState({
+    // Basic Information
+    businessName: "",
+    clientIndustry: "",
+    countryCode: "IN",
+    cityTown: "",
+    logo: null as File | null,
+
+    // Tax Information
+    vatNumber: "",
+    clientType: "individual",
+    taxTreatment: "overseas",
+
+    // Address
+    addressLine1: "",
+    addressLine2: "",
+    state: "",
+    zipCode: "",
+
+    // Account Details
+    bankName: "",
+    accountNumber: "",
+    accountHolderName: "",
+    ifscCode: "",
+    swiftCode: "",
+  });
+
+  const validationSchema = yup.object().shape({
+    businessName: yup.string().required("Business name is required"),
+    clientIndustry: yup.string().required("Industry is required"),
+    countryCode: yup.string().required("Country is required"),
+  });
+
+  const validateForm = async (): Promise<boolean> => {
+    try {
+      await validationSchema.validate(formData, { abortEarly: false });
+      setErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        const newErrors: Record<string, string> = {};
+        err.inner.forEach((e) => {
+          if (e.path) newErrors[e.path] = e.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (modelType === "edit" && selectedClient) {
+      setFormData({
+        businessName: selectedClient.clientName || "",
+        clientIndustry: selectedClient.industry || "",
+        countryCode: selectedClient.countryCode || "IN",
+        cityTown: selectedClient.cityTown || "",
+        logo: null,
+        vatNumber: selectedClient.vatNumber || "",
+        clientType: selectedClient.clientType || "individual",
+        taxTreatment: selectedClient.taxTreatment || "overseas",
+        addressLine1: selectedClient.addressLine1 || "",
+        addressLine2: selectedClient.addressLine2 || "",
+        state: selectedClient.state || "",
+        zipCode: selectedClient.zipCode || "",
+        bankName: selectedClient.bankName || "",
+        accountNumber: selectedClient.accountNumber || "",
+        accountHolderName: selectedClient.accountHolderName || "",
+        ifscCode: selectedClient.ifscCode || "",
+        swiftCode: selectedClient.swiftCode || "",
+      });
+    } else {
+      setFormData({
+        businessName: "",
+        clientIndustry: "",
+        countryCode: "IN",
+        cityTown: "",
+        logo: null,
+        vatNumber: "",
+        clientType: "individual",
+        taxTreatment: "overseas",
+        addressLine1: "",
+        addressLine2: "",
+        state: "",
+        zipCode: "",
+        bankName: "",
+        accountNumber: "",
+        accountHolderName: "",
+        ifscCode: "",
+        swiftCode: "",
+      });
+      setLogoPreview(null);
+    }
+  }, [isOpen, modelType, selectedClient]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((p) => ({ ...p, [name]: value }));
+    if (errors[name]) {
+      setErrors((p) => {
+        const copy = { ...p };
+        delete copy[name];
+        return copy;
+      });
+    }
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((p) => ({ ...p, logo: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getTaxLabel = (country: string) => {
+    const taxLabels: Record<string, string> = {
+      IN: "GST Number",
+      US: "EIN (Employer Identification Number)",
+      GB: "VAT Registration Number",
+      DE: "USt-IdNr. (VAT ID)",
+      FR: "Numéro de TVA",
+      AU: "ABN (Australian Business Number)",
+      CA: "Business Number (BN)",
+      JP: "Corporate Number",
+      SG: "GST Registration Number",
+    };
+    return taxLabels[country] || "VAT Number";
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (modelType !== "delete") {
+      const isValid = await validateForm();
+      if (!isValid) return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (modelType === "delete") {
+        const res = await axios.delete(`/clients/${selectedClient?._id}`);
+        showToast("success", res?.data?.title, res?.data?.message);
+
+        setClients((prev: any) => ({
+          ...prev,
+          Clients: prev.Clients.filter(
+            (client: any) => client?._id !== selectedClient?._id
+          ),
+          totalRecords: prev.totalRecords - 1,
+        }));
+
+        handleClose();
+      } else {
+        const payload = {
+          ...formData,
+          // Convert logo to base64 or handle file upload separately
+        };
+
+        if (modelType === "edit") {
+          const res = await axios.put(
+            `/clients/${selectedClient?._id}`,
+            payload
+          );
+          showToast("success", res?.data?.title, res?.data?.message);
+
+          setClients((prev: any) => ({
+            ...prev,
+            Clients: prev.Clients.map((client: any) =>
+              client._id === selectedClient?._id
+                ? { ...client, ...payload }
+                : client
+            ),
+          }));
+
+          handleClose();
+        } else {
+          const res = await axios.post(`/clients`, payload);
+          showToast("success", res?.data?.title, res?.data?.message);
+          const response = res?.data?.Response;
+
+          setClients((prev: any) => {
+            const updatedClients = [...prev.Clients];
+
+            if (updatedClients.length >= rowsPerPage) {
+              updatedClients.pop();
+            }
+
+            return {
+              ...prev,
+              Clients: [response, ...updatedClients],
+              totalRecords: prev.totalRecords + 1,
+            };
+          });
+
+          handleClose();
+        }
+      }
+    } catch (err) {
+      const axiosErr = err as AxiosError<any>;
+      showToast(
+        "error",
+        axiosErr?.response?.data?.title || "Error",
+        axiosErr?.response?.data?.message || "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (loading) return;
+    setFormData({
+      businessName: "",
+      clientIndustry: "",
+      countryCode: "IN",
+      cityTown: "",
+      logo: null,
+      vatNumber: "",
+      clientType: "individual",
+      taxTreatment: "overseas",
+      addressLine1: "",
+      addressLine2: "",
+      state: "",
+      zipCode: "",
+      bankName: "",
+      accountNumber: "",
+      accountHolderName: "",
+      ifscCode: "",
+      swiftCode: "",
+    });
+    setErrors({});
+    setModelType("");
+    setSelectedClient(null);
+    setLogoPreview(null);
+    setOpenAccordion("basic");
+    closeModal();
+  };
+
+  const getModalTitle = () => {
+    switch (modelType) {
+      case "add":
+        return "Add New Client";
+      case "edit":
+        return "Edit Client";
+      case "delete":
+        return "Delete Client";
+      default:
+        return "";
+    }
+  };
+
+  const getModalDescription = () => {
+    switch (modelType) {
+      case "add":
+        return "Add a new client to the system.";
+      case "edit":
+        return "Update the client details.";
+      case "delete":
+        return "This action cannot be undone.";
+      default:
+        return "";
+    }
+  };
+
+  const toggleAccordion = (section: string) => {
+    setOpenAccordion(openAccordion === section ? null : section);
+  };
+
+  const AccordionHeader = ({
+    section,
+    title,
+  }: {
+    section: string;
+    title: string;
+  }) => (
+    <button
+      type="button"
+      onClick={() => toggleAccordion(section)}
+      className="flex items-center justify-between w-full p-4 text-left bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+    >
+      <span className="font-semibold text-gray-800 dark:text-white">
+        {title}
+      </span>
+      <ChevronDown
+        className={`w-5 h-5 text-gray-500 transition-transform ${
+          openAccordion === section ? "rotate-180" : ""
+        }`}
+      />
+    </button>
+  );
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      className={`${
+        modelType === "delete" ? "max-w-[600px]" : "max-w-[900px]"
+      } p-5 lg:p-10 m-4 max-h-[90vh] overflow-y-auto`}
+    >
+      <div className="space-y-6">
+        <header className="px-2">
+          <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+            {getModalTitle()}
+          </h4>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {getModalDescription()}
+          </p>
+        </header>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {modelType === "delete" ? (
+            <div className="space-y-5">
+              <div>
+                <Label>Client Name</Label>
+                <p className="rounded-lg bg-gray-100 dark:bg-gray-700 p-4 text-lg text-foreground">
+                  {selectedClient?.clientName}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Basic Information Accordion */}
+              <div>
+                <AccordionHeader section="basic" title="Basic Information" />
+                {openAccordion === "basic" && (
+                  <div className="p-4 space-y-4 border border-gray-200 dark:border-gray-700 rounded-b-lg">
+                    {/* Logo Upload */}
+                    <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
+                      {logoPreview ? (
+                        <div className="relative">
+                          <img
+                            src={logoPreview}
+                            alt="Logo preview"
+                            className="w-32 h-32 object-contain rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLogoPreview(null);
+                              setFormData((p) => ({ ...p, logo: null }));
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="cursor-pointer flex flex-col items-center">
+                          <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Upload Logo
+                          </span>
+                          <span className="text-xs text-gray-500 mt-1">
+                            JPG or PNG, Dimensions 1080×1080px and file size up
+                            to 20MB
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            onChange={handleLogoUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+
+                    
+                    <div>
+                      <Label required>Business Name</Label>
+                      <Input
+                        name="businessName"
+                        placeholder="Business Name (Required)"
+                        value={formData.businessName}
+                        onChange={handleInputChange}
+                        error={!!errors.businessName}
+                        errorMessage={errors.businessName}
+                      />
+                    </div>
+
+                    
+                    <div>
+                      <Label required>Client Industry</Label>
+                      <select
+                        name="clientIndustry"
+                        value={formData.clientIndustry}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      >
+                        <option value="">Select an industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Education">Education</option>
+                      </select>
+                      {errors.clientIndustry && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.clientIndustry}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Country and City/Town */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label required>Select Country</Label>
+                        <select
+                          name="countryCode"
+                          value={formData.countryCode}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        >
+                          <option value="IN">India</option>
+                          <option value="US">United States</option>
+                          <option value="GB">United Kingdom</option>
+                          <option value="DE">Germany</option>
+                          <option value="FR">France</option>
+                          <option value="AU">Australia</option>
+                          <option value="CA">Canada</option>
+                          <option value="JP">Japan</option>
+                          <option value="SG">Singapore</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <Label>City/Town</Label>
+                        <Input
+                          name="cityTown"
+                          placeholder="City/Town Name"
+                          value={formData.cityTown}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Tax Information Accordion */}
+              <div>
+                <AccordionHeader
+                  section="tax"
+                  title="Tax Information (optional)"
+                />
+                {openAccordion === "tax" && (
+                  <div className="p-4 space-y-4 border border-gray-200 dark:border-gray-700 rounded-b-lg">
+                    {/* VAT Number */}
+                    <div>
+                      <Label>{getTaxLabel(formData.countryCode)}</Label>
+                      <Input
+                        name="vatNumber"
+                        placeholder={getTaxLabel(formData.countryCode)}
+                        value={formData.vatNumber}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    {/* Client Type */}
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        Client Type
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </Label>
+                      <div className="flex gap-6 mt-2">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="clientType"
+                            value="individual"
+                            checked={formData.clientType === "individual"}
+                            onChange={handleInputChange}
+                            className="w-4 h-4 text-brand-500"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            Individual
+                          </span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="clientType"
+                            value="company"
+                            checked={formData.clientType === "company"}
+                            onChange={handleInputChange}
+                            className="w-4 h-4 text-brand-500"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            Company
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                   
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        Tax Treatment
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </Label>
+                      <select
+                        name="taxTreatment"
+                        value={formData.taxTreatment}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      >
+                        <option value="overseas">Overseas</option>
+                        <option value="domestic">Domestic</option>
+                        <option value="exempt">Exempt</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+             
+              <div>
+                <AccordionHeader section="address" title="Address" />
+                {openAccordion === "address" && (
+                  <div className="p-4 space-y-4 border border-gray-200 dark:border-gray-700 rounded-b-lg">
+                    <div>
+                      <Label>Address Line 1</Label>
+                      <Input
+                        name="addressLine1"
+                        placeholder="Street address, P.O. box"
+                        value={formData.addressLine1}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Address Line 2</Label>
+                      <Input
+                        name="addressLine2"
+                        placeholder="Apartment, suite, unit, building, floor, etc."
+                        value={formData.addressLine2}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>State/Province</Label>
+                        <Input
+                          name="state"
+                          placeholder="State or Province"
+                          value={formData.state}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div>
+                        <Label>ZIP/Postal Code</Label>
+                        <Input
+                          name="zipCode"
+                          placeholder="ZIP or Postal Code"
+                          value={formData.zipCode}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              
+              <div>
+                <AccordionHeader section="account" title="Account Details" />
+                {openAccordion === "account" && (
+                  <div className="p-4 space-y-4 border border-gray-200 dark:border-gray-700 rounded-b-lg">
+                    <div>
+                      <Label>Bank Name</Label>
+                      <Input
+                        name="bankName"
+                        placeholder="Enter bank name"
+                        value={formData.bankName}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Account Number</Label>
+                      <Input
+                        name="accountNumber"
+                        placeholder="Enter account number"
+                        value={formData.accountNumber}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Account Holder Name</Label>
+                      <Input
+                        name="accountHolderName"
+                        placeholder="Enter account holder name"
+                        value={formData.accountHolderName}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>IFSC Code</Label>
+                        <Input
+                          name="ifscCode"
+                          placeholder="Enter IFSC code"
+                          value={formData.ifscCode}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div>
+                        <Label>SWIFT Code</Label>
+                        <Input
+                          name="swiftCode"
+                          placeholder="Enter SWIFT code"
+                          value={formData.swiftCode}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-between gap-3 pt-4">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={handleClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+
+            <Button type="submit" disabled={loading} className="min-w-[160px]">
+              {loading ? (
+                <Loading size={1} style={2} />
+              ) : modelType === "delete" ? (
+                "Delete"
+              ) : modelType === "edit" ? (
+                "Update"
+              ) : (
+                "Add"
+              )}{" "}
+              Client
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
+}

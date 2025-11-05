@@ -4,9 +4,8 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Gravity Oasis Reset Password | TailAdmin - Gravity Oasis Dashboard Template",
-  description:
-    "This is Gravity Oasis Password Reset page for TailAdmin Dashboard Template",
+  title: "Reset Password | Gravita Oasis ",
+  description: "This is  Reset Password page for Gravita Oasis ",
 };
 
 export default function ResetPasswordPage() {

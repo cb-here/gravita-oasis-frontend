@@ -11,6 +11,7 @@ import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import TextArea from "@/components/form/input/TextArea";
 import Switch from "@/components/form/switch/Switch";
+import axios from "@/lib/axiosInstance";
 
 interface DocumentModalProps {
   isOpen: boolean;
@@ -19,13 +20,10 @@ interface DocumentModalProps {
   setModelType: React.Dispatch<React.SetStateAction<string>>;
   selectedDocument: any;
   setSelectedDocument: React.Dispatch<React.SetStateAction<any>>;
+  setDocuments: any;
+   rowsPerPage: any;
 }
 
-interface FileUpload {
-  id: string;
-  file: File;
-  preview?: string;
-}
 
 export default function DocumentModal({
   isOpen,
@@ -34,9 +32,10 @@ export default function DocumentModal({
   setModelType,
   selectedDocument,
   setSelectedDocument,
+  setDocuments,
+  rowsPerPage
 }: DocumentModalProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [uploadedFiles, setUploadedFiles] = useState<FileUpload[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -70,13 +69,12 @@ export default function DocumentModal({
 
     if ((modelType === "edit" || modelType === "read") && selectedDocument) {
       setFormData({
-        fileName: selectedDocument.fileName || "",
+        fileName: selectedDocument.name || "",
         description: selectedDocument.description || "",
         visible: selectedDocument.visible ?? false,
       });
     } else {
       setFormData({ fileName: "", description: "", visible: false });
-      setUploadedFiles([]);
     }
   }, [isOpen, modelType, selectedDocument]);
   const handleInputChange = (
@@ -100,61 +98,82 @@ export default function DocumentModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (modelType === "read") {
-      handleClose();
-      return;
+    if (modelType !== "delete") {
+      const isValid = await validateForm();
+      if (!isValid) return;
     }
-
-    // ---- delete mode – no validation needed ----
-    if (modelType === "delete") {
-      setLoading(true);
-      try {
-        // await api.deleteDocument(selectedDocument._id);
-        showToast("success", "Deleted", "Document removed permanently");
-        handleClose();
-      } catch (err) {
-        const axiosErr = err as AxiosError<any>;
-        showToast(
-          "error",
-          axiosErr?.response?.data?.title || "Error",
-          axiosErr?.response?.data?.message || "Could not delete"
-        );
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
-    // ---- upload / edit ----
-    if (modelType === "upload" && uploadedFiles.length === 0) {
-      showToast("error", "File Required", "Please select a file");
-      return;
-    }
-
-    const isValid = await validateForm();
-    if (!isValid) return;
 
     setLoading(true);
+
     try {
-      const payload: any = {
-        fileName: formData.fileName,
-        description: formData.description,
-        visible: formData.visible,
-        file: uploadedFiles[0]?.file ?? null,
-      };
+      if (modelType === "delete") {
+        const res = await axios.delete(
+          `/documents/${selectedDocument?._id}`
+        );
+        showToast("success", res?.data?.title, res?.data?.message);
 
-      if (modelType === "edit" && uploadedFiles.length === 0) {
-        payload.existingFile = selectedDocument.fileUrl;
+        setDocuments((prev: any) => ({
+          ...prev,
+          documents: prev.documents.filter(
+            (doc: any) => doc?._id !== selectedDocument?._id
+          ),
+          totalRecords: prev.totalRecords - 1,
+        }));
+
+        handleClose();
+      } else {
+        if (modelType === "edit") {
+          const res = await axios.put(
+            `/documents/${selectedDocument?._id}`,
+            {
+              name: formData.fileName,
+              description: formData.description,
+              visible: formData.visible,
+            }
+          );
+          showToast("success", res?.data?.title, res?.data?.message);
+
+          setDocuments((prev: any) => ({
+            ...prev,
+            documents: prev.documents.map((doc: any) =>
+              doc._id === selectedDocument?._id
+                ? {
+                    ...doc,
+                    name: formData.fileName,
+                    description: formData.description,
+                    visible: formData.visible,
+                  }
+                : doc
+            ),
+          }));
+
+          handleClose();
+        } else {
+          const res = await axios.post(`/documents`, {
+            name: formData.fileName,
+            description: formData.description,
+            visible: formData.visible,
+          });
+          showToast("success", res?.data?.title, res?.data?.message);
+          const response = res?.data?.Response;
+
+          setDocuments((prev: any) => {
+            const updatedDocuments = [...prev.documents];
+
+            if (updatedDocuments.length >= rowsPerPage) {
+              updatedDocuments.pop();
+            }
+
+            return {
+              ...prev,
+              documents: [response, ...updatedDocuments],
+              totalRecords: prev.totalRecords + 1,
+            };
+          });
+
+          handleClose();
+        }
       }
-
-      console.log("SUBMIT PAYLOAD →", payload);
-      // await api.saveDocument(payload, modelType);
-      showToast(
-        "success",
-        "Success",
-        `Document ${modelType === "edit" ? "updated" : "uploaded"}`
-      );
-      handleClose();
     } catch (err) {
       const axiosErr = err as AxiosError<any>;
       showToast(
@@ -171,7 +190,6 @@ export default function DocumentModal({
     if (loading) return;
     setFormData({ fileName: "", description: "", visible: false });
     setErrors({});
-    setUploadedFiles([]);
     setModelType("");
     setSelectedDocument(null);
     closeModal();
@@ -230,8 +248,8 @@ export default function DocumentModal({
             <div className="space-y-5">
               <div>
                 <Label>File Name</Label>
-                <p className="rounded-lg bg-gray-100 dark:bg-gray-700 p-6 text-lg text-foreground">
-                  {selectedDocument?.fileName}
+                <p className="rounded-lg bg-gray-100 dark:bg-gray-700 p-4 text-lg text-foreground">
+                  {selectedDocument?.name}
                 </p>
               </div>
             </div>
@@ -284,7 +302,7 @@ export default function DocumentModal({
               onClick={handleClose}
               disabled={loading}
             >
-              Cancek
+              Cancel
             </Button>
 
             <Button type="submit" disabled={loading} className="min-w-[160px]">

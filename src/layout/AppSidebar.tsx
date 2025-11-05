@@ -63,6 +63,18 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    name: "Sales",
+    icon: <Receipt className="w-5 h-5" />,
+    new: true,
+    subItems: [
+      { name: "Clients", path: "/clients" },
+      {
+        name: "Invoices",
+        path: "/invoice",
+      },
+    ],
+  },
+  {
     name: "Master Data",
     icon: <CogIcon className="h-5 w-5" />,
     subItems: [
@@ -102,15 +114,12 @@ const navItems: NavItem[] = [
     name: "To Do",
     path: "/to-do",
   },
-   {
-    icon: <Receipt className="h-5 w-5" />,
-    name: "Invoice",
-    path: "/invoice",
-  },
+
   {
     icon: <FaSitemap className="h-5 w-5" />,
     name: "Organization",
     path: "/organization-structure",
+    new: true,
   },
 ];
 
