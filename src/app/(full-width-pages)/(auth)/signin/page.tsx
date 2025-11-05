@@ -2,8 +2,8 @@ import SignInForm from "@/components/auth/SignInForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Gravity Oasis SignIn Page | TailAdmin - Gravity Oasis Dashboard Template",
-  description: "This is Gravity Oasis Signin Page TailAdmin Dashboard Template",
+  title: "SignIn |  Gravita Oasis",
+  description: "This is SignIn page for Gravita Oasis.",
 };
 
 export default function SignIn() {

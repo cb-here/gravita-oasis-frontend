@@ -1,7 +1,7 @@
 "use client";
 import CommonTable from "@/components/common/CommonTable";
-import FilterButton from "@/components/common/filter/FilterButton";
-import FilterModal from "@/components/common/filter/FilterModal";
+// import FilterButton from "@/components/common/filter/FilterButton";
+// import FilterModal from "@/components/common/filter/FilterModal";
 import Search from "@/components/common/Search";
 import TableFooter from "@/components/common/TableFooter";
 import Badge from "@/components/ui/badge/Badge";
@@ -9,157 +9,40 @@ import Button from "@/components/ui/button/Button";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { useModal } from "@/hooks/useModal";
 import { PencilIcon, TrashBinIcon } from "@/icons";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import FilterAndSortPills from "@/components/common/filter/FilterAndSortPills";
 import DocumentModal from "../modals/DocumentModal";
+import { fetchDocuments } from "@/utils/fetchApis";
 
 export default function Documents() {
   const mainModal = useModal();
 
-  const [documents, setDocuments] = useState<any>({
-    totalRecords: 15,
-    Documents: [
-      {
-        _id: "1",
-        fileName: "Aadhar Card Front",
-        description: "Front side of Aadhar card",
-        visible: true,
-        updatedBy: "John Doe",
-        updatedAt: "2024-01-15T10:30:00Z",
-      },
-      {
-        _id: "2",
-        fileName: "Aadhar Card Back",
-        description: "Back side of Aadhar card",
-        visible: true,
-        updatedBy: "John Doe",
-        updatedAt: "2024-01-15T10:30:00Z",
-      },
-      {
-        _id: "3",
-        fileName: "Voter ID",
-        description: "Voter identification card",
-        visible: true,
-        updatedBy: "Jane Smith",
-        updatedAt: "2024-01-14T14:20:00Z",
-      },
-      {
-        _id: "4",
-        fileName: "Driving License",
-        description: "Driver's license document",
-        visible: false,
-        updatedBy: "Mike Johnson",
-        updatedAt: "2024-01-13T09:15:00Z",
-      },
-      {
-        _id: "5",
-        fileName: "Passport",
-        description: "International passport",
-        visible: true,
-        updatedBy: "Sarah Wilson",
-        updatedAt: "2024-01-12T16:45:00Z",
-      },
-      // … (the rest of the 15 items – same pattern)
-      {
-        _id: "6",
-        fileName: "Health Insurance Card",
-        description: "Health insurance details",
-        visible: true,
-        updatedBy: "David Brown",
-        updatedAt: "2024-01-11T11:20:00Z",
-      },
-      {
-        _id: "7",
-        fileName: "Medical History Form",
-        description: "Patient medical history",
-        visible: false,
-        updatedBy: "Emily Davis",
-        updatedAt: "2024-01-10T13:45:00Z",
-      },
-      {
-        _id: "8",
-        fileName: "Consent Form",
-        description: "Patient consent",
-        visible: true,
-        updatedBy: "Robert Wilson",
-        updatedAt: "2024-01-09T15:30:00Z",
-      },
-      {
-        _id: "9",
-        fileName: "HIPAA Authorization Form",
-        description: "HIPAA release",
-        visible: true,
-        updatedBy: "Lisa Anderson",
-        updatedAt: "2024-01-08T12:10:00Z",
-      },
-      {
-        _id: "10",
-        fileName: "Patient Registration Form",
-        description: "New patient registration",
-        visible: false,
-        updatedBy: "Michael Clark",
-        updatedAt: "2024-01-07T14:25:00Z",
-      },
-      {
-        _id: "11",
-        fileName: "Lab Test Results",
-        description: "Recent lab results",
-        visible: true,
-        updatedBy: "Jennifer Lee",
-        updatedAt: "2024-01-06T16:40:00Z",
-      },
-      {
-        _id: "12",
-        fileName: "Prescription Document",
-        description: "Doctor's prescription",
-        visible: true,
-        updatedBy: "Kevin Martin",
-        updatedAt: "2024-01-05T09:55:00Z",
-      },
-      {
-        _id: "13",
-        fileName: "Insurance Claim Form",
-        description: "Claim submitted to insurer",
-        visible: false,
-        updatedBy: "Amanda White",
-        updatedAt: "2024-01-04T11:30:00Z",
-      },
-      {
-        _id: "14",
-        fileName: "Emergency Contact Form",
-        description: "Emergency contacts",
-        visible: true,
-        updatedBy: "Daniel Harris",
-        updatedAt: "2024-01-03T13:15:00Z",
-      },
-      {
-        _id: "15",
-        fileName: "Medical Power of Attorney",
-        description: "Legal power of attorney",
-        visible: true,
-        updatedBy: "Michelle Taylor",
-        updatedAt: "2024-01-02T15:50:00Z",
-      },
-    ],
+  const [documentsData, setDocumentsData] = useState<any>({
+    totalRecords: 0,
+    documents: [],
   });
 
   const initParams = {
-    search: "",
     page: 1,
     limit: 10,
+    search: "",
   };
+
   const [documentParams, setDocumentParams] = useState<any>(initParams);
   const [loading, setLoading] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+  const hasFetchedInitialData = useRef(false);
 
-  const totalPages = Math.ceil(documents?.totalRecords / documentParams?.limit);
+  const totalPages = Math.ceil(
+    documentsData?.totalRecords / documentParams?.limit
+  );
   const startIndex = (documentParams?.page - 1) * documentParams?.limit;
   const endIndex = Math.min(
     startIndex + documentParams?.limit,
-    documents?.totalRecords
+    documentsData?.totalRecords
   );
 
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  // const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [modalType, setModalType] = useState<any>("");
 
@@ -167,23 +50,29 @@ export default function Documents() {
     page?: number;
     limit?: number;
     search?: string;
-    status?: string;
   }) => {
     setLoading(true);
     try {
-      const res = await {
+      const res = await fetchDocuments({
         page: params?.page ?? documentParams?.page,
         limit: params?.limit ?? documentParams?.limit,
         search: params?.search ?? documentParams?.search,
-        status: params?.status ?? documentParams?.status,
-      };
-      setDocuments(res);
+      });
+      setDocumentsData(res);
     } catch (err) {
-      console.error("Failed to fetch master data:", err);
+      console.error("Failed to fetch documents:", err);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!hasFetchedInitialData.current) {
+      hasFetchedInitialData.current = true;
+      getDocuments();
+    }
+  }, []);
+
   const handlePageChange = async (page: number) => {
     setDocumentParams((prev: any) => ({ ...prev, page }));
     await getDocuments({ page });
@@ -215,15 +104,15 @@ export default function Documents() {
       sortable: true,
       render: (row: any) => (
         <div className="flex items-center gap-2">
-          <span className="font-medium">{row.fileName}</span>
+          <span className="font-medium">{row?.name}</span>
         </div>
       ),
     },
     {
       label: "Description",
       render: (row: any) => (
-        <span className="text-gray-700 dark:text-gray-300">
-          {row.description ?? "No description available"}
+        <span className="text-gray-700 dark:text-gray-300 flex justify-center">
+          {row?.description ? row.description : "-"}
         </span>
       ),
     },
@@ -233,10 +122,10 @@ export default function Documents() {
         <div className="flex items-center justify-center">
           <Badge
             className="text-xs"
-            color={row.visible ? "success" : "error"}
+            color={row?.visible ? "success" : "error"}
             variant="light"
           >
-            {row.visible ? "Visible" : "Not Visible"}
+            {row?.visible ? "Visible" : "Not Visible"}
           </Badge>
         </div>
       ),
@@ -264,7 +153,7 @@ export default function Documents() {
             Add New Document
           </Button>
 
-          <FilterModal
+          {/* <FilterModal
             isOpen={isFilterModalOpen}
             onClose={() => setIsFilterModalOpen(false)}
             title="Filter Documents"
@@ -292,7 +181,7 @@ export default function Documents() {
           <FilterButton
             onClick={() => setIsFilterModalOpen(true)}
             className="px-4 py-2"
-          />
+          /> */}
         </div>
       </div>
 
@@ -300,7 +189,7 @@ export default function Documents() {
 
       <CommonTable
         headers={headers}
-        data={documents?.Documents || []}
+        data={documentsData?.documents || []}
         actions={(item: any) => (
           <>
             <Tooltip content="Edit" position="left">
@@ -338,7 +227,7 @@ export default function Documents() {
         currentPage={documentParams?.page}
         totalPages={totalPages}
         handlePageChange={handlePageChange}
-        totalEntries={documents?.totalRecords}
+        totalEntries={documentsData?.totalRecords}
         startIndex={startIndex}
         endIndex={endIndex}
       />
@@ -350,6 +239,8 @@ export default function Documents() {
         setModelType={setModalType}
         selectedDocument={selectedDocument}
         setSelectedDocument={setSelectedDocument}
+        rowsPerPage={documentsData?.limit}
+        setDocuments={setDocumentsData}
       />
     </div>
   );

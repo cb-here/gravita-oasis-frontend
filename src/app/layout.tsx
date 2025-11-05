@@ -2,12 +2,13 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import "swiper/swiper-bundle.css";
 import "simplebar-react/dist/simplebar.min.css";
-import { SidebarProvider } from "@/context/SidebarContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { AppLayout } from "@/components/app-layout";
+import { Providers } from "@/components/providers";
 import ToastProvider from "@/components/ToastProvider";
 import { TimerProvider } from "@/lib/contexts/TimerContext";
 import FloatingTimer from "@/components/common/FloatingTimer";
-import SupportPopupForm from "@/components/support-tickets/modals/SupportPopupForm";
+// import SupportPopupForm from "@/components/support-tickets/modals/SupportPopupForm";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -21,16 +22,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
-        <ThemeProvider>
-          <ToastProvider />
-          <TimerProvider>
-            <SidebarProvider>
-              {children}
-              <SupportPopupForm />
+        <Providers>
+          <ThemeProvider>
+            <ToastProvider />
+            <TimerProvider>
+              <AppLayout>{children}</AppLayout>
+              {/* <SupportPopupForm /> */}
               <FloatingTimer />
-            </SidebarProvider>
-          </TimerProvider>
-        </ThemeProvider>
+            </TimerProvider>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
